@@ -179,7 +179,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setUseDbalEditorApi(bool $useDbalEditorApi): void
     {
-        /** @phpstan-ignore function.impossibleType (This API is not released yet) */
+        /** @phpstan-ignore function.alreadyNarrowedType (This API is not always available) */
         if ($useDbalEditorApi && ! method_exists(Schema::class, 'edit')) {
             throw new LogicException('Using the DBAL editor API requires doctrine/dbal 4.5 or higher.');
         }

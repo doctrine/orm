@@ -222,6 +222,7 @@ class SchemaTool
 
             $tableName = $this->quoteStrategy->getTableName($class, $this->platform);
 
+            /** @phpstan-ignore method.deprecated (to be handled in experimental code) */
             $table = $schema->createTable($tableName);
 
             if ($class->isInheritanceTypeSingleTable()) {
@@ -301,6 +302,7 @@ class SchemaTool
                                 $this->platform,
                             );
                             // TODO: This seems rather hackish, can we optimize it?
+                            /** @phpstan-ignore method.deprecated (to be handled in experimental code) */
                             $table->getColumn($columnName)->setAutoincrement(false);
 
                             $pkColumns[]           = $columnName;
@@ -337,6 +339,7 @@ class SchemaTool
 
                     if ($inheritedKeyColumns !== []) {
                         // Add a FK constraint on the ID column
+                        /** @phpstan-ignore method.deprecated (to be handled in experimental code) */
                         $table->addForeignKeyConstraint(
                             $this->quoteStrategy->getTableName(
                                 $this->em->getClassMetadata($class->rootEntityName),
@@ -394,6 +397,7 @@ class SchemaTool
 
             foreach ($table->getIndexes() as $idxKey => $existingIndex) {
                 if ($existingIndex !== $primaryKey && $primaryKey->spansColumns(self::getIndexedColumns($existingIndex))) {
+                    /** @phpstan-ignore method.deprecated (to be handled in experimental code) */
                     $table->dropIndex($idxKey);
                 }
             }
@@ -404,6 +408,7 @@ class SchemaTool
                         $indexData['flags'] = [];
                     }
 
+                    /** @phpstan-ignore method.deprecated (to be handled in experimental code) */
                     $table->addIndex(
                         $this->getIndexColumns($class, $indexData),
                         is_numeric($indexName) ? null : $indexName,
@@ -419,17 +424,20 @@ class SchemaTool
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
                         if (self::isIndexRedundantForUniqueConstraint($tableIndex, $uniqIndex)) {
+                            /** @phpstan-ignore method.deprecated (to be handled in experimental code) */
                             $table->dropIndex($tableIndexName);
                             break;
                         }
                     }
 
+                    /** @phpstan-ignore method.deprecated (to be handled in experimental code) */
                     $table->addUniqueIndex(self::getIndexedColumns($uniqIndex), is_numeric($indexName) ? null : $indexName, $indexData['options'] ?? []);
                 }
             }
 
             if (isset($class->table['options'])) {
                 foreach ($class->table['options'] as $key => $val) {
+                    /** @phpstan-ignore method.deprecated (to be handled in experimental code) */
                     $table->addOption($key, $val);
                 }
             }
@@ -440,6 +448,7 @@ class SchemaTool
                 $seqDef     = $class->sequenceGeneratorDefinition;
                 $quotedName = $this->quoteStrategy->getSequenceName($seqDef, $class, $this->platform);
                 if (! $schema->hasSequence($quotedName)) {
+                    /** @phpstan-ignore method.deprecated (to be handled in experimental code) */
                     $schema->createSequence(
                         $quotedName,
                         (int) $seqDef['allocationSize'],
@@ -462,7 +471,6 @@ class SchemaTool
                 $originalTableName = $table->getObjectName();
                 $newTable          = $tableEventArgs->getClassTable();
 
-                // @phpstan-ignore method.notFound (Using unreleased Schema::edit() API)
                 $schema = $schema->edit()
                     ->dropTable($originalTableName)
                     ->addTable($newTable)
@@ -481,6 +489,7 @@ class SchemaTool
             }
 
             // Add the FK constraint to the table
+            /** @phpstan-ignore method.deprecated (to be handled in experimental code) */
             $fkData['table']->addForeignKeyConstraint(
                 $fkData['foreignTableName'],
                 $fkData['localColumns'],
@@ -650,6 +659,7 @@ class SchemaTool
 
                     if ($inheritedKeyColumns !== []) {
                         // Add a FK constraint on the ID column
+                        /** @phpstan-ignore method.deprecated (todo) */
                         $table->addForeignKeyConstraint(
                             $this->quoteStrategy->getTableName(
                                 $this->em->getClassMetadata($class->rootEntityName),
@@ -707,6 +717,7 @@ class SchemaTool
 
             foreach ($table->getIndexes() as $idxKey => $existingIndex) {
                 if ($existingIndex !== $primaryKey && $primaryKey->spansColumns(self::getIndexedColumns($existingIndex))) {
+                    /** @phpstan-ignore method.deprecated (todo) */
                     $table->dropIndex($idxKey);
                 }
             }
@@ -717,7 +728,9 @@ class SchemaTool
                         $indexData['flags'] = [];
                     }
 
+                    /** @phpstan-ignore method.deprecated (todo) */
                     $table->addIndex(
+                        /** @phpstan-ignore argument.type (todo) */
                         $this->getIndexColumns($class, $indexData),
                         is_numeric($indexName) ? null : $indexName,
                         (array) $indexData['flags'],
@@ -732,11 +745,13 @@ class SchemaTool
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
                         if (self::isIndexRedundantForUniqueConstraint($tableIndex, $uniqIndex)) {
+                            /** @phpstan-ignore method.deprecated (todo) */
                             $table->dropIndex($tableIndexName);
                             break;
                         }
                     }
 
+                    /** @phpstan-ignore method.deprecated (todo), argument.type (todo) */
                     $table->addUniqueIndex(self::getIndexedColumns($uniqIndex), is_numeric($indexName) ? null : $indexName, $indexData['options'] ?? []);
                 }
             }
@@ -748,7 +763,6 @@ class SchemaTool
             $processedClasses[$class->name] = true;
 
             // Add the fully populated table to the schema
-            // @phpstan-ignore method.notFound (Using unreleased Schema::edit() API)
             $schemaEditor = $schema->edit();
             $schemaEditor->addTable($table);
 
@@ -764,6 +778,7 @@ class SchemaTool
                 $seqDef     = $class->sequenceGeneratorDefinition;
                 $quotedName = $this->quoteStrategy->getSequenceName($seqDef, $class, $this->platform);
                 if (! $schema->hasSequence($quotedName)) {
+                    /** @phpstan-ignore method.deprecated (todo) */
                     $schema->createSequence(
                         $quotedName,
                         (int) $seqDef['allocationSize'],
@@ -786,7 +801,6 @@ class SchemaTool
                 $originalTableName = $table->getObjectName();
                 $newTable          = $tableEventArgs->getClassTable();
 
-                // @phpstan-ignore method.notFound (Using unreleased Schema::edit() API)
                 $schema = $schema->edit()
                     ->dropTable($originalTableName)
                     ->addTable($newTable)
@@ -855,6 +869,7 @@ class SchemaTool
         }
 
         $options = $this->gatherColumnOptions($discrColumn) + $options;
+        /** @phpstan-ignore method.deprecated (todo) */
         $table->addColumn($discrColumn->name, $discrColumn->type, $options);
     }
 
@@ -990,18 +1005,22 @@ class SchemaTool
 
         if ($table->hasColumn($columnName)) {
             // required in some inheritance scenarios
+            /** @phpstan-ignore method.deprecated (todo) */
             $table->modifyColumn($columnName, $options);
         } else {
+            /** @phpstan-ignore method.deprecated (todo) */
             $table->addColumn($columnName, $columnType, $options);
         }
 
         $isUnique = $mapping->unique ?? false;
         if ($isUnique) {
+            /** @phpstan-ignore method.deprecated (todo) */
             $table->addUniqueIndex([$columnName]);
         }
 
         $isIndex = $mapping->index ?? false;
         if ($isIndex) {
+            /** @phpstan-ignore method.deprecated (todo) */
             $table->addIndex([$columnName]);
         }
     }
@@ -1067,11 +1086,14 @@ class SchemaTool
                     );
                     // Add default table options (charset, collation, engine, etc.)
                     foreach ($schemaConfig->getDefaultTableOptions() as $option => $value) {
+                        /** @phpstan-ignore method.deprecated (todo) */
                         $theJoinTable->addOption($option, $value);
                     }
                 } else {
+                    /** @phpstan-ignore method.deprecated (to be handled in experimental code) */
                     $theJoinTable = $schema->createTable($tableName);
                     foreach ($joinTable->options as $key => $val) {
+                        /** @phpstan-ignore method.deprecated (to be handled in experimental code) */
                         $theJoinTable->addOption($key, $val);
                     }
                 }
@@ -1248,6 +1270,7 @@ class SchemaTool
 
                 $columnOptions = $this->gatherColumnOptions($joinColumn) + $columnOptions;
 
+                /** @phpstan-ignore method.deprecated (todo) */
                 $theJoinTable->addColumn($quotedColumnName, $fieldMapping->type, $columnOptions);
             }
 
@@ -1267,6 +1290,7 @@ class SchemaTool
         // Prefer unique constraints over implicit simple indexes created for foreign keys.
         // Also avoids index duplication.
         foreach ($uniqueConstraints as $indexName => $unique) {
+            /** @phpstan-ignore method.deprecated (todo) */
             $theJoinTable->addUniqueIndex($unique['columns'], is_numeric($indexName) ? null : $indexName);
         }
 
@@ -1322,7 +1346,7 @@ class SchemaTool
             if (! isset($blacklistedFks[$compositeName])) {
                 // Add an index for the local columns since we won't be adding a FK
                 // (FKs normally create implicit indexes).
-                // @phpstan-ignore argument.type ($localColumns is not empty)
+                /** @phpstan-ignore argument.type ($localColumns is not empty), method.deprecated (todo) */
                 $theJoinTable->addIndex($localColumns);
             }
 
@@ -1425,6 +1449,7 @@ class SchemaTool
 
         foreach ($schema->getTables() as $table) {
             if (! $deployedSchema->hasTable($this->getAssetName($table))) {
+                /** @phpstan-ignore method.deprecated (todo) */
                 $schema->dropTable($this->getAssetName($table));
             }
         }
@@ -1432,6 +1457,7 @@ class SchemaTool
         if ($this->platform->supportsSequences()) {
             foreach ($schema->getSequences() as $sequence) {
                 if (! $deployedSchema->hasSequence($this->getAssetName($sequence))) {
+                    /** @phpstan-ignore method.deprecated (todo) */
                     $schema->dropSequence($this->getAssetName($sequence));
                 }
             }
@@ -1456,6 +1482,7 @@ class SchemaTool
                 if (count($columns) === 1) {
                     $checkSequence = $this->getAssetName($table) . '_' . $columns[0] . '_seq';
                     if ($deployedSchema->hasSequence($checkSequence) && ! $schema->hasSequence($checkSequence)) {
+                        /** @phpstan-ignore method.deprecated (todo) */
                         $schema->createSequence($checkSequence);
                     }
                 }
@@ -1554,6 +1581,7 @@ class SchemaTool
             }
         }
 
+        /** @phpstan-ignore method.deprecated (todo) */
         $table->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, $primaryKeyColumnNames, true));
     }
 

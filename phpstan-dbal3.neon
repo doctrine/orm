@@ -239,3 +239,7 @@ parameters:
         -
             message: '~^Unknown parameter \$configuration in call to Doctrine\\DBAL\\Schema\\Table constructor\.$~'
             path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Call to an undefined method .*Schema.*edit~'
+            path: src/Tools/SchemaTool.php
