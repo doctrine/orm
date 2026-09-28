@@ -227,6 +227,14 @@ parameters:
             path: src/Tools/SchemaTool.php
 
         -
+            message: '~^Parameter \$indexEditor of method .*SchemaTool\:\:applyIndexFlags\(\) has invalid type Doctrine\\DBAL\\Schema\\IndexEditor\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Call to method (?:setIsClustered|setType)\(\) on an unknown class Doctrine\\DBAL\\Schema\\IndexEditor\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
             message: '~^Call to an undefined method Doctrine\\DBAL\\Schema\\Table::edit\(\)\.$~'
             path: src/Tools/SchemaTool.php
 
@@ -240,4 +248,8 @@ parameters:
 
         -
             message: '~^Unknown parameter \$configuration in call to Doctrine\\DBAL\\Schema\\Table constructor\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Call to an undefined method .*Schema.*edit~'
             path: src/Tools/SchemaTool.php
