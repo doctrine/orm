@@ -395,13 +395,62 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
     public function set(string|int $key, mixed $value): void
     {
+        $replaced = parent::get($key);
+
         parent::set($key, $value);
 
         $this->changed();
 
+        $this->orphanReplacedElement($replaced);
+
         if (is_object($value) && $this->em) {
             $this->getUnitOfWork()->cancelOrphanRemoval($value);
         }
+    }
+
+    /**
+     * Schedules the element displaced by a set() for orphan removal.
+     *
+     * Overwriting an occupied key removes the element stored under it, so like
+     * an explicit remove() the set() has to orphan that element (#4153).
+     *
+     * The scheduling only happens when the replaced element left the
+     * collection entirely. An element that keeps its membership under a
+     * different key — a key swap or a rotation — must survive the flush, and
+     * one that is set under another key afterwards is revived by the
+     * cancel-orphan-removal pass of that very set().
+     */
+    private function orphanReplacedElement(mixed $replaced): void
+    {
+        if (! is_object($replaced)) {
+            // The key held no entity (or no value at all): no orphan to schedule.
+            return;
+        }
+
+        if (! $this->managesOrphanRemoval()) {
+            return;
+        }
+
+        if ($this->unwrap()->contains($replaced)) {
+            // The replaced element is still a member of the collection.
+            return;
+        }
+
+        $this->getUnitOfWork()->scheduleOrphanRemoval($replaced);
+    }
+
+    /**
+     * Tells whether elements dropped from this collection are subject to
+     * orphan removal: a to-many association bound to an owner with
+     * orphanRemoval enabled — the condition under which remove() orphans
+     * an element as well.
+     */
+    private function managesOrphanRemoval(): bool
+    {
+        return $this->association !== null
+            && $this->association->isToMany()
+            && $this->owner
+            && $this->getMapping()->orphanRemoval;
     }
 
     private function doAdd(mixed $value): void
