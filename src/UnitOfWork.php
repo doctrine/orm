@@ -413,8 +413,9 @@ class UnitOfWork implements PropertyChangedListener
 
                 $this->remove($orphan);
 
-                // Deletions materialized here originate from orphan removal: only
-                // they are candidates for early execution before insertions (#6776).
+                // Deletions materialized here originate from orphan removal:
+                // they carry the orphan provenance, deletions scheduled before
+                // this loop carry the explicit one (#6776, #5109).
                 if (! $wasScheduled && isset($this->entityDeletions[$oid])) {
                     $this->orphanDeletions[$oid] = true;
                 }
@@ -438,13 +439,14 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            // Orphan deletions that collide with pending insertions on a unique
-            // constraint must run before those insertions (#6776): execute the
-            // foreign-key-safe collision subset early, all remaining deletions at
-            // their usual place after the insertions.
-            $earlyOrphanDeletions = $this->computeEarlyOrphanDeletions();
-            if ($earlyOrphanDeletions) {
-                $this->executeDeletions($earlyOrphanDeletions);
+            // Scheduled deletions — orphan removals as well as explicit
+            // removals — that collide with pending insertions on a unique
+            // constraint must run before those insertions (#6776, #5109):
+            // execute the foreign-key-safe collision subset early, all
+            // remaining deletions at their usual place after the insertions.
+            $earlyDeletions = $this->computeEarlyDeletions();
+            if ($earlyDeletions) {
+                $this->executeDeletions($earlyDeletions);
             }
 
             if ($this->entityInsertions) {
@@ -1268,31 +1270,31 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Computes the subset of orphan deletions that collide with pending
-     * insertions on a metadata-declared unique constraint and are safe to
-     * execute before those insertions (#6776).
+     * Computes the subset of scheduled deletions — orphan removals as well as
+     * explicit removals — that collide with pending insertions on a
+     * metadata-declared unique constraint and are safe to execute before
+     * those insertions (#6776, #5109).
      *
-     * A colliding orphan is eligible only when no pending operation of this
+     * A colliding deletion is eligible only when no pending operation of this
      * flush holds an owning to-one reference to it (foreign key soundness);
      * otherwise it stays on the baseline commit order.
      *
      * @return array<int, object>
      */
-    private function computeEarlyOrphanDeletions(): array
+    private function computeEarlyDeletions(): array
     {
-        if (! $this->orphanDeletions || ! $this->entityInsertions) {
+        if (! $this->entityDeletions || ! $this->entityInsertions) {
             return [];
         }
 
         $candidates = [];
-        foreach ($this->orphanDeletions as $oid => $ignored) {
-            if (isset($this->entityDeletions[$oid])) {
-                $candidates[] = new DeletionCandidate($this->entityDeletions[$oid], DeletionCandidate::PROVENANCE_ORPHAN);
-            }
-        }
-
-        if (! $candidates) {
-            return [];
+        foreach ($this->entityDeletions as $oid => $entity) {
+            $candidates[] = new DeletionCandidate(
+                $entity,
+                isset($this->orphanDeletions[$oid])
+                    ? DeletionCandidate::PROVENANCE_ORPHAN
+                    : DeletionCandidate::PROVENANCE_EXPLICIT,
+            );
         }
 
         // Pending many-to-many collection operations delete their join rows only
