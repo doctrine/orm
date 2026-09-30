@@ -84,6 +84,66 @@ final class ConstraintEdgePlannerTest extends TestCase
         self::assertSame([], $plan->blockedDeletions);
     }
 
+    #[Group('planner-mixed-composite-unit')]
+    public function testMixedCompositeTableUniqueConstraintCollisionProducesEarlyDeletion(): void
+    {
+        $owner = new PlannerItem();
+
+        $old        = new PlannerItem();
+        $old->f     = 'v';
+        $old->owner = $owner;
+        $new        = new PlannerItem();
+        $new->f     = 'v';
+        $new->owner = $owner;
+
+        $plan = $this->plan([$this->orphan($old)], [$new], [], [], [], [], [], [
+            PlannerItem::class => $this->mixedCompositeItemMetadata(),
+        ]);
+
+        self::assertCount(1, $plan->edges);
+        self::assertSame($old, $plan->edges[0]->deletion);
+        self::assertSame($new, $plan->edges[0]->insertion);
+        self::assertSame([$old], $plan->earlyDeletions());
+        self::assertSame([], $plan->blockedDeletions);
+    }
+
+    #[Group('planner-mixed-composite-unit')]
+    public function testMixedCompositeTableUniqueConstraintWithDifferentOwnersDoesNotCollide(): void
+    {
+        $firstOwner  = new PlannerItem();
+        $secondOwner = new PlannerItem();
+
+        $old        = new PlannerItem();
+        $old->f     = 'v';
+        $old->owner = $firstOwner;
+        $new        = new PlannerItem();
+        $new->f     = 'v';
+        $new->owner = $secondOwner;
+
+        $plan = $this->plan([$this->orphan($old)], [$new], [], [], [], [], [], [
+            PlannerItem::class => $this->mixedCompositeItemMetadata(),
+        ]);
+
+        self::assertSame([], $plan->edges);
+        self::assertSame([], $plan->blockedDeletions);
+    }
+
+    #[Group('planner-mixed-composite-unit')]
+    public function testMixedCompositeTableUniqueConstraintWithNullOwnerDoesNotCollide(): void
+    {
+        $old    = new PlannerItem();
+        $old->f = 'v';
+        $new    = new PlannerItem();
+        $new->f = 'v';
+
+        $plan = $this->plan([$this->orphan($old)], [$new], [], [], [], [], [], [
+            PlannerItem::class => $this->mixedCompositeItemMetadata(),
+        ]);
+
+        self::assertSame([], $plan->edges);
+        self::assertSame([], $plan->blockedDeletions);
+    }
+
     public function testUniqueJoinColumnCollisionByReferencedEntityIdentity(): void
     {
         $ref = new PlannerRef();
@@ -362,6 +422,25 @@ final class ConstraintEdgePlannerTest extends TestCase
         $metadata = new ClassMetadata(PlannerOther::class);
 
         $this->addField($metadata, 'f', true);
+
+        return $metadata;
+    }
+
+    /**
+     * Metadata for the mixed composite shape of #4153: a table-level unique
+     * constraint spanning the join column of the owning side ('owner_id') and
+     * a plain field ('f') — the association component resolves through
+     * associationFieldForColumn(), the field component through fieldNames.
+     */
+    private function mixedCompositeItemMetadata(): ClassMetadata
+    {
+        $metadata = new ClassMetadata(PlannerItem::class);
+
+        $this->addField($metadata, 'f');
+
+        $this->addManyToOne($metadata, 'owner', PlannerItem::class);
+
+        $metadata->table['uniqueConstraints']['owner_f_uniq'] = ['columns' => ['owner_id', 'f']];
 
         return $metadata;
     }
