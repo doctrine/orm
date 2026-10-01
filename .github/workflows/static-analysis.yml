@@ -53,4 +53,4 @@ jobs:
         uses: ramsey/composer-install@v4
 
       - name: Run static analysis with phpstan/phpstan
-        run: "vendor/bin/phpstan analyse -c ${{ matrix.config }} --error-format=checkstyle | cs2pr"
+        run: "vendor/bin/phpstan analyse -c ${{ matrix.config }}"
