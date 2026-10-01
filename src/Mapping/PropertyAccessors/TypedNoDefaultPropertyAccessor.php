@@ -11,10 +11,14 @@ use ReflectionProperty;
 use function assert;
 use function sprintf;
 
+use const PHP_VERSION_ID;
+
 /** @internal */
 class TypedNoDefaultPropertyAccessor implements PropertyAccessor
 {
     private Closure|null $unsetter = null;
+
+    private bool $hasHooks;
 
     public function __construct(private PropertyAccessor $parent, private ReflectionProperty $reflectionProperty)
     {
@@ -33,11 +37,20 @@ class TypedNoDefaultPropertyAccessor implements PropertyAccessor
                 $this->reflectionProperty->getName(),
             ));
         }
+
+        $this->hasHooks = PHP_VERSION_ID >= 80400 && $this->reflectionProperty->hasHooks();
     }
 
     public function setValue(object $object, mixed $value): void
     {
         if ($value === null) {
+            // A hooked property cannot be returned to its uninitialized state: unset() on one
+            // raises an Error, and null would violate the type. Leaving it alone keeps a property
+            // that was never written uninitialized, which is the state unset() produced here.
+            if ($this->hasHooks) {
+                return;
+            }
+
             if ($this->unsetter === null) {
                 $propertyName   = $this->reflectionProperty->getName();
                 $this->unsetter = function () use ($propertyName): void {
