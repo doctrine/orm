@@ -17,6 +17,9 @@ use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ObjectManager;
 
+/**
+ * Finds, queries and persists entities, and flushes their changes to the database.
+ */
 interface EntityManagerInterface extends ObjectManager
 {
     /**
