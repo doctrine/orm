@@ -26,6 +26,7 @@ final class FieldMapping implements ArrayAccess
     public bool|null $nullable           = null;
     public bool|null $notInsertable      = null;
     public bool|null $notUpdatable       = null;
+    public bool|null $selectable         = null;
     public string|null $columnDefinition = null;
     /** @phpstan-var ClassMetadata::GENERATED_*|null */
     public int|null $generated = null;
@@ -102,6 +103,7 @@ final class FieldMapping implements ArrayAccess
      *     index?: bool|null,
      *     notInsertable?: bool|null,
      *     notUpdatable?: bool|null,
+     *     selectable?: bool|null,
      *     columnDefinition?: string|null,
      *     generated?: ClassMetadata::GENERATED_*|null,
      *     enumType?: string|null,
@@ -166,6 +168,7 @@ final class FieldMapping implements ArrayAccess
                 'declaredField',
                 'options',
                 'default',
+                'selectable',
             ] as $key
         ) {
             if ($this->$key !== null) {
