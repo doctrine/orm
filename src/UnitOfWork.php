@@ -1766,15 +1766,22 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Checks whether an entity is registered as removed/deleted with the unit
-     * of work.
+     * of work: the deletion plan is the union of the explicitly removed
+     * entities and the entities orphaned by collection mutations. The
+     * orphan removals scheduled by wholesale collection replacement are a
+     * subset of the orphan removals and are covered by the latter.
      */
     public function isScheduledForDelete(object $entity): bool
     {
-        return isset($this->entityDeletions[spl_object_id($entity)]);
+        $oid = spl_object_id($entity);
+
+        return isset($this->entityDeletions[$oid])
+            || isset($this->orphanRemovals[$oid]);
     }
 
     /**
-     * Checks whether an entity is scheduled for insertion, update or deletion.
+     * Checks whether an entity is scheduled for insertion, update or deletion,
+     * including a deletion scheduled as an orphan removal.
      */
     public function isEntityScheduled(object $entity): bool
     {
@@ -1782,7 +1789,8 @@ class UnitOfWork implements PropertyChangedListener
 
         return isset($this->entityInsertions[$oid])
             || isset($this->entityUpdates[$oid])
-            || isset($this->entityDeletions[$oid]);
+            || isset($this->entityDeletions[$oid])
+            || isset($this->orphanRemovals[$oid]);
     }
 
     /**
@@ -3382,13 +3390,17 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Gets the currently scheduled entity deletions in this UnitOfWork.
+     * Gets the currently scheduled entity deletions in this UnitOfWork: the
+     * deletion plan, the union of the explicitly removed entities and the
+     * entities orphaned by collection mutations. The orphan removals
+     * scheduled by wholesale collection replacement are a subset of the
+     * orphan removals and are covered by the latter.
      *
      * @phpstan-return array<int, object>
      */
     public function getScheduledEntityDeletions(): array
     {
-        return $this->entityDeletions;
+        return $this->entityDeletions + $this->orphanRemovals;
     }
 
     /**
