@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Schema\ForeignKeyConstraint\ReferentialAction;
 use Doctrine\DBAL\Schema\ForeignKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Index as DbalIndex;
 use Doctrine\DBAL\Schema\Index\IndexedColumn;
@@ -19,6 +20,7 @@ use Doctrine\DBAL\Schema\Table as DbalTable;
 use Doctrine\DBAL\Schema\TableEditor;
 use Doctrine\DBAL\Types\EnumType;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
@@ -59,6 +61,7 @@ use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\GH10288\GH10288People;
 use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresMethod;
 
@@ -73,6 +76,8 @@ use function strtolower;
 
 class SchemaToolTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     public function testAddUniqueIndexForUniqueFieldAttribute(): void
     {
         $em         = $this->getTestEntityManager();
@@ -499,6 +504,89 @@ class SchemaToolTest extends OrmTestCase
         }
     }
 
+    /**
+     * @param list<class-string> $classNames
+     * @param list<string>       $childTableNames
+     */
+    #[DataProvider('provideJoinedHierarchiesWithAssociationAsIdentifier')]
+    #[Group('GH-12651')]
+    public function testJoinedChildTableForeignKeyReferencesRootTableWhenIdentifierIsAnAssociation(
+        array $classNames,
+        string $rootTableName,
+        string|null $rootTableOnDelete,
+        array $childTableNames,
+    ): void {
+        // The inherited identifier association and the FK to the root table share the same
+        // local columns, and thus the same generated name. Only one of them must be added.
+        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/dbal/pull/7125');
+
+        $em         = $this->getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+
+        $schema = $schemaTool->getSchemaFromMetadata(array_map(
+            static fn (string $className): ClassMetadata => $em->getClassMetadata($className),
+            $classNames,
+        ));
+
+        self::assertTableHasSingleForeignKey(
+            $schema->getTable($rootTableName),
+            ['target_id'],
+            'gh12651_target',
+            ['id'],
+            $rootTableOnDelete,
+        );
+
+        foreach ($childTableNames as $childTableName) {
+            // JoinedSubclassPersister::delete() only deletes the root row and relies on this
+            // ON DELETE CASCADE constraint to delete the rows of the child tables.
+            self::assertTableHasSingleForeignKey(
+                $schema->getTable($childTableName),
+                ['target_id'],
+                $rootTableName,
+                ['target_id'],
+                'CASCADE',
+            );
+        }
+    }
+
+    /** @return iterable<string, array{list<class-string>, string, string|null, list<string>}> */
+    public static function provideJoinedHierarchiesWithAssociationAsIdentifier(): iterable
+    {
+        yield 'one-to-one identifier' => [
+            [GH12651Target::class, GH12651Root::class, GH12651Child::class],
+            'gh12651_root',
+            'CASCADE',
+            ['gh12651_child'],
+        ];
+
+        yield 'many-to-one identifier' => [
+            [GH12651Target::class, GH12651ManyToOneRoot::class, GH12651ManyToOneChild::class],
+            'gh12651_many_to_one_root',
+            'CASCADE',
+            ['gh12651_many_to_one_child'],
+        ];
+
+        yield 'identifier without onDelete' => [
+            [GH12651Target::class, GH12651NoOnDeleteRoot::class, GH12651NoOnDeleteChild::class],
+            'gh12651_no_on_delete_root',
+            null,
+            ['gh12651_no_on_delete_child'],
+        ];
+
+        // Like any other JOINED child table, the leaf table references the root table, not its parent table.
+        yield 'three-level hierarchy' => [
+            [
+                GH12651Target::class,
+                GH12651ThreeLevelRoot::class,
+                GH12651ThreeLevelMiddle::class,
+                GH12651ThreeLevelLeaf::class,
+            ],
+            'gh12651_three_level_root',
+            'CASCADE',
+            ['gh12651_three_level_middle', 'gh12651_three_level_leaf'],
+        ];
+    }
+
     public function testIndexesBasedOnFields(): void
     {
         $em = $this->getTestEntityManager();
@@ -845,6 +933,38 @@ class SchemaToolTest extends OrmTestCase
         return current($tables);
     }
 
+    /**
+     * @param list<string> $localColumns
+     * @param list<string> $foreignColumns
+     */
+    private static function assertTableHasSingleForeignKey(
+        DbalTable $table,
+        array $localColumns,
+        string $foreignTableName,
+        array $foreignColumns,
+        string|null $onDelete,
+    ): void {
+        $foreignKeys = $table->getForeignKeys();
+
+        self::assertCount(1, $foreignKeys);
+
+        $foreignKey = current($foreignKeys);
+
+        if (class_exists(ForeignKeyConstraintEditor::class)) {
+            self::assertSame($foreignTableName, $foreignKey->getReferencedTableName()->toString());
+            self::assertSame($localColumns, array_map(static fn (UnqualifiedName $name) => $name->toString(), $foreignKey->getReferencingColumnNames()));
+            self::assertSame($foreignColumns, array_map(static fn (UnqualifiedName $name) => $name->toString(), $foreignKey->getReferencedColumnNames()));
+
+            $onDeleteAction = $foreignKey->getOnDeleteAction();
+            self::assertSame($onDelete, $onDeleteAction === ReferentialAction::NO_ACTION ? null : $onDeleteAction->value);
+        } else {
+            self::assertSame($foreignTableName, $foreignKey->getForeignTableName());
+            self::assertSame($localColumns, $foreignKey->getLocalColumns());
+            self::assertSame($foreignColumns, $foreignKey->getForeignColumns());
+            self::assertSame($onDelete, $foreignKey->onDelete());
+        }
+    }
+
     /** @return string[] */
     private static function getIndexedColumns(DbalIndex $index): array
     {
@@ -1099,6 +1219,100 @@ class GH12609IdenticalRef
     #[Id]
     #[Column]
     private int $id;
+}
+
+#[Entity]
+#[Table(name: 'gh12651_target')]
+class GH12651Target
+{
+    #[Id]
+    #[Column]
+    private int $id;
+}
+
+#[Entity]
+#[Table(name: 'gh12651_root')]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'dtype', type: 'string')]
+#[DiscriminatorMap(['child' => GH12651Child::class])]
+abstract class GH12651Root
+{
+    #[Id]
+    #[OneToOne(targetEntity: GH12651Target::class)]
+    #[JoinColumn(name: 'target_id', onDelete: 'CASCADE')]
+    private GH12651Target $target;
+}
+
+#[Entity]
+#[Table(name: 'gh12651_child')]
+class GH12651Child extends GH12651Root
+{
+}
+
+#[Entity]
+#[Table(name: 'gh12651_many_to_one_root')]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'dtype', type: 'string')]
+#[DiscriminatorMap(['child' => GH12651ManyToOneChild::class])]
+abstract class GH12651ManyToOneRoot
+{
+    #[Id]
+    #[ManyToOne(targetEntity: GH12651Target::class)]
+    #[JoinColumn(name: 'target_id', onDelete: 'CASCADE')]
+    private GH12651Target $target;
+}
+
+#[Entity]
+#[Table(name: 'gh12651_many_to_one_child')]
+class GH12651ManyToOneChild extends GH12651ManyToOneRoot
+{
+}
+
+#[Entity]
+#[Table(name: 'gh12651_no_on_delete_root')]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'dtype', type: 'string')]
+#[DiscriminatorMap(['child' => GH12651NoOnDeleteChild::class])]
+abstract class GH12651NoOnDeleteRoot
+{
+    #[Id]
+    #[OneToOne(targetEntity: GH12651Target::class)]
+    #[JoinColumn(name: 'target_id')]
+    private GH12651Target $target;
+}
+
+#[Entity]
+#[Table(name: 'gh12651_no_on_delete_child')]
+class GH12651NoOnDeleteChild extends GH12651NoOnDeleteRoot
+{
+}
+
+#[Entity]
+#[Table(name: 'gh12651_three_level_root')]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'dtype', type: 'string')]
+#[DiscriminatorMap([
+    'middle' => GH12651ThreeLevelMiddle::class,
+    'leaf' => GH12651ThreeLevelLeaf::class,
+])]
+abstract class GH12651ThreeLevelRoot
+{
+    #[Id]
+    #[OneToOne(targetEntity: GH12651Target::class)]
+    #[JoinColumn(name: 'target_id', onDelete: 'CASCADE')]
+    private GH12651Target $target;
+}
+
+#[Entity]
+#[Table(name: 'gh12651_three_level_middle')]
+class GH12651ThreeLevelMiddle extends GH12651ThreeLevelRoot
+{
+}
+
+#[Entity]
+#[Table(name: 'gh12651_three_level_leaf')]
+class GH12651ThreeLevelLeaf extends GH12651ThreeLevelMiddle
+{
 }
 
 class GenerateSchemaEventListener

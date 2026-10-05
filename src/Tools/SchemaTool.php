@@ -342,6 +342,10 @@ class SchemaTool
                     }
 
                     if ($inheritedKeyColumns !== []) {
+                        // A FK collected on the same columns (e.g. for an inherited identifier association)
+                        // would get the same generated name and replace the FK to the root table.
+                        unset($addedFks[$this->getAssetName($table) . '.' . implode('', $inheritedKeyColumns)]);
+
                         // Add a FK constraint on the ID column
                         /** @phpstan-ignore method.deprecated (to be handled in experimental code) */
                         $table->addForeignKeyConstraint(
@@ -663,6 +667,10 @@ class SchemaTool
                     }
 
                     if ($inheritedKeyColumns !== []) {
+                        // A FK collected on the same columns (e.g. for an inherited identifier association)
+                        // would get the same generated name and replace the FK to the root table.
+                        unset($addedFks[$this->getAssetName($table) . '.' . implode('', $inheritedKeyColumns)]);
+
                         // Add a FK constraint on the ID column
                         /** @phpstan-ignore method.deprecated (todo) */
                         $table->addForeignKeyConstraint(
