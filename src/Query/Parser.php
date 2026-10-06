@@ -177,7 +177,7 @@ class Parser
      */
     private $customOutputWalker;
 
-    /** @phpstan-var array<string, AST\SelectExpression> */
+    /** @phpstan-var array<string, non-empty-list<AST\SelectExpression>> */
     private $identVariableExpressions = [];
 
     /**
@@ -446,12 +446,15 @@ class Parser
                 continue;
             }
 
-            $expr = $this->identVariableExpressions[$dqlAlias];
-            $key  = array_search($expr, $AST->selectClause->selectExpressions, true);
+            // The same identification variable may be selected several times; move every occurrence,
+            // otherwise those left behind end up ahead of their parent
+            foreach ($this->identVariableExpressions[$dqlAlias] as $expr) {
+                $key = array_search($expr, $AST->selectClause->selectExpressions, true);
 
-            unset($AST->selectClause->selectExpressions[$key]);
+                unset($AST->selectClause->selectExpressions[$key]);
 
-            $AST->selectClause->selectExpressions[] = $expr;
+                $AST->selectClause->selectExpressions[] = $expr;
+            }
         }
     }
 
@@ -2374,7 +2377,7 @@ class Parser
         $expr = new AST\SelectExpression($expression, $aliasResultVariable, $hiddenAliasResultVariable);
 
         if ($identVariable) {
-            $this->identVariableExpressions[$identVariable] = $expr;
+            $this->identVariableExpressions[$identVariable][] = $expr;
         }
 
         return $expr;
