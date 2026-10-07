@@ -25,7 +25,8 @@ use function sprintf;
  * configuration: a single instance can be shared as a service and reused for
  * any query and any page. This avoids the implicit offset handling and the
  * stateful API of the legacy {@see Paginator}, which this class is intended to
- * replace.
+ * replace. When only the total is needed, {@see getTotalCount()} runs the COUNT
+ * query without fetching any row.
  *
  * @template-covariant T
  * @implements PaginatorInterface<T, Window>
@@ -89,12 +90,28 @@ final class OffsetPaginator implements PaginatorInterface
             $this->fetchJoinCollection,
         ));
 
-        return new WindowPage($items, function () use ($query): int {
-            try {
-                return (int) array_sum(array_map('current', $this->getCountQuery($query)->getScalarResult()));
-            } catch (NoResultException) {
-                return 0;
-            }
-        }, $position);
+        return new WindowPage($items, fn (): int => $this->countResolvedQuery($query), $position);
+    }
+
+    /**
+     * Executes the COUNT query only and returns the total number of matching
+     * root entities, without fetching any row.
+     *
+     * This is the same COUNT query as the one {@see WindowPage::getTotalCount()}
+     * runs, for when the total is needed on its own: before choosing the window
+     * to fetch, or without any listing at all.
+     */
+    public function getTotalCount(Query|QueryBuilder $query): int
+    {
+        return $this->countResolvedQuery($this->resolveQuery($query));
+    }
+
+    private function countResolvedQuery(Query $query): int
+    {
+        try {
+            return (int) array_sum(array_map('current', $this->getCountQuery($query)->getScalarResult()));
+        } catch (NoResultException) {
+            return 0;
+        }
     }
 }

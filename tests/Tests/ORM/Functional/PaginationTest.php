@@ -83,6 +83,35 @@ class PaginationTest extends OrmFunctionalTestCase
         self::assertSame(9, $page->getTotalCount());
     }
 
+    #[DataProvider('useOutputWalkersAndFetchJoinCollection')]
+    public function testGetTotalCountWithoutPaginating(bool $useOutputWalkers, bool $fetchJoinCollection): void
+    {
+        $dql   = 'SELECT u, g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g WHERE u.id > :min';
+        $query = $this->_em->createQuery($dql)->setParameter('min', 0);
+
+        $paginator = new OffsetPaginator($fetchJoinCollection, $useOutputWalkers);
+
+        self::assertSame(9, $paginator->getTotalCount($query));
+        self::assertSame($paginator->paginate($query, new Window(0, 4))->getTotalCount(), $paginator->getTotalCount($query));
+    }
+
+    public function testGetTotalCountAcceptsAQueryBuilder(): void
+    {
+        $queryBuilder = $this->_em->createQueryBuilder()
+            ->select('g')
+            ->from(CmsGroup::class, 'g');
+
+        self::assertSame(3, (new OffsetPaginator())->getTotalCount($queryBuilder));
+    }
+
+    public function testGetTotalCountReturnsZeroForAnEmptyResultSet(): void
+    {
+        $dql   = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id < 0';
+        $query = $this->_em->createQuery($dql);
+
+        self::assertSame(0, (new OffsetPaginator())->getTotalCount($query));
+    }
+
     public function testOffsetPaginatorReturnsFirstPage(): void
     {
         $dql   = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.id ASC';

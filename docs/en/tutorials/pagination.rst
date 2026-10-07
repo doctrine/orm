@@ -81,6 +81,21 @@ Because the returned ``WindowPage`` is immutable and carries no temporal
 coupling, its accessors can be called in any order, and building another page
 never affects a page you already hold.
 
+When only the total is needed — to clamp a requested page number before
+fetching it, to display an "N results" badge, or to cache the total separately
+from the pages — ``getTotalCount()`` runs the ``COUNT`` query alone, without
+fetching any row:
+
+.. code-block:: php
+
+    <?php
+    $paginator = new OffsetPaginator();
+
+    $total    = $paginator->getTotalCount($query);
+    $lastPage = max(1, (int) ceil($total / 25));
+
+    $page = $paginator->paginate($query, Window::fromPageNumberAndSize(min($requestedPage, $lastPage), 25));
+
 How Offset Pagination Works
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -130,6 +145,11 @@ API Reference
     Executes the query for the given ``Window`` and returns an immutable
     ``WindowPage``. All page accessors below live on the returned page. Throws an
     ``InvalidArgumentException`` if ``$position`` is not a ``Window``.
+
+``OffsetPaginator::getTotalCount(Query|QueryBuilder $query): int``
+    Executes the ``COUNT`` query only and returns the total number of matching
+    root entities, without fetching any row. It is the same query as the one
+    ``WindowPage::getTotalCount()`` runs.
 
 ``WindowPage::getItems(): array``
     Returns the raw entity array for the current page.

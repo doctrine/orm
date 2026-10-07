@@ -137,6 +137,29 @@ class OffsetPaginatorTest extends OrmTestCase
         self::assertSame(2, $executedQueries, 'The COUNT query result is memoized.');
     }
 
+    #[AllowMockObjectsWithoutExpectations]
+    public function testGetTotalCountOnlyExecutesTheCountQuery(): void
+    {
+        $executedSql = [];
+        $resultStub  = $this->createStub(Result::class);
+        $this->connection
+            ->method('executeQuery')
+            ->willReturnCallback(static function (string $sql) use (&$executedSql, $resultStub): Result {
+                $executedSql[] = $sql;
+
+                return $resultStub;
+            });
+
+        $this->hydrator->method('hydrateAll')->willReturn([[3]]);
+
+        $query = new Query($this->em);
+        $query->setDQL('SELECT u FROM Doctrine\\Tests\\Models\\CMS\\CmsUser u');
+
+        self::assertSame(3, (new OffsetPaginator(true, false))->getTotalCount($query));
+        self::assertCount(1, $executedSql, 'Only the COUNT query has been executed.');
+        self::assertStringStartsWith('SELECT count(DISTINCT', $executedSql[0]);
+    }
+
     public function testPaginatingDoesCareAboutExtraParametersWithoutOutputWalkersWhenResultIsNotEmpty(): void
     {
         $result = $this->getMockBuilder(Result::class)->disableOriginalConstructor()->getMock();

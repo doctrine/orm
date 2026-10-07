@@ -85,6 +85,14 @@ immutable, iterable `WindowPage`.
  }
 ```
 
+When only the total is needed, `OffsetPaginator::getTotalCount()` runs the count
+query without fetching any row:
+
+```diff
+-$total = count(new Paginator($query, fetchJoinCollection: true));
++$total = (new OffsetPaginator(fetchJoinCollection: true))->getTotalCount($query);
+```
+
 `Paginator::setUseOutputWalkers()` becomes the `useOutputWalkers` constructor
 argument of `OffsetPaginator`.
 
