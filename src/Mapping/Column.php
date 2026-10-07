@@ -11,10 +11,13 @@ use BackedEnum;
 final class Column implements MappingAttribute
 {
     /**
-     * @param int|null                      $precision The precision for a decimal (exact numeric) column (Applies only for decimal column).
-     * @param int|null                      $scale     The scale for a decimal (exact numeric) column (Applies only for decimal column).
+     * @param int|null                      $precision  The precision for a decimal (exact numeric) column (Applies only for decimal column).
+     * @param int|null                      $scale      The scale for a decimal (exact numeric) column (Applies only for decimal column).
      * @param class-string<BackedEnum>|null $enumType
      * @param array<string,mixed>           $options
+     * @param ValueComparator|null          $comparator How changes on this field are detected. When null, the
+     *                                                  comparison depends on the field type: value comparison
+     *                                                  for mutable date types, reference comparison otherwise.
      * @phpstan-param 'NEVER'|'INSERT'|'ALWAYS'|null $generated
      */
     public function __construct(
@@ -32,6 +35,7 @@ final class Column implements MappingAttribute
         public readonly string|null $columnDefinition = null,
         public readonly string|null $generated = null,
         public readonly bool $index = false,
+        public readonly ValueComparator|null $comparator = null,
     ) {
     }
 }

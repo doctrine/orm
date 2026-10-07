@@ -6,13 +6,16 @@ namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\Comparison;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\ValueComparator;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\Persistence\Mapping\Driver\FileLocator;
 use DOMDocument;
 use InvalidArgumentException;
 use LogicException;
+use ReflectionClass;
 use SimpleXMLElement;
 use SortDirection;
 
@@ -823,7 +826,8 @@ class XmlDriver extends FileDriver
       *                   enumType?: string,
       *                   version?: bool,
       *                   columnDefinition?: string,
-      *                   options?: array
+      *                   options?: array,
+      *                   comparator?: ValueComparator
       *               }
       */
     private function columnToArray(SimpleXMLElement $fieldMapping): array
@@ -888,11 +892,52 @@ class XmlDriver extends FileDriver
             $mapping['enumType'] = (string) $fieldMapping['enum-type'];
         }
 
+        if (isset($fieldMapping['comparator'])) {
+            $mapping['comparator'] = $this->buildValueComparator((string) $fieldMapping['comparator']);
+        }
+
         if (isset($fieldMapping->options)) {
             $mapping['options'] = $this->parseOptions($fieldMapping->options->children());
         }
 
         return $mapping;
+    }
+
+    /**
+     * Instantiates the value comparator declared by the "comparator" attribute.
+     *
+     * The attribute holds either the name of a built-in {@see Comparison} case
+     * or the class name of a {@see ValueComparator} implementation.
+     */
+    private function buildValueComparator(string $comparator): ValueComparator
+    {
+        $builtin = match ($comparator) {
+            'same' => Comparison::Same,
+            'equal' => Comparison::Equal,
+            'equal_mutable' => Comparison::EqualMutable,
+            default => null,
+        };
+
+        if ($builtin !== null) {
+            return $builtin;
+        }
+
+        if (! class_exists($comparator)) {
+            throw MappingException::invalidValueComparator($comparator);
+        }
+
+        $reflection = new ReflectionClass($comparator);
+
+        if (0 < $reflection->getConstructor()?->getNumberOfRequiredParameters()) {
+            throw MappingException::invalidValueComparator($comparator);
+        }
+
+        $instance = $reflection->newInstance();
+        if (! $instance instanceof ValueComparator) {
+            throw MappingException::invalidValueComparator($comparator);
+        }
+
+        return $instance;
     }
 
     /**

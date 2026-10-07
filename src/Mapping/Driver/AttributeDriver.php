@@ -736,7 +736,8 @@ class AttributeDriver implements MappingDriver
      *                   enumType?: class-string,
      *                   options?: mixed[],
      *                   columnName?: string,
-     *                   columnDefinition?: string
+     *                   columnDefinition?: string,
+     *                   comparator?: Mapping\ValueComparator
      *               }
      */
     private function columnToArray(string $fieldName, Mapping\Column $column): array
@@ -778,6 +779,10 @@ class AttributeDriver implements MappingDriver
 
         if ($column->enumType) {
             $mapping['enumType'] = $column->enumType;
+        }
+
+        if ($column->comparator !== null) {
+            $mapping['comparator'] = $column->comparator;
         }
 
         return $mapping;

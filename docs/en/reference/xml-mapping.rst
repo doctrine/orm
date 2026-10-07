@@ -288,6 +288,10 @@ Optional attributes:
    specify the complete column definition. Using this feature will
    turn this field dirty for Schema-Tool update commands at all
    times.
+-  comparator - How changes on this field are detected. Holds the name
+   of a built-in comparator (same, equal or equal_mutable) or the fully
+   qualified class name of a Doctrine\ORM\Mapping\ValueComparator
+   implementation. See :ref:`reference-change-detection-comparator`.
 
 .. note::
 

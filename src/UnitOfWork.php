@@ -564,6 +564,53 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Tells whether two values of a field must be considered equal.
+     *
+     * Fields with a comparator are compared with it, so that in-place mutations
+     * are detected. Other fields keep the reference comparison.
+     *
+     * @phpstan-param ClassMetadata<object> $class
+     */
+    private function isFieldValueEqual(ClassMetadata $class, string $fieldName, mixed $originalValue, mixed $actualValue): bool
+    {
+        // A value is always equal to itself
+        if ($originalValue === $actualValue) {
+            return true;
+        }
+
+        // The property may be an association, which has no field mapping.
+        return ($class->fieldMappings[$fieldName]->comparator ?? null)?->equals($originalValue, $actualValue) ?? false;
+    }
+
+    /**
+     * Returns a copy of the given entity data suitable to be stored as the
+     * original data snapshot.
+     *
+     * The values of fields holding a mutable object are cloned, so that the
+     * snapshot stays independent from the object held by the entity and
+     * in-place mutations can be detected by the comparator.
+     *
+     * @internal
+     *
+     * @param ClassMetadata<T>     $class
+     * @param array<string, mixed> $data
+     *
+     * @return array<string, mixed>
+     *
+     * @template T of object
+     */
+    public function takeSnapshot(ClassMetadata $class, array $data): array
+    {
+        foreach ($class->fieldMappings as $fieldName => $mapping) {
+            if (is_object($data[$fieldName] ?? null) && $mapping->comparator?->isMutable()) {
+                $data[$fieldName] = clone $data[$fieldName];
+            }
+        }
+
+        return $data;
+    }
+
+    /**
      * Computes the changes that happened to a single entity.
      *
      * Modifies/populates the following properties:
@@ -662,7 +709,7 @@ class UnitOfWork implements PropertyChangedListener
         if (! isset($this->originalEntityData[$oid])) {
             // Entity is either NEW or MANAGED but not yet fully persisted (only has an id).
             // These result in an INSERT.
-            $this->originalEntityData[$oid] = $actualData;
+            $this->originalEntityData[$oid] = $this->takeSnapshot($class, $actualData);
             $changeSet                      = [];
 
             foreach ($actualData as $propName => $actualValue) {
@@ -719,7 +766,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // skip if value haven't changed
-                if ($orgValue === $actualValue) {
+                if ($this->isFieldValueEqual($class, $propName, $orgValue, $actualValue)) {
                     continue;
                 }
 
@@ -779,7 +826,7 @@ class UnitOfWork implements PropertyChangedListener
 
             if ($changeSet) {
                 $this->entityChangeSets[$oid]   = $changeSet;
-                $this->originalEntityData[$oid] = $actualData;
+                $this->originalEntityData[$oid] = $this->takeSnapshot($class, $actualData);
                 $this->entityUpdates[$oid]      = $entity;
             }
         }
@@ -800,7 +847,7 @@ class UnitOfWork implements PropertyChangedListener
                 $val->isDirty()
             ) {
                 $this->entityChangeSets[$oid]   = [];
-                $this->originalEntityData[$oid] = $actualData;
+                $this->originalEntityData[$oid] = $this->takeSnapshot($class, $actualData);
                 $this->entityUpdates[$oid]      = $entity;
             }
         }
@@ -848,7 +895,7 @@ class UnitOfWork implements PropertyChangedListener
             $originalData[$propName] = $actualValue;
         }
 
-        $this->originalEntityData[$oid] = $originalData;
+        $this->originalEntityData[$oid] = $this->takeSnapshot($class, $originalData);
     }
 
     /**
@@ -1103,7 +1150,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            if ($orgValue !== $actualValue) {
+            if (! $this->isFieldValueEqual($class, $propName, $orgValue, $actualValue)) {
                 $changeSet[$propName] = [$orgValue, $actualValue];
             }
         }
@@ -1116,7 +1163,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->entityUpdates[$oid]    = $entity;
             }
 
-            $this->originalEntityData[$oid] = $actualData;
+            $this->originalEntityData[$oid] = $this->takeSnapshot($class, $actualData);
         }
     }
 
@@ -2554,7 +2601,7 @@ class UnitOfWork implements PropertyChangedListener
             // init fired. Fields not yet loaded (not in $existingData) are added from $data.
             // For regular proxies and explicit refreshes $existingData is empty, so this is
             // equivalent to a plain assignment.
-            $this->originalEntityData[$oid] = $existingData + $data;
+            $this->originalEntityData[$oid] = $existingData + $this->takeSnapshot($class, $data);
 
             // Whichever way we got here (lazy ghost initializer, find(), or an explicit
             // refresh()), $data is always a complete row: the early return above is the
@@ -2598,7 +2645,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             $oid = spl_object_id($entity);
-            $this->registerManaged($entity, $id, $data);
+            $this->registerManaged($entity, $id, $this->takeSnapshot($class, $data));
 
             if (isset($hints[Query::HINT_READ_ONLY]) && $hints[Query::HINT_READ_ONLY] === true) {
                 $this->readOnlyObjects[$oid] = true;

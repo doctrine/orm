@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\Comparison;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Mapping\EmbeddedClassMapping;
 use Doctrine\ORM\Mapping\MappingException;
@@ -28,6 +29,10 @@ use Doctrine\Tests\Models\Project\Project;
 use Doctrine\Tests\Models\Project\ProjectId;
 use Doctrine\Tests\Models\Project\ProjectInvalidMapping;
 use Doctrine\Tests\Models\Project\ProjectName;
+use Doctrine\Tests\Models\ValueComparator\InvalidComparatorXmlEntity;
+use Doctrine\Tests\Models\ValueComparator\InvalidConstructorComparatorXmlEntity;
+use Doctrine\Tests\Models\ValueComparator\ValueComparatorDateComparator;
+use Doctrine\Tests\Models\ValueComparator\ValueComparatorXmlEntity;
 use Doctrine\Tests\Models\ValueObjects\Name;
 use Doctrine\Tests\Models\ValueObjects\Person;
 use Doctrine\Tests\ORM\Mapping\Fixtures\CompositeIdWithPosition;
@@ -308,6 +313,40 @@ class XmlMappingDriverTest extends MappingDriverTestCase
 
         self::assertEquals(ProjectId::class, $id->type);
         self::assertEquals(ProjectName::class, $name->type);
+    }
+
+    public function testValueComparatorFromXml(): void
+    {
+        $class = new ClassMetadata(ValueComparatorXmlEntity::class);
+        $class->initializeReflection(new RuntimeReflectionService());
+
+        $driver = $this->loadDriver();
+        $driver->loadMetadataForClass(ValueComparatorXmlEntity::class, $class);
+
+        self::assertSame(Comparison::EqualMutable, $class->fieldMappings['createdAt']->comparator);
+        self::assertInstanceOf(ValueComparatorDateComparator::class, $class->fieldMappings['customDate']->comparator);
+    }
+
+    public function testInvalidValueComparatorFromXml(): void
+    {
+        $class = new ClassMetadata(InvalidComparatorXmlEntity::class);
+        $class->initializeReflection(new RuntimeReflectionService());
+
+        $driver = $this->loadDriver();
+
+        $this->expectException(MappingException::class);
+        $driver->loadMetadataForClass(InvalidComparatorXmlEntity::class, $class);
+    }
+
+    public function testValueComparatorWithRequiredConstructorFromXml(): void
+    {
+        $class = new ClassMetadata(InvalidConstructorComparatorXmlEntity::class);
+        $class->initializeReflection(new RuntimeReflectionService());
+
+        $driver = $this->loadDriver();
+
+        $this->expectException(MappingException::class);
+        $driver->loadMetadataForClass(InvalidConstructorComparatorXmlEntity::class, $class);
     }
 
     public function testDisablingXmlValidationIsPossible(): void

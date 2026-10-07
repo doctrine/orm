@@ -730,4 +730,13 @@ EXCEPTION
             $className,
         ));
     }
+
+    public static function invalidValueComparator(string $comparator): self
+    {
+        return new self(sprintf(
+            'The value comparator "%s" must be an instantiable class implementing %s.',
+            $comparator,
+            ValueComparator::class,
+        ));
+    }
 }
