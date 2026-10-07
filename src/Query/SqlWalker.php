@@ -9,9 +9,12 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\TypeProvider;
+use Doctrine\DBAL\Types\TypeRegistry;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Internal\TypeProviderLocator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\OptimisticLockException;
@@ -142,6 +145,8 @@ class SqlWalker
      */
     private readonly QuoteStrategy $quoteStrategy;
 
+    private readonly TypeProvider|TypeRegistry $typeProvider;
+
     /** @phpstan-param array<string, QueryComponent> $queryComponents The query components (symbol table). */
     public function __construct(
         private readonly Query $query,
@@ -153,6 +158,7 @@ class SqlWalker
         $this->conn          = $this->em->getConnection();
         $this->platform      = $this->conn->getDatabasePlatform();
         $this->quoteStrategy = $this->em->getConfiguration()->getQuoteStrategy();
+        $this->typeProvider  = TypeProviderLocator::fromConnection($this->conn);
     }
 
     /**
@@ -1304,7 +1310,7 @@ class SqlWalker
                 $columnAlias   = $this->getSQLColumnAlias($fieldMapping->columnName);
                 $col           = $sqlTableAlias . '.' . $columnName;
 
-                $type = Type::getType($fieldMapping->type);
+                $type = $this->typeProvider->get($fieldMapping->type);
                 $col  = $type->convertToPHPValueSQL($col, $this->conn->getDatabasePlatform());
 
                 $sql .= $col . ' AS ' . $columnAlias;
@@ -1359,8 +1365,10 @@ class SqlWalker
                         Query\AST\ExpressionWithReturnType::class,
                     );
 
-                    // @phpstan-ignore method.deprecatedInterface
-                    $this->rsm->addScalarResult($columnAlias, $resultAlias, Type::getTypeRegistry()->lookupName($expr->getReturnType()));
+                    // TypedExpression only exposes a Type instance, so the name has to be looked up.
+                    // This branch and Type::lookupName() are both deprecated and go away together.
+                    // @phpstan-ignore method.deprecatedInterface, staticMethod.deprecated
+                    $this->rsm->addScalarResult($columnAlias, $resultAlias, Type::lookupName($expr->getReturnType()));
 
                     break;
                 }
@@ -1446,7 +1454,7 @@ class SqlWalker
 
             $col = $sqlTableAlias . '.' . $quotedColumnName;
 
-            $type = Type::getType($mapping->type);
+            $type = $this->typeProvider->get($mapping->type);
             $col  = $type->convertToPHPValueSQL($col, $this->platform);
 
             $sqlParts[] = $col . ' AS ' . $columnAlias;
@@ -1481,7 +1489,7 @@ class SqlWalker
 
                     $col = $sqlTableAlias . '.' . $quotedColumnName;
 
-                    $type = Type::getType($mapping->type);
+                    $type = $this->typeProvider->get($mapping->type);
                     $col  = $type->convertToPHPValueSQL($col, $this->platform);
 
                     $sqlParts[] = $col . ' AS ' . $columnAlias;
@@ -1586,7 +1594,7 @@ class SqlWalker
                     $fieldType    = $fieldMapping->type;
                     $col          = trim($e->dispatch($this));
 
-                    $type = Type::getType($fieldType);
+                    $type = $this->typeProvider->get($fieldType);
                     $col  = $type->convertToPHPValueSQL($col, $this->platform);
 
                     $sqlSelectExpressions[] = $col . ' AS ' . $columnAlias;
@@ -2220,8 +2228,8 @@ class SqlWalker
 
         if ($parameter) {
             $type = $parameter->getType();
-            if (is_string($type) && Type::hasType($type)) {
-                return Type::getType($type)->convertToDatabaseValueSQL('?', $this->platform);
+            if (is_string($type) && $this->typeProvider->has($type)) {
+                return $this->typeProvider->get($type)->convertToDatabaseValueSQL('?', $this->platform);
             }
         }
 
