@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                                      https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Doctrine\Tests\Models\ValueComparator\ValueComparatorXmlEntity" table="vc_xml_entity">
+        <id name="id" type="integer"/>
+        <field name="createdAt" type="datetime"/>
+        <field name="customDate" type="datetime"
+               comparator="Doctrine\Tests\Models\ValueComparator\ValueComparatorDateComparator"/>
+    </entity>
+</doctrine-mapping>

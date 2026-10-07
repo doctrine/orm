@@ -164,7 +164,7 @@ class DefaultEntityHydrator implements EntityHydrator
         }
 
         if ($entity !== null) {
-            $this->uow->registerManaged($entity, $key->identifier, $data);
+            $this->uow->registerManaged($entity, $key->identifier, $this->uow->takeSnapshot($metadata, $data));
         }
 
         $result = $this->uow->createEntity($entry->class, $data, $hints);

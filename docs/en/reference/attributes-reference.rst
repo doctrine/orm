@@ -218,6 +218,12 @@ Optional parameters:
    -  ``check``: Adds a check constraint type to the column (might not
       be supported by all vendors).
 
+-  **comparator**: How changes on this field are detected. Accepts a
+   ``Doctrine\ORM\Mapping\Comparison`` case or a
+   ``Doctrine\ORM\Mapping\ValueComparator`` instance. When not specified,
+   mutable date types use ``Comparison::EqualMutable`` and other fields use a
+   reference comparison. See :ref:`reference-change-detection-comparator`.
+
 -  **columnDefinition**: Specify the DDL SQL snippet that starts after the column
    name and specifies the complete (non-portable!) column definition.
    This attribute allows to make use of advanced RMDBS features.

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                                      https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Doctrine\Tests\Models\ValueComparator\InvalidConstructorComparatorXmlEntity" table="vc_xml_invalid_ctor_entity">
+        <id name="id" type="integer"/>
+        <field name="createdAt" type="datetime" comparator="Doctrine\Tests\Models\ValueComparator\ValueComparatorWithRequiredConstructor"/>
+    </entity>
+</doctrine-mapping>

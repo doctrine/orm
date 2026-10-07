@@ -588,7 +588,8 @@ abstract class AbstractHydrator
             ];
         }
 
-        $this->em->getUnitOfWork()->registerManaged($entity, $id, $data);
+        $uow = $this->em->getUnitOfWork();
+        $uow->registerManaged($entity, $id, $uow->takeSnapshot($class, $data));
     }
 
     /**

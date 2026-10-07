@@ -181,6 +181,10 @@ Here is a complete list of ``Column``s attributes (all optional):
   confuses the :doc:`SchemaTool <tools>` to always detect the column as changed.
 - ``options``: Key-value pairs of options that get passed
   to the underlying database platform when generating DDL statements.
+- ``comparator``: How changes on this field are detected. Accepts a
+  ``Doctrine\ORM\Mapping\Comparison`` case or a
+  ``Doctrine\ORM\Mapping\ValueComparator`` instance. See
+  :ref:`reference-change-detection-comparator`.
 
 Specifying default values
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -710,3 +714,113 @@ You can use it with the following code:
     use Doctrine\ORM\Mapping\AnsiQuoteStrategy;
 
     $configuration->setQuoteStrategy(new AnsiQuoteStrategy());
+
+.. _reference-change-detection-comparator:
+
+Change Detection on Object Fields
+---------------------------------
+
+The ORM compares the current value of a field with the value loaded from the
+database to decide whether the field changed. By default this is a reference
+comparison (``===``), which is correct for scalars and for immutable objects.
+
+This default does not work for mutable objects such as a non-immutable
+``DateTime`` or a custom value object:
+
+* a mutation in place (``$entity->startsAt->modify('+1 day')``) is not
+  detected, because the property still holds the same instance;
+* two equal but distinct instances are reported as a change, which triggers an
+  unnecessary ``UPDATE``.
+
+The ``comparator`` option controls how changes are detected:
+
+.. configuration-block::
+
+    .. code-block:: attribute
+
+        <?php
+        use Doctrine\ORM\Mapping\Column;
+        use Doctrine\ORM\Mapping\Comparison;
+
+        #[Entity]
+        class Event
+        {
+            #[Column(type: 'datetime')]
+            private \DateTime $startsAt;
+
+            #[Column(type: 'datetime', comparator: Comparison::Same)]
+            private \DateTime $publishedAt;
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+          <entity name="Event">
+            <field name="startsAt" type="datetime" />
+            <field name="publishedAt" type="datetime" comparator="same" />
+          </entity>
+        </doctrine-mapping>
+
+The built-in comparators are exposed as the ``Comparison`` enum:
+
+* ``Comparison::Same``: reference comparison (``===``). This is the default for
+  fields without a comparator.
+* ``Comparison::Equal``: value comparison (``==``) for immutable objects.
+* ``Comparison::EqualMutable``: value comparison (``==``) for mutable objects.
+  The original value is cloned when the snapshot is taken, so that a mutation
+  in place is detected.
+
+Fields mapped to a type whose PHP value can be mutated in place get
+``Comparison::EqualMutable`` by default. This covers the mutable date types
+(``date``, ``datetime``, ``datetimetz``, ``datetime_utc``, ``time`` and
+``vardatetime``) as well as ``object`` and ``json``. Immutable date types such
+as ``date_immutable`` are not affected.
+
+Custom comparison logic
+~~~~~~~~~~~~~~~~~~~~~~~
+
+When the built-in comparators are not enough, implement the
+``Doctrine\ORM\Mapping\ValueComparator`` interface and pass an instance to the
+``comparator`` option. The comparator is part of the metadata, so it is
+serialized when the metadata cache is enabled: it must not hold a closure or a
+non-serializable resource.
+
+.. code-block:: attribute
+
+    <?php
+    use Doctrine\ORM\Mapping\Column;
+    use Doctrine\ORM\Mapping\ValueComparator;
+
+    class SameDayComparator implements ValueComparator
+    {
+        public function equals(mixed $first, mixed $second): bool
+        {
+            return $first instanceof \DateTimeInterface
+                && $second instanceof \DateTimeInterface
+                && $first->format('Y-m-d') === $second->format('Y-m-d');
+        }
+
+        public function isMutable(): bool
+        {
+            return true;
+        }
+    }
+
+    #[Entity]
+    class Event
+    {
+        #[Column(type: 'datetime', comparator: new SameDayComparator())]
+        private \DateTime $startsAt;
+    }
+
+``isMutable()`` tells the ORM whether the value may change in place. When it
+returns ``true``, the original value is cloned when the snapshot is taken, so
+that the comparator can detect an in-place mutation.
+
+With XML mapping, the ``comparator`` attribute holds either the name of a
+built-in comparator (``same``, ``equal`` or ``equal_mutable``) or the fully
+qualified class name of a ``ValueComparator`` implementation:
+
+.. code-block:: xml
+
+    <field name="startsAt" type="datetime" comparator="App\Mapping\SameDayComparator" />

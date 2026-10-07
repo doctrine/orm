@@ -235,6 +235,23 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public const GENERATED_ALWAYS = 2;
 
     /**
+     * The DBAL types whose PHP value can be mutated in place (mutable dates,
+     * objects and json). Fields mapped to one of these types get a value
+     * comparator that clones the original value by default, so that in-place
+     * mutations are detected.
+     */
+    private const MUTABLE_TYPES = [
+        'date',
+        'datetime',
+        'datetimetz',
+        'datetime_utc',
+        'json',
+        'object',
+        'time',
+        'vardatetime',
+    ];
+
+    /**
      * READ-ONLY: The namespace the entity class is contained in.
      *
      * @todo Not really needed. Usage could be localized.
@@ -1230,6 +1247,12 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         // Complete fieldName and columnName mapping
         if (! isset($mapping['columnName'])) {
             $mapping['columnName'] = $this->namingStrategy->propertyToColumnName($mapping['fieldName'], $this->name);
+        }
+
+        // A field holding a mutable value gets a comparator that clones the
+        // original value by default, so that in-place mutations are detected.
+        if (! isset($mapping['comparator']) && in_array($mapping['type'], self::MUTABLE_TYPES, true)) {
+            $mapping['comparator'] = Comparison::EqualMutable;
         }
 
         $mapping = FieldMapping::fromMappingArray($mapping);
