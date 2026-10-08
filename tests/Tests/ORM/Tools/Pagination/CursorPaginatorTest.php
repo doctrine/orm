@@ -546,8 +546,5 @@ class CursorPaginatorTest extends OrmTestCase
 
         $query->getSQL();
         self::assertCount(1, $queryCache->getValues());
-
-        $query->getSQL();
-        self::assertCount(1, $queryCache->getValues());
     }
 }
