@@ -95,7 +95,11 @@ final class CursorPaginator implements PaginatorInterface
         $shouldReverse = $cursor?->isPrevious() ?? false;
 
         $subQuery = $this->cloneQuery($query);
-        $subQuery->expireQueryCache();
+        // Cursor values live in HINT_CURSOR_PARAMETERS, which is part of the query-cache id,
+        // so every cursor would write its own entry. A cached ParserResult would also skip
+        // CursorWalker: a repeated cursor would leave dctrn_cursor_* unbound, and a repeated
+        // first page would build the next cursor from an unset order-by hint.
+        $subQuery->useQueryCache(false);
 
         $this->appendTreeWalker($subQuery, CursorWalker::class);
         $subQuery->setHint(CursorWalker::HINT_QUERY_PRODUCES_DUPLICATES, $this->queryProducesDuplicates);
