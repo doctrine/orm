@@ -189,7 +189,7 @@ class EntityRepository implements ObjectRepository, Selectable
         return $this->em;
     }
 
-    final protected function expr(): Expr
+    protected function expr(): Expr
     {
         return $this->em->getExpressionBuilder();
     }

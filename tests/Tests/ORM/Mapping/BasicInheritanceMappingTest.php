@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Embeddable;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
@@ -216,6 +217,13 @@ class BasicInheritanceMappingTest extends OrmTestCase
 
         yield 'complex example (Entity Root -> Mapped Superclass -> transient class -> Entity)'
             => [InvalidComplexRoot::class, InvalidComplexEntity::class];
+    }
+
+    public function testEmbeddableSubclassDoesNotRequireInheritanceTypeDeclaration(): void
+    {
+        $class = $this->cmf->getMetadataFor(EmbeddableSubclass::class);
+
+        self::assertTrue($class->isEmbeddedClass);
     }
 
     #[Group('DDC-964')]
@@ -465,4 +473,18 @@ class InvalidComplexTransientClass extends InvalidComplexMappedSuperclass
 #[Entity]
 class InvalidComplexEntity extends InvalidComplexTransientClass
 {
+}
+
+#[Embeddable]
+class EmbeddableBase
+{
+    #[Column]
+    public string|null $value = null;
+}
+
+#[Embeddable]
+class EmbeddableSubclass extends EmbeddableBase
+{
+    #[Column]
+    public string|null $extraValue = null;
 }
