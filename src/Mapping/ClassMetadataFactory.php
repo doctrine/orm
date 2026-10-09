@@ -175,7 +175,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         if (! $class->isMappedSuperclass) {
-            if ($rootEntityFound && $class->isInheritanceTypeNone()) {
+            if ($rootEntityFound && $class->isInheritanceTypeNone() && ! $class->isEmbeddedClass) {
                 throw MappingException::missingInheritanceTypeDeclaration(end($nonSuperclassParents), $class->name);
             }
 
