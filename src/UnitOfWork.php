@@ -31,11 +31,10 @@ use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Internal\StronglyConnectedComponents;
 use Doctrine\ORM\Internal\TopologicalSort;
-use Doctrine\ORM\Internal\UnitOfWork\ConstraintEdgePlanner;
+use Doctrine\ORM\Internal\UnitOfWork\EarlyDeletionPlanner;
 use Doctrine\ORM\Internal\UnitOfWork\InsertBatch;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ManyToManyOwningSideMapping;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\PropertyAccessors\PropertyAccessorFactory;
 use Doctrine\ORM\Mapping\PropertyAccessors\ReadonlyAccessor;
@@ -1265,21 +1264,16 @@ class UnitOfWork implements PropertyChangedListener
         // row referencing the candidate when these deletions run: candidates
         // of the element class stay on the baseline commit order.
         $manyToManyTargetClasses = [];
-        foreach ($this->collectionUpdates as $collection) {
-            $mapping = $collection->getMapping();
-            if ($mapping instanceof ManyToManyOwningSideMapping) {
-                $manyToManyTargetClasses[$mapping->targetEntity] = true;
+        foreach ([$this->collectionUpdates, $this->collectionDeletions] as $collections) {
+            foreach ($collections as $collection) {
+                $mapping = $collection->getMapping();
+                if ($mapping->isManyToManyOwningSide()) {
+                    $manyToManyTargetClasses[$mapping->targetEntity] = true;
+                }
             }
         }
 
-        foreach ($this->collectionDeletions as $collection) {
-            $mapping = $collection->getMapping();
-            if ($mapping instanceof ManyToManyOwningSideMapping) {
-                $manyToManyTargetClasses[$mapping->targetEntity] = true;
-            }
-        }
-
-        $planner = new ConstraintEdgePlanner(
+        $planner = new EarlyDeletionPlanner(
             fn (string $class): ClassMetadata => $this->em->getClassMetadata($class),
         );
 
