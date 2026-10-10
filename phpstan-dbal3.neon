@@ -253,3 +253,14 @@ parameters:
         -
             message: '~^Call to an undefined method .*Schema.*edit~'
             path: src/Tools/SchemaTool.php
+
+        # EquatableType is a DBAL 4 interface. UnitOfWork tests the values with
+        # instanceof, so the code still works with DBAL 3 where the interface
+        # does not exist.
+        -
+            message: '~^Class Doctrine\\DBAL\\Types\\EquatableType not found\.$~'
+            path: src/UnitOfWork.php
+
+        -
+            message: '~^Call to an undefined method Doctrine\\DBAL\\Types\\Type::valuesAreEqual\(\)\.$~'
+            path: src/UnitOfWork.php
