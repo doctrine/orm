@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Name\Identifier;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\TableEditor;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\Tests\ORM\Functional\DatabaseDriverTestCase;
 
 use function class_exists;
@@ -27,14 +26,14 @@ class GH7684Test extends DatabaseDriverTestCase
     {
         $table1 = new Table(
             'GH7684_identity_test_table',
-            [new Column('id', Type::getType('integer'))],
+            [self::createColumn('id', Types::INTEGER)],
         );
 
         $table2 = new Table(
             'GH7684_identity_test_assoc_table',
             [
-                new Column('id', Type::getType('integer')),
-                new Column('gh7684_identity_test_id', Type::getType('integer')),
+                self::createColumn('id', Types::INTEGER),
+                self::createColumn('gh7684_identity_test_id', Types::INTEGER),
             ],
         );
 
