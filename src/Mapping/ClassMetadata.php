@@ -499,7 +499,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * </code>
      *
      * @var array<string, mixed>|null
-     * @phpstan-var array{sequenceName: string, allocationSize: string, initialValue: string, quoted?: mixed}|null
+     * @phpstan-var array{sequenceName: string, allocationSize: string, initialValue: string, quoted?: mixed, implicit?: bool}|null
      * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
      */
     public array|null $sequenceGeneratorDefinition = null;
@@ -2467,7 +2467,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * )
      * </code>
      *
-     * @phpstan-param array{sequenceName?: string, allocationSize?: int|string, initialValue?: int|string, quoted?: mixed} $definition
+     * @phpstan-param array{sequenceName?: string, allocationSize?: int|string, initialValue?: int|string, quoted?: mixed, implicit?: bool} $definition
      *
      * @throws MappingException
      */
