@@ -46,6 +46,11 @@ parameters:
             message: '~.*getTrimExpression.*expects int.*~'
             path: src/Query/AST/Functions/TrimFunction.php
 
+        # TypeProvider only exists on DBAL >= 4.6
+        -
+            message: '~Doctrine\\DBAL\\Types\\TypeProvider~'
+            identifier: class.notFound
+
         -
             message: '~^Call to static method unquoted\(\) on an unknown class Doctrine\\DBAL\\Schema\\Name\\Identifier\.$~'
             path: src/Tools/SchemaTool.php

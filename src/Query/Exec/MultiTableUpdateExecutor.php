@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Query\Exec;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Internal\TypeProviderLocator;
 use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Query\AST\UpdateStatement;
 use Doctrine\ORM\Query\ParameterTypeInferer;
@@ -125,14 +125,18 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
         // 4. Store DDL for temporary identifier table.
         $columnDefinitions = [];
+        $typeProvider      = TypeProviderLocator::fromConnection($em->getConnection());
 
         foreach ($idColumnNames as $idColumnName) {
             $typeName = PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em);
 
+            // DBAL >= 4.5 reads the type name from "typeName" and ignores "type", so the
+            // deprecation of "type" is not triggered. Older versions ignore "typeName" and
+            // require the Type instance under "type".
             $columnDefinitions[$idColumnName] = [
                 'name'     => $idColumnName,
                 'notnull'  => true,
-                'type'     => Type::getType($typeName),
+                'type'     => $typeProvider->get($typeName),
                 'typeName' => $typeName,
             ];
         }
