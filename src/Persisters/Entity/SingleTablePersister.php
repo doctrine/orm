@@ -66,6 +66,10 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
                     continue;
                 }
 
+                if ($mapping->selectable === false) {
+                    continue;
+                }
+
                 $columnList[] = $this->getSelectColumnSQL($fieldName, $subClass);
             }
 
