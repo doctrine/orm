@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests;
 
 use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Configuration as DBALConfiguration;
 use Doctrine\DBAL\Exception\DatabaseObjectNotFoundException;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
@@ -14,6 +15,7 @@ use Doctrine\DBAL\Schema\NamedObject;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\TypeRegistry;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
@@ -219,6 +221,15 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      * @var DbalExtensions\Connection|null
      */
     protected static $sharedConn;
+
+    /**
+     * The DBAL types registry shared by the functional tests.
+     *
+     * On DBAL >= 4.6, a connection resolves types through its type provider instead of the
+     * global registry, so this registry is injected in the configuration of the shared
+     * connection, see {@see getTypeRegistry()}.
+     */
+    private static TypeRegistry|null $typeRegistry = null;
 
     /** @var EntityManagerInterface */
     protected $_em;
@@ -844,7 +855,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $this->setUpDBALTypes();
 
         if (! isset(static::$sharedConn)) {
-            static::$sharedConn = TestUtil::getConnection();
+            static::$sharedConn = TestUtil::getConnection(self::createDbalConfiguration());
         }
 
         if (isset($GLOBALS['DOCTRINE_MARK_SQL_LOGS'])) {
@@ -1040,11 +1051,87 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      */
     protected function setUpDBALTypes(): void
     {
-        if (Type::hasType('rot13')) {
-            Type::overrideType('rot13', Rot13Type::class);
-        } else {
-            Type::addType('rot13', Rot13Type::class);
+        // On DBAL >= 4.6, the type is provided by the registry of the shared connection,
+        // see getTypeRegistry().
+        if (method_exists(DBALConfiguration::class, 'setTypeProvider')) {
+            return;
         }
+
+        self::registerDbalType('rot13', Rot13Type::class);
+    }
+
+    /**
+     * Registers a DBAL type used by the tests.
+     *
+     * On DBAL >= 4.6, types are scoped to the connection, so they are registered in the
+     * registry of the shared connection, see {@see getTypeRegistry()}. On older versions,
+     * they are registered in the global registry, which is the only place where the
+     * connections of the tests can find them.
+     *
+     * @param class-string<Type> $type
+     */
+    final protected static function registerDbalType(string $name, string $type): void
+    {
+        if (! method_exists(DBALConfiguration::class, 'setTypeProvider')) {
+            if (Type::hasType($name)) {
+                Type::overrideType($name, $type);
+            } else {
+                Type::addType($name, $type);
+            }
+
+            return;
+        }
+
+        $typeRegistry = self::getTypeRegistry();
+
+        if ($typeRegistry->has($name)) {
+            $typeRegistry->override($name, $type);
+        } else {
+            $typeRegistry->register($name, $type);
+        }
+    }
+
+    /**
+     * Tells whether a DBAL type used by the tests is registered.
+     */
+    final protected static function hasDbalType(string $name): bool
+    {
+        if (method_exists(DBALConfiguration::class, 'setTypeProvider')) {
+            return self::getTypeRegistry()->has($name);
+        }
+
+        return Type::hasType($name);
+    }
+
+    /**
+     * Returns the DBAL types registry shared by the functional tests.
+     *
+     * On DBAL >= 4.6, a connection resolves types through its type provider instead of
+     * the global registry, so this registry is injected in the configuration of the
+     * shared connection, see {@see createDbalConfiguration()}.
+     */
+    final protected static function getTypeRegistry(): TypeRegistry
+    {
+        return self::$typeRegistry ??= new TypeRegistry([
+            'rot13' => Rot13Type::class,
+        ]);
+    }
+
+    /**
+     * Creates the DBAL configuration used to create the shared connection.
+     *
+     * On DBAL >= 4.6, the types required by the tests are provided to the connection by
+     * the registry shared by the functional tests, see {@see getTypeRegistry()}.
+     */
+    final protected static function createDbalConfiguration(): DBALConfiguration
+    {
+        $configuration = new DBALConfiguration();
+
+        if (method_exists($configuration, 'setTypeProvider')) {
+            $configuration->setTypeProvider(self::getTypeRegistry());
+        }
+
+        return $configuration;
     }
 
     final protected function isQueryLogAvailable(): bool
