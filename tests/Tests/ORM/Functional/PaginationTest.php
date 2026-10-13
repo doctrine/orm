@@ -14,6 +14,7 @@ use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\WhereClause;
 use Doctrine\ORM\Query\SqlOutputWalker;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
+use Doctrine\ORM\Tools\Pagination\CursorPaginator;
 use Doctrine\ORM\Tools\Pagination\OffsetPaginator;
 use Doctrine\ORM\Tools\Pagination\Window;
 use Doctrine\Tests\DbalTypes\CustomIdObject;
@@ -30,12 +31,14 @@ use Doctrine\Tests\Models\Pagination\Logo;
 use Doctrine\Tests\Models\Pagination\User1;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
+use LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use ReflectionMethod;
 use RuntimeException;
 
 use function array_keys;
+use function array_map;
 use function count;
 use function sprintf;
 
@@ -684,6 +687,54 @@ class PaginationTest extends OrmFunctionalTestCase
         // parameters from query object not used in new query.
         self::assertCount(1, $getCountQuery->invoke($paginator, $query)->getParameters());
         self::assertSame(9, $paginator->paginate($query, $window)->getTotalCount());
+    }
+
+    #[DataProvider('fetchJoinCollection')]
+    public function testCursorPaginatorOrderedByFieldOfJoinedEntity(bool $queryProducesDuplicates): void
+    {
+        $query = $this->_em->createQuery(
+            'SELECT a, u
+            FROM Doctrine\\Tests\\Models\\CMS\\CmsArticle a
+            JOIN a.user u
+            ORDER BY u.username ASC, a.id ASC',
+        );
+
+        $paginator = new CursorPaginator(4, $queryProducesDuplicates);
+
+        $firstPage = $paginator->paginate($query);
+        self::assertSame(
+            ['topic00', 'topic10', 'topic11', 'topic20'],
+            array_map(static fn (CmsArticle $article): string => $article->topic, $firstPage->getItems()),
+        );
+
+        $secondPage = $paginator->paginate($query, $firstPage->getNextCursor());
+        self::assertSame(
+            ['topic21', 'topic22', 'topic30', 'topic31'],
+            array_map(static fn (CmsArticle $article): string => $article->topic, $secondPage->getItems()),
+        );
+
+        $previousPage = $paginator->paginate($query, $secondPage->getPreviousCursor());
+        self::assertSame(
+            ['topic00', 'topic10', 'topic11', 'topic20'],
+            array_map(static fn (CmsArticle $article): string => $article->topic, $previousPage->getItems()),
+        );
+    }
+
+    public function testCursorPaginatorCannotBuildCursorFromFieldOfJoinedCollection(): void
+    {
+        $query = $this->_em->createQuery(
+            'SELECT u, a
+            FROM Doctrine\\Tests\\Models\\CMS\\CmsUser u
+            JOIN u.articles a
+            ORDER BY a.topic ASC, u.id ASC',
+        );
+
+        $page = (new CursorPaginator(4))->paginate($query);
+
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Cannot build a cursor for the ORDER BY item "a.topic"');
+
+        $page->getNextCursor();
     }
 
     #[DataProvider('useOutputWalkersAndFetchJoinCollection')]
