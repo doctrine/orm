@@ -99,17 +99,20 @@ final class CursorPaginator implements PaginatorInterface
 
         $this->appendTreeWalker($subQuery, CursorWalker::class);
         $subQuery->setHint(CursorWalker::HINT_QUERY_PRODUCES_DUPLICATES, $this->queryProducesDuplicates);
+        $subQuery->setHint(CursorWalker::HINT_CURSOR_REVERSE, $shouldReverse);
+        $subQuery->setHint(CursorWalker::HINT_CURSOR_PARAMETERS, $cursor?->getParameters() ?? []);
 
         if ($this->queryProducesDuplicates) {
             if ($this->useOutputWalker($subQuery)) {
                 $subQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
             } else {
                 $this->appendTreeWalker($subQuery, LimitSubqueryWalker::class);
+                // The cursor hints must be set beforehand: parsing the query runs
+                // the CursorWalker, which binds the cursor parameters it uses.
+                $this->unbindUnusedQueryParams($subQuery);
             }
         }
 
-        $subQuery->setHint(CursorWalker::HINT_CURSOR_REVERSE, $shouldReverse);
-        $subQuery->setHint(CursorWalker::HINT_CURSOR_PARAMETERS, $cursor?->getParameters() ?? []);
         $subQuery->setFirstResult(0)->setMaxResults($this->limit + 1);
 
         if ($this->queryProducesDuplicates) {
