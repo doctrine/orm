@@ -87,10 +87,13 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         // 4. Store DDL for temporary identifier table.
         $columnDefinitions = [];
         foreach ($idColumnNames as $idColumnName) {
+            $typeName = PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em);
+
             $columnDefinitions[$idColumnName] = [
-                'name'    => $idColumnName,
-                'notnull' => true,
-                'type'    => Type::getType(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em)),
+                'name'     => $idColumnName,
+                'notnull'  => true,
+                'type'     => Type::getType($typeName),
+                'typeName' => $typeName,
             ];
         }
 

@@ -221,10 +221,13 @@ class OneToManyPersister extends AbstractCollectionPersister
         $columnDefinitions = [];
 
         foreach ($idColumnNames as $idColumnName) {
+            $typeName = PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $this->em);
+
             $columnDefinitions[$idColumnName] = [
-                'name'    => $idColumnName,
-                'notnull' => true,
-                'type'    => Type::getType(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $this->em)),
+                'name'     => $idColumnName,
+                'notnull'  => true,
+                'type'     => Type::getType($typeName),
+                'typeName' => $typeName,
             ];
         }
 

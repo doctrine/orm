@@ -8,14 +8,13 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
-use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Name\Identifier;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\TableEditor;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use PHPUnit\Framework\Attributes\Group;
 
 use function array_change_key_case;
@@ -43,15 +42,15 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
     {
         $user = new Table(
             'ddc2059_user',
-            [new Column('id', Type::getType('integer'))],
+            [self::createColumn('id', Types::INTEGER)],
         );
 
         $project = new Table(
             'ddc2059_project',
             [
-                new Column('id', Type::getType('integer')),
-                new Column('user_id', Type::getType('integer')),
-                new Column('user', Type::getType('string')),
+                self::createColumn('id', Types::INTEGER),
+                self::createColumn('user_id', Types::INTEGER),
+                self::createColumn('user', Types::STRING),
 
             ],
         );
@@ -93,8 +92,8 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $table = new Table(
             'dbdriver_foo',
             [
-                new Column('id', Type::getType('integer')),
-                new Column('bar', Type::getType('string'), ['notnull' => false, 'length' => 200]),
+                self::createColumn('id', Types::INTEGER),
+                self::createColumn('bar', Types::STRING, ['notnull' => false, 'length' => 200]),
             ],
         );
 
@@ -135,15 +134,15 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $tableB = new Table(
             'dbdriver_bar',
             [
-                new Column('id', Type::getType('integer')),
+                self::createColumn('id', Types::INTEGER),
             ],
         );
 
         $tableA = new Table(
             'dbdriver_baz',
             [
-                new Column('id', Type::getType('integer')),
-                new Column('bar_id', Type::getType('integer')),
+                self::createColumn('id', Types::INTEGER),
+                self::createColumn('bar_id', Types::INTEGER),
             ],
         );
 
@@ -210,13 +209,13 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
     {
         $tableB = new Table(
             'dbdriver_bar',
-            [new Column('id', Type::getType('integer'))],
+            [self::createColumn('id', Types::INTEGER)],
         );
 
         $tableA = new Table(
             'dbdriver_baz',
             [
-                new Column('id', Type::getType('integer')),
+                self::createColumn('id', Types::INTEGER),
             ],
         );
 
@@ -243,8 +242,8 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $tableMany = new Table(
             'dbdriver_bar_baz',
             [
-                new Column('bar_id', Type::getType('integer')),
-                new Column('baz_id', Type::getType('integer')),
+                self::createColumn('bar_id', Types::INTEGER),
+                self::createColumn('baz_id', Types::INTEGER),
             ],
         );
         if (class_exists(TableEditor::class)) {
@@ -269,15 +268,15 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $table = new Table(
             'dbdriver_foo',
             [
-                new Column('id', Type::getType('integer'), ['unsigned' => true]),
-                new Column('column_unsigned', Type::getType('integer'), ['unsigned' => true]),
-                new Column('column_comment', Type::getType('string'), ['length' => 16, 'comment' => 'test_comment']),
-                new Column('column_default', Type::getType('string'), ['length' => 16, 'default' => 'test_default']),
-                new Column('column_decimal', Type::getType('decimal'), ['precision' => 4, 'scale' => 3]),
-                new Column('column_index1', Type::getType('string'), ['length' => 16]),
-                new Column('column_index2', Type::getType('string'), ['length' => 16]),
-                new Column('column_unique_index1', Type::getType('string'), ['length' => 16]),
-                new Column('column_unique_index2', Type::getType('string'), ['length' => 16]),
+                self::createColumn('id', Types::INTEGER, ['unsigned' => true]),
+                self::createColumn('column_unsigned', Types::INTEGER, ['unsigned' => true]),
+                self::createColumn('column_comment', Types::STRING, ['length' => 16, 'comment' => 'test_comment']),
+                self::createColumn('column_default', Types::STRING, ['length' => 16, 'default' => 'test_default']),
+                self::createColumn('column_decimal', Types::DECIMAL, ['precision' => 4, 'scale' => 3]),
+                self::createColumn('column_index1', Types::STRING, ['length' => 16]),
+                self::createColumn('column_index2', Types::STRING, ['length' => 16]),
+                self::createColumn('column_unique_index1', Types::STRING, ['length' => 16]),
+                self::createColumn('column_unique_index2', Types::STRING, ['length' => 16]),
             ],
         );
 
