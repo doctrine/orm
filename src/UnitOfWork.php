@@ -12,6 +12,8 @@ use Doctrine\Common\EventDispatcher;
 use Doctrine\DBAL;
 use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
 use Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\Types\EquatableType;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Event\ListenersInvoker;
 use Doctrine\ORM\Event\OnClearEventArgs;
@@ -692,6 +694,10 @@ class UnitOfWork implements PropertyChangedListener
                 $partialFields = null;
             }
 
+            // Resolved on the first equatable comparison, so entities without
+            // object values do not pay for it.
+            $platform = null;
+
             foreach ($actualData as $propName => $actualValue) {
                 if ($partialFields !== null) {
                     if (! in_array($propName, $partialFields, true)) {
@@ -725,6 +731,25 @@ class UnitOfWork implements PropertyChangedListener
 
                 // if regular field
                 if (! isset($class->associationMappings[$propName])) {
+                    // Let the field type decide whether the values are equal.
+                    // This avoids useless updates when a value object is
+                    // replaced by an equal one. Only object values are
+                    // compared, scalars are already compared by value.
+                    if (is_object($orgValue) && is_object($actualValue)) {
+                        $fieldType = Type::getType($class->fieldMappings[$propName]->type);
+
+                        if (
+                            $fieldType instanceof EquatableType
+                            && $fieldType->valuesAreEqual(
+                                $orgValue,
+                                $actualValue,
+                                $platform ??= $this->em->getConnection()->getDatabasePlatform(),
+                            )
+                        ) {
+                            continue;
+                        }
+                    }
+
                     $changeSet[$propName] = [$orgValue, $actualValue];
 
                     continue;
@@ -1085,6 +1110,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $originalData = $this->originalEntityData[$oid];
         $changeSet    = [];
+        $platform     = null;
 
         foreach ($actualData as $propName => $actualValue) {
             $orgValue = $originalData[$propName] ?? null;
@@ -1103,9 +1129,33 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            if ($orgValue !== $actualValue) {
-                $changeSet[$propName] = [$orgValue, $actualValue];
+            if ($orgValue === $actualValue) {
+                continue;
             }
+
+            // Let the field type decide whether the values are equal.
+            // This avoids useless updates when a value object is replaced by an
+            // equal one. Only object values are compared, scalars are already
+            // compared by value.
+            if (
+                is_object($orgValue) && is_object($actualValue)
+                && isset($class->fieldMappings[$propName])
+            ) {
+                $fieldType = Type::getType($class->fieldMappings[$propName]->type);
+
+                if (
+                    $fieldType instanceof EquatableType
+                    && $fieldType->valuesAreEqual(
+                        $orgValue,
+                        $actualValue,
+                        $platform ??= $this->em->getConnection()->getDatabasePlatform(),
+                    )
+                ) {
+                    continue;
+                }
+            }
+
+            $changeSet[$propName] = [$orgValue, $actualValue];
         }
 
         if ($changeSet) {
