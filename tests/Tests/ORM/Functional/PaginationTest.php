@@ -23,6 +23,7 @@ use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\CMS\CmsUserDTO;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent;
 use Doctrine\Tests\Models\Pagination\Company;
@@ -717,6 +718,48 @@ class PaginationTest extends OrmFunctionalTestCase
         self::assertSame(
             ['topic00', 'topic10', 'topic11', 'topic20'],
             array_map(static fn (CmsArticle $article): string => $article->topic, $previousPage->getItems()),
+        );
+    }
+
+    #[DataProvider('fetchJoinCollection')]
+    public function testCursorPaginatorOrderedByFieldOfJoinedEntityThatIsNotSelected(bool $queryProducesDuplicates): void
+    {
+        // the authors are not loaded: the results only reference them through uninitialized proxies
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery(
+            'SELECT a
+            FROM Doctrine\\Tests\\Models\\CMS\\CmsArticle a
+            JOIN a.user u
+            ORDER BY u.username ASC, a.id ASC',
+        );
+
+        $paginator = new CursorPaginator(4, $queryProducesDuplicates);
+
+        $firstPage  = $paginator->paginate($query);
+        $secondPage = $paginator->paginate($query, $firstPage->getNextCursor());
+        self::assertSame(
+            ['topic21', 'topic22', 'topic30', 'topic31'],
+            array_map(static fn (CmsArticle $article): string => $article->topic, $secondPage->getItems()),
+        );
+    }
+
+    public function testCursorPaginatorOrderedByFieldOfJoinedEntityWithNonEntityResults(): void
+    {
+        $query = $this->_em->createQuery(
+            'SELECT NEW Doctrine\\Tests\\Models\\CMS\\CmsUserDTO(u.name, e.email)
+            FROM Doctrine\\Tests\\Models\\CMS\\CmsUser u
+            JOIN u.email e
+            ORDER BY e.email ASC, u.name ASC',
+        );
+
+        $paginator = new CursorPaginator(4, false);
+
+        $firstPage  = $paginator->paginate($query);
+        $secondPage = $paginator->paginate($query, $firstPage->getNextCursor());
+        self::assertSame(
+            ['Name4', 'Name5', 'Name6', 'Name7'],
+            array_map(static fn (CmsUserDTO $user): string|null => $user->name, $secondPage->getItems()),
         );
     }
 

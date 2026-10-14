@@ -204,7 +204,7 @@ final class CursorPaginator implements PaginatorInterface
 
             $fieldName     = $orderByItem->expression->field;
             $orderMetadata = $orderByItem->metadata ?? $metadata;
-            $value         = $orderByItem->associationPath === []
+            $value         = $metadata === null || $orderByItem->associationPath === []
                 ? $metadata?->getFieldValue($item, $fieldName) ?? $item->$fieldName
                 : $this->getJoinedFieldValue($em, $item, $metadata, $orderByItem);
 
@@ -225,15 +225,15 @@ final class CursorPaginator implements PaginatorInterface
      * Reads the value of an ORDER BY item that is on a joined alias, by following
      * the single-valued associations leading from the root entity to that alias.
      *
-     * @param ClassMetadata<object>|null $metadata
+     * @param ClassMetadata<object> $metadata
      *
      * @throws LogicException If the alias cannot be reached from the root entity.
      */
-    private function getJoinedFieldValue(EntityManagerInterface $em, object $item, ClassMetadata|null $metadata, CursorOrderByItem $orderByItem): mixed
+    private function getJoinedFieldValue(EntityManagerInterface $em, object $item, ClassMetadata $metadata, CursorOrderByItem $orderByItem): mixed
     {
         assert($orderByItem->expression instanceof PathExpression);
 
-        if ($orderByItem->associationPath === null || $metadata === null || $orderByItem->metadata === null) {
+        if ($orderByItem->associationPath === null || $orderByItem->metadata === null) {
             throw new LogicException(sprintf(
                 'Cannot build a cursor for the ORDER BY item "%s": its alias must be the root alias, or be joined from it through single-valued associations only.',
                 $orderByItem->paramKey,
@@ -246,6 +246,9 @@ final class CursorPaginator implements PaginatorInterface
             if ($item === null) {
                 return null;
             }
+
+            // the joined entity is an uninitialized proxy when its alias is not selected
+            $em->initializeObject($item);
 
             $metadata = $em->getClassMetadata($metadata->associationMappings[$associationName]->targetEntity);
         }
