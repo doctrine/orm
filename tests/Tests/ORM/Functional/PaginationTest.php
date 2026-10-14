@@ -704,7 +704,7 @@ class PaginationTest extends OrmFunctionalTestCase
         self::assertCount(4, $firstPage);
         self::assertSame('username0', $firstPage->getItems()[0]->username);
 
-        // the cursor parameters must survive the unbinding of the unused parameters
+        // the id query of the next page also binds the cursor parameters
         $secondPage = $paginator->paginate($query, $firstPage->getNextCursor());
         self::assertCount(4, $secondPage);
         self::assertSame('username4', $secondPage->getItems()[0]->username);
