@@ -3159,6 +3159,16 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_id($entity);
 
+        // A partial object being lazily initialized keeps the snapshot of the fields it
+        // already loaded: they hold the same instances as the entity, so replacing them
+        // with freshly hydrated objects would make unchanged fields look modified.
+        if (isset($this->partialObjectLoadedFields[$oid])) {
+            $data = array_intersect_key(
+                $this->originalEntityData[$oid] ?? [],
+                array_flip($this->partialObjectLoadedFields[$oid]),
+            ) + $data;
+        }
+
         $this->entityIdentifiers[$oid]  = $id;
         $this->entityStates[$oid]       = self::STATE_MANAGED;
         $this->originalEntityData[$oid] = $data;
