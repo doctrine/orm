@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Proxy;
 
 use Doctrine\Common\EventManager;
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityNotFoundException;
@@ -51,9 +50,7 @@ class ProxyFactoryTest extends OrmTestCase
         $platform->method('supportsIdentityColumns')
             ->willReturn(true);
 
-        $connection = $this->createStub(Connection::class);
-        $connection->method('getDatabasePlatform')
-            ->willReturn($platform);
+        $connection = $this->createConnectionStub($platform);
 
         if (method_exists($connection, 'getEventManager')) {
             $connection->method('getEventManager')

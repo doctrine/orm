@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\ComparisonExpression;
 use Doctrine\ORM\Query\AST\ConditionalPrimary;
@@ -52,11 +51,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->useModelSet('company');
         $this->useModelSet('custom_id_object_type');
 
-        if (DBALType::hasType(CustomIdObjectType::NAME)) {
-            DBALType::overrideType(CustomIdObjectType::NAME, CustomIdObjectType::class);
-        } else {
-            DBALType::addType(CustomIdObjectType::NAME, CustomIdObjectType::class);
-        }
+        self::registerDbalType(CustomIdObjectType::NAME, CustomIdObjectType::class);
 
         parent::setUp();
 
