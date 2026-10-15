@@ -11,6 +11,8 @@ use ReflectionProperty;
 use function assert;
 use function sprintf;
 
+use const PHP_VERSION_ID;
+
 /** @internal */
 class TypedNoDefaultPropertyAccessor implements PropertyAccessor
 {
@@ -59,6 +61,12 @@ class TypedNoDefaultPropertyAccessor implements PropertyAccessor
 
     public function getValue(object $object): mixed
     {
+        /* A lazy property cannot be initialized yet, and calling isInitialized()
+           on it would trigger the initialization of the whole object. */
+        if (PHP_VERSION_ID >= 80400 && $this->reflectionProperty->isLazy($object)) {
+            return null;
+        }
+
         return $this->reflectionProperty->isInitialized($object) ? $this->parent->getValue($object) : null;
     }
 
