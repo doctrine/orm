@@ -25,7 +25,9 @@ use IteratorAggregate;
 interface Page extends Countable, IteratorAggregate
 {
     /**
-     * Returns the raw entities on this page.
+     * Returns the raw entities on this page, as a list. The result keys, such
+     * as those of a DQL INDEX BY clause, are not preserved, here or when
+     * iterating the page.
      *
      * @return list<T>
      */

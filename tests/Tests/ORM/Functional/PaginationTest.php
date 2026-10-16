@@ -170,12 +170,13 @@ class PaginationTest extends OrmFunctionalTestCase
         (new OffsetPaginator())->paginate($query, 42);
     }
 
-    public function testPageItemsAreAListEvenForIndexByQueries(): void
+    #[DataProvider('useOutputWalkersAndFetchJoinCollection')]
+    public function testPageItemsAreAListEvenForIndexByQueries(bool $useOutputWalkers, bool $fetchJoinCollection): void
     {
         $dql   = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u INDEX BY u.id';
         $query = $this->_em->createQuery($dql);
 
-        $page = (new OffsetPaginator(false))->paginate($query, new Window(0, 3));
+        $page = (new OffsetPaginator($fetchJoinCollection, $useOutputWalkers))->paginate($query, new Window(0, 3));
 
         self::assertSame([0, 1, 2], array_keys($page->getItems()));
     }

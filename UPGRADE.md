@@ -88,6 +88,21 @@ immutable, iterable `WindowPage`.
 `Paginator::setUseOutputWalkers()` becomes the `useOutputWalkers` constructor
 argument of `OffsetPaginator`.
 
+A `Window` always carries a page size, so paginating without a limit is no longer
+possible: run the query itself when you want every row.
+
+`WindowPage::getItems()` returns a list, whereas iterating the legacy `Paginator`
+preserved the result keys of a DQL `INDEX BY` clause. Iterating a `WindowPage`
+yields this list as well, so index the items yourself if you relied on these keys:
+
+```diff
+-foreach ($paginator as $id => $post) {
++foreach ($page as $post) {
++    $id = $post->getId();
+     // ...
+ }
+```
+
 ## Deprecated `Paginator::HINT_ENABLE_DISTINCT`
 
 The query hint is now declared as

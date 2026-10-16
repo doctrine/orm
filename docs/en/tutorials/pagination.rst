@@ -132,7 +132,9 @@ API Reference
     ``InvalidArgumentException`` if ``$position`` is not a ``Window``.
 
 ``WindowPage::getItems(): array``
-    Returns the raw entity array for the current page.
+    Returns the raw entity array for the current page, as a list. The result
+    keys, such as those of a DQL ``INDEX BY`` clause, are not preserved, here
+    or when iterating the page.
 
 ``WindowPage::count(): int``
     Returns the number of items on the current page (SPL ``Countable``).
@@ -328,7 +330,9 @@ API Reference
     set spans more than one page).
 
 ``CursorPage::getItems(): array``
-    Returns the raw entity array for the current page.
+    Returns the raw entity array for the current page, as a list. The result
+    keys, such as those of a DQL ``INDEX BY`` clause, are not preserved, here
+    or when iterating the page.
 
 ``CursorPage::getItemsWithCursors(): array``
     Returns an array of ``CursorItem`` objects, each wrapping an entity and its
