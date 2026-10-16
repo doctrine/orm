@@ -152,7 +152,8 @@ API Reference
     ``WindowPage::getTotalCount()`` runs.
 
 ``WindowPage::getItems(): array``
-    Returns the raw entity array for the current page.
+    Returns the raw entity array for the current page. The result keys are
+    preserved, so a query using DQL ``INDEX BY`` keeps its keys.
 
 ``WindowPage::count(): int``
     Returns the number of items on the current page (SPL ``Countable``).
@@ -354,7 +355,7 @@ API Reference
     set spans more than one page).
 
 ``CursorPage::getItems(): array``
-    Returns the raw entity array for the current page.
+    Returns the raw entity array for the current page, as a list.
 
 ``CursorPage::getItemsWithCursors(): array``
     Returns an array of ``CursorItem`` objects, each wrapping an entity and its

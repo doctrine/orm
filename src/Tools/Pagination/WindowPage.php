@@ -23,6 +23,9 @@ use function max;
  * On top of {@see Page}, a window page exposes what only offset pagination can
  * know: the total number of pages and the position of the last one.
  *
+ * The result keys are preserved, so a query using DQL ``INDEX BY`` keeps its
+ * keys: {@see getItems()} and the iteration both carry them.
+ *
  * @template-covariant T
  * @implements Page<T>
  */
@@ -32,9 +35,9 @@ final class WindowPage implements Page
     private int|null $resolvedTotalCount = null;
 
     /**
-     * @param list<T>            $items
-     * @param int|Closure(): int $totalCount The total number of matching root entities, or a closure
-     *                                       running the COUNT query on demand.
+     * @param array<array-key, T> $items
+     * @param int|Closure(): int  $totalCount The total number of matching root entities, or a closure
+     *                                        running the COUNT query on demand.
      */
     public function __construct(
         private readonly array $items,
@@ -43,7 +46,11 @@ final class WindowPage implements Page
     ) {
     }
 
-    /** @return list<T> */
+    /**
+     * {@inheritDoc}
+     *
+     * @return array<array-key, T>
+     */
     public function getItems(): array
     {
         return $this->items;
@@ -52,7 +59,7 @@ final class WindowPage implements Page
     /**
      * {@inheritDoc}
      *
-     * @return Traversable<int, T>
+     * @return Traversable<array-key, T>
      */
     public function getIterator(): Traversable
     {
