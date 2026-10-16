@@ -109,6 +109,7 @@ final class CursorPaginator implements PaginatorInterface
                 $subQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
             } else {
                 $this->appendTreeWalker($subQuery, LimitSubqueryWalker::class);
+                $this->unbindUnusedQueryParams($subQuery);
             }
         }
 

@@ -14,6 +14,7 @@ use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\WhereClause;
 use Doctrine\ORM\Query\SqlOutputWalker;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
+use Doctrine\ORM\Tools\Pagination\CursorPaginator;
 use Doctrine\ORM\Tools\Pagination\OffsetPaginator;
 use Doctrine\ORM\Tools\Pagination\Window;
 use Doctrine\Tests\DbalTypes\CustomIdObject;
@@ -684,6 +685,29 @@ class PaginationTest extends OrmFunctionalTestCase
         // parameters from query object not used in new query.
         self::assertCount(1, $getCountQuery->invoke($paginator, $query)->getParameters());
         self::assertSame(9, $paginator->paginate($query, $window)->getTotalCount());
+    }
+
+    #[DataProvider('useOutputWalkers')]
+    public function testCursorPaginatorWithFetchJoinStripsParametersOnlyUsedInSelect(bool $useOutputWalkers): void
+    {
+        $query = $this->_em->createQuery(
+            'SELECT u, a, (CASE WHEN u.id < :vipMaxId THEN 1 ELSE 0 END) AS HIDDEN promotedFirst
+            FROM Doctrine\\Tests\\Models\\CMS\\CmsUser u
+            LEFT JOIN u.articles a
+            ORDER BY u.id',
+        );
+        $query->setParameter('vipMaxId', 10);
+
+        $paginator = new CursorPaginator(4, true, $useOutputWalkers);
+
+        $firstPage = $paginator->paginate($query);
+        self::assertCount(4, $firstPage);
+        self::assertSame('username0', $firstPage->getItems()[0]->username);
+
+        // the id query of the next page also binds the cursor parameters
+        $secondPage = $paginator->paginate($query, $firstPage->getNextCursor());
+        self::assertCount(4, $secondPage);
+        self::assertSame('username4', $secondPage->getItems()[0]->username);
     }
 
     #[DataProvider('useOutputWalkersAndFetchJoinCollection')]
