@@ -95,6 +95,10 @@ class CursorWalker extends TreeWalkerAdapter
             return;
         }
 
+        if (count($orderByItems) > 1) {
+            $condition = $this->prependLeadingBound($orderByItems[0], $condition);
+        }
+
         $conditionalPrimary                        = new ConditionalPrimary();
         $conditionalPrimary->conditionalExpression = $condition;
 
@@ -151,9 +155,9 @@ class CursorWalker extends TreeWalkerAdapter
         $direction   = $orderByItem->direction;
         $paramKey    = $orderByItem->paramKey;
 
-        $operator = $direction->operator();
+        $operator = $direction->exclusiveOperator();
 
-        $paramName  = self::CURSOR_PARAMETER_PREFIX . $index;
+        $paramName  = $this->parameterName($index);
         $paramValue = $cursorParameters[$paramKey] ?? null;
 
         // Security note: $paramKey is derived from the DQL ORDER BY AST, not from the
@@ -199,6 +203,41 @@ class CursorWalker extends TreeWalkerAdapter
         return new ConditionalExpression([
             new ConditionalTerm([$comparisonPrimary]),
             new ConditionalTerm([$andPrimary]),
+        ]);
+    }
+
+    private function parameterName(int $index): string
+    {
+        return self::CURSOR_PARAMETER_PREFIX . $index;
+    }
+
+    /**
+     * ANDs a redundant bound on the first ORDER BY column in front of the cursor condition:
+     * col1 >= :val1 AND ((col1 > :val1) OR (col1 = :val1 AND col2 > :val2) OR ...)
+     *
+     * It does not change which rows match, since every row matching the OR chain already
+     * satisfies it. Some platforms (PostgreSQL among them) cannot derive an index range from
+     * the OR chain and filter rows one by one instead, so a page's cost grows with its
+     * depth; the bound gives them a range to seek to.
+     *
+     * @see https://use-the-index-luke.com/sql/partial-results/fetch-next-page#sb-equivalent-logic
+     *
+     * @throws QueryException
+     */
+    private function prependLeadingBound(CursorOrderByItem $orderByItem, ConditionalExpression $condition): ConditionalExpression
+    {
+        $boundPrimary                              = new ConditionalPrimary();
+        $boundPrimary->simpleConditionalExpression = new ComparisonExpression(
+            $orderByItem->expression,
+            $orderByItem->direction->inclusiveOperator(),
+            new InputParameter(':' . $this->parameterName(0)),
+        );
+
+        $conditionPrimary                        = new ConditionalPrimary();
+        $conditionPrimary->conditionalExpression = $condition;
+
+        return new ConditionalExpression([
+            new ConditionalTerm([$boundPrimary, $conditionPrimary]),
         ]);
     }
 
