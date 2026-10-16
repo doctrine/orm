@@ -25,6 +25,7 @@ use SortDirection;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function enum_exists;
+use function method_exists;
 
 require_once __DIR__ . '/PaginationTestCase.php';
 
@@ -39,6 +40,10 @@ class CursorPaginatorTest extends OrmTestCase
         $platform = $this->getMockBuilder(AbstractPlatform::class)
             ->setConstructorArgs(enum_exists(UnquotedIdentifierFolding::class) ? [UnquotedIdentifierFolding::UPPER] : [])
             ->getMock();
+        if (method_exists($platform, 'getUnquotedIdentifierFolding')) {
+            $platform->method('getUnquotedIdentifierFolding')->willReturn(UnquotedIdentifierFolding::NONE);
+        }
+
         $platform->method('supportsIdentityColumns')
             ->willReturn(true);
 
