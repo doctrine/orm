@@ -27,6 +27,38 @@ At this point, we recommend upgrading to PHP 8.4 first and then directly from
 ORM 2.19 to 3.5 and up so that you can skip the lazy ghost proxy generation
 and directly start using native lazy objects.
 
+# Upgrade to 3.8
+
+## `OffsetPaginator` now preserves the result keys of DQL `INDEX BY`
+
+`WindowPage::getItems()` and the iteration of a `WindowPage` used to apply
+`array_values()`, so a DQL `INDEX BY` clause had no effect on the keys and the
+items were always indexed from 0. They now keep the keys, as iterating the
+deprecated `Paginator` did.
+
+Queries without `INDEX BY` are unaffected: their keys remain `0..n-1`.
+`CursorPage::getItems()` still returns a list.
+
+If your code relied on a 0-based list, apply `array_values()` yourself:
+
+```diff
+-$items = $page->getItems();
+-$first = $items[0];
++$items = array_values($page->getItems());
++$first = $items[0];
+```
+
+```diff
+-foreach ($page as $index => $item) {
++foreach (array_values($page->getItems()) as $index => $item) {
+     // ...
+ }
+```
+
+The same applies when you destructure the result with `list()` or pass it to a
+parameter typed as a list. When you use `iterator_to_array()`, pass `false` as
+the second argument to reindex the keys.
+
 # Upgrade to 3.7
 
 ## Deprecated `Doctrine\ORM\Mapping\JoinColumns` attribute

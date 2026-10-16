@@ -12,7 +12,6 @@ use InvalidArgumentException;
 
 use function array_map;
 use function array_sum;
-use function array_values;
 use function get_debug_type;
 use function sprintf;
 
@@ -82,13 +81,13 @@ final class OffsetPaginator implements PaginatorInterface
 
         $query = $this->resolveQuery($query);
 
-        /** @var list<T> $items */
-        $items = array_values($this->getResultForOffset(
+        /** @var array<array-key, T> $items */
+        $items = $this->getResultForOffset(
             $query,
             $position->getFirstResult(),
             $position->getMaxResults(),
             $this->fetchJoinCollection,
-        ));
+        );
 
         return new WindowPage($items, fn (): int => $this->countResolvedQuery($query), $position);
     }
