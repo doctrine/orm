@@ -29,6 +29,22 @@ and directly start using native lazy objects.
 
 # Upgrade to 3.7
 
+## Second-level cache key format
+
+Entity and collection cache keys now hash an unambiguous representation of their
+components. Integer identifiers and their string equivalents still produce the
+same key, and the order of composite identifier fields remains irrelevant.
+`DefaultRegion` also hashes cache keys instead of replacing reserved characters
+with underscores, and uses a new storage namespace for all regions, including
+query and timestamp regions. Existing entries are treated as cache misses.
+
+Clear existing second-level cache entries and `READ_WRITE` lock files during a
+coordinated deployment. Old and new ORM versions use different keys and cannot
+invalidate each other's entries or coordinate their locks, so do not run them
+concurrently with second-level caching enabled against the same database.
+Custom cache regions must also discard old entries and account for the changed
+`EntityCacheKey::$hash` and `CollectionCacheKey::$hash` formats.
+
 ## Deprecated `Doctrine\ORM\Mapping\JoinColumns` attribute
 
 Using it has no effect, it should have been removed in 3.0.0. Instead, use the
