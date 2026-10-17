@@ -14,7 +14,13 @@ use Psr\Cache\CacheItemPoolInterface;
 use Traversable;
 
 use function array_map;
+use function bin2hex;
+use function ctype_xdigit;
+use function hash;
+use function is_string;
 use function iterator_to_array;
+use function random_bytes;
+use function strlen;
 use function strtr;
 
 /**
@@ -23,7 +29,7 @@ use function strtr;
 class DefaultRegion implements Region
 {
     private const REGION_KEY_SEPARATOR = '_';
-    private const REGION_PREFIX        = 'DC2_REGION_';
+    private const REGION_PREFIX        = 'DC2_L2_REGION_';
 
     public function __construct(
         private readonly string $name,
@@ -39,12 +45,19 @@ class DefaultRegion implements Region
 
     public function contains(CacheKey $key): bool
     {
-        return $this->cacheItemPool->hasItem($this->getCacheEntryKey($key));
+        $version = $this->getRegionVersion();
+
+        return $version !== null && $this->cacheItemPool->hasItem($this->getCacheEntryKey($key, $version));
     }
 
     public function get(CacheKey $key): CacheEntry|null
     {
-        $item  = $this->cacheItemPool->getItem($this->getCacheEntryKey($key));
+        $version = $this->getRegionVersion();
+        if ($version === null) {
+            return null;
+        }
+
+        $item  = $this->cacheItemPool->getItem($this->getCacheEntryKey($key, $version));
         $entry = $item->isHit() ? $item->get() : null;
 
         if (! $entry instanceof CacheEntry) {
@@ -56,8 +69,17 @@ class DefaultRegion implements Region
 
     public function getMultiple(CollectionCacheEntry $collection): array|null
     {
+        if ($collection->identifiers === []) {
+            return [];
+        }
+
+        $version = $this->getRegionVersion();
+        if ($version === null) {
+            return null;
+        }
+
         $keys = array_map(
-            $this->getCacheEntryKey(...),
+            fn (CacheKey $key): string => $this->getCacheEntryKey($key, $version),
             $collection->identifiers,
         );
         /** @var iterable<string, CacheItemInterface> $items */
@@ -85,8 +107,13 @@ class DefaultRegion implements Region
 
     public function put(CacheKey $key, CacheEntry $entry, Lock|null $lock = null): bool
     {
+        $version = $this->getRegionVersion();
+        if ($version === null) {
+            return false;
+        }
+
         $item = $this->cacheItemPool
-            ->getItem($this->getCacheEntryKey($key))
+            ->getItem($this->getCacheEntryKey($key, $version))
             ->set($entry);
 
         if ($this->lifetime > 0) {
@@ -98,16 +125,44 @@ class DefaultRegion implements Region
 
     public function evict(CacheKey $key): bool
     {
-        return $this->cacheItemPool->deleteItem($this->getCacheEntryKey($key));
+        $version = $this->getRegionVersion();
+
+        return $version !== null && $this->cacheItemPool->deleteItem($this->getCacheEntryKey($key, $version));
     }
 
     public function evictAll(): bool
     {
-        return $this->cacheItemPool->clear(self::REGION_PREFIX . $this->name);
+        return $this->replaceRegionVersion($this->cacheItemPool->getItem($this->getRegionVersionKey())) !== null;
     }
 
-    private function getCacheEntryKey(CacheKey $key): string
+    private function getCacheEntryKey(CacheKey $key, string $version): string
     {
-        return self::REGION_PREFIX . $this->name . self::REGION_KEY_SEPARATOR . strtr($key->hash, '{}()/\@:', '________');
+        return self::REGION_PREFIX . $version . self::REGION_KEY_SEPARATOR . strtr($key->hash, '{}()/\@:', '________');
+    }
+
+    private function getRegionVersionKey(): string
+    {
+        return self::REGION_PREFIX . 'version_' . hash('sha256', $this->name);
+    }
+
+    private function getRegionVersion(): string|null
+    {
+        // Read on every operation so eviction by another instance takes effect.
+        $item    = $this->cacheItemPool->getItem($this->getRegionVersionKey());
+        $version = $item->isHit() ? $item->get() : null;
+        if (is_string($version) && strlen($version) === 32 && ctype_xdigit($version)) {
+            return $version;
+        }
+
+        // Never reuse a missing version: its old entries may still exist.
+        return $this->replaceRegionVersion($item);
+    }
+
+    private function replaceRegionVersion(CacheItemInterface $item): string|null
+    {
+        $version = bin2hex(random_bytes(16));
+        $item->set($version)->expiresAfter(null);
+
+        return $this->cacheItemPool->save($item) ? $version : null;
     }
 }
