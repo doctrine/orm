@@ -8,10 +8,12 @@ use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 
 use function array_map;
+use function hash;
 
 /** @extends RegionTestCase<DefaultRegion> */
 #[Group('DDC-2183')]
@@ -72,6 +74,61 @@ class DefaultRegionTest extends RegionTestCase
         self::assertEquals($value2, $actual[1]);
     }
 
+    #[DataProvider('collidingCacheKeys')]
+    public function testDistinctKeysDoNotShareEntries(string $firstHash, string $secondHash): void
+    {
+        $firstKey    = new CacheKeyMock($firstHash);
+        $secondKey   = new CacheKeyMock($secondHash);
+        $firstEntry  = new CacheEntryMock(['value' => 'first']);
+        $secondEntry = new CacheEntryMock(['value' => 'second']);
+
+        self::assertTrue($this->region->put($firstKey, $firstEntry));
+        self::assertFalse($this->region->contains($secondKey));
+        self::assertNull($this->region->get($secondKey));
+
+        self::assertTrue($this->region->put($secondKey, $secondEntry));
+        self::assertEquals($firstEntry, $this->region->get($firstKey));
+        self::assertEquals($secondEntry, $this->region->get($secondKey));
+        self::assertEquals(
+            ['first' => $firstEntry, 'second' => $secondEntry],
+            $this->region->getMultiple(new CollectionCacheEntry(['first' => $firstKey, 'second' => $secondKey])),
+        );
+
+        self::assertTrue($this->region->evict($firstKey));
+        self::assertFalse($this->region->contains($firstKey));
+        self::assertEquals($secondEntry, $this->region->get($secondKey));
+    }
+
+    /** @return iterable<string, array{string, string}> */
+    public static function collidingCacheKeys(): iterable
+    {
+        foreach (['{', '}', '(', ')', '/', '\\', '@', ':'] as $character) {
+            yield $character => ['a' . $character . 'b', 'a_b'];
+        }
+    }
+
+    public function testLegacyEntriesAreNotRead(): void
+    {
+        $key = new CacheKeyMock('foo_a:b');
+        $this->cacheItemPool->save(
+            $this->cacheItemPool->getItem('DC2_REGION_default.region.test_foo_a_b')
+                ->set(new CacheEntryMock(['value' => 'legacy'])),
+        );
+        // Application-supplied legacy cache IDs may themselves be digests.
+        $this->cacheItemPool->save(
+            $this->cacheItemPool->getItem('DC2_REGION_default.region.test_' . hash('sha256', $key->hash))
+                ->set(new CacheEntryMock(['value' => 'another legacy entry'])),
+        );
+
+        self::assertFalse($this->region->contains($key));
+        self::assertNull($this->region->get($key));
+        self::assertNull($this->region->getMultiple(new CollectionCacheEntry([$key])));
+
+        $entry = new CacheEntryMock(['value' => 'current']);
+        self::assertTrue($this->region->put($key, $entry));
+        self::assertEquals($entry, $this->region->get($key));
+    }
+
     public function testGetMultiPreservesOrderAndKeys(): void
     {
         $key1   = new CacheKeyMock('key.1');
@@ -101,7 +158,7 @@ class DefaultRegionTest extends RegionTestCase
         $key1 = new CacheKeyMock('key.1');
         $this->cacheItemPool->save(
             $this->cacheItemPool
-                ->getItem('DC2_REGION_' . $this->region->getName() . '_' . $key1->hash)
+                ->getItem('DC2_V2_REGION_' . $this->region->getName() . '_' . hash('sha256', $key1->hash))
                 ->set('a-very-invalid-value'),
         );
 
@@ -116,7 +173,7 @@ class DefaultRegionTest extends RegionTestCase
         $key1 = new CacheKeyMock('key.1');
         $this->cacheItemPool->save(
             $this->cacheItemPool
-                ->getItem('DC2_REGION_' . $this->region->getName() . '_' . $key1->hash)
+                ->getItem('DC2_V2_REGION_' . $this->region->getName() . '_' . hash('sha256', $key1->hash))
                 ->set('a-very-invalid-value'),
         );
 
