@@ -31,6 +31,7 @@ use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Internal\StronglyConnectedComponents;
 use Doctrine\ORM\Internal\TopologicalSort;
+use Doctrine\ORM\Internal\UnitOfWork\EarlyDeletionPlanner;
 use Doctrine\ORM\Internal\UnitOfWork\InsertBatch;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -355,11 +356,14 @@ class UnitOfWork implements PropertyChangedListener
      *
      * The operations are executed in the following order:
      *
-     * 1) All entity insertions
-     * 2) All entity updates
-     * 3) All collection deletions
-     * 4) All collection updates
-     * 5) All entity deletions
+     * 1) All collection deletions
+     * 2) The early batch of entity deletions: deletions that collide with a
+     *    pending insertion on a metadata-declared unique constraint and are
+     *    safe to run first
+     * 3) All entity insertions
+     * 4) All entity updates, plus any extra updates requested by persisters
+     * 5) All collection updates
+     * 6) All entity deletions
      *
      * @throws Exception
      */
@@ -415,6 +419,12 @@ class UnitOfWork implements PropertyChangedListener
                 if ($this->em->getClassMetadata($owner::class)->isChangeTrackingDeferredImplicit() || $this->isScheduledForDirtyCheck($owner)) {
                     $this->getCollectionPersister($collectionToDelete->getMapping())->delete($collectionToDelete);
                 }
+            }
+
+            // Early batch of deletions (before the insertions)
+            $earlyDeletions = $this->computeEarlyDeletions();
+            if ($earlyDeletions) {
+                $this->executeDeletions($earlyDeletions);
             }
 
             if ($this->entityInsertions) {
@@ -1237,11 +1247,83 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Executes all entity deletions
+     * Computes the scheduled deletions that collide with a pending insertion
+     * on a metadata-declared unique constraint and are safe to run before
+     * the insertions.
+     *
+     * @return list<object>
      */
-    private function executeDeletions(): void
+    private function computeEarlyDeletions(): array
     {
-        $entities         = $this->computeDeleteExecutionOrder();
+        if (! $this->entityDeletions || ! $this->entityInsertions) {
+            return [];
+        }
+
+        $candidates = array_values($this->entityDeletions);
+
+        // Guard inputs from pending owning many-to-many collection updates:
+        // the element class names and the owners' object ids.
+        // Collection deletions are not part of the guard input: they have
+        // already been executed above, so their join rows are gone.
+        $manyToManyTargetClasses = [];
+        $manyToManyOwnerIds      = [];
+        foreach ($this->collectionUpdates as $collection) {
+            $mapping = $collection->getMapping();
+            if (! $mapping->isManyToManyOwningSide()) {
+                continue;
+            }
+
+            $owner = $collection->getOwner();
+            if ($owner !== null) {
+                $manyToManyOwnerIds[spl_object_id($owner)] = true;
+            }
+
+            $manyToManyTargetClasses[$mapping->targetEntity] = true;
+        }
+
+        // The elements of a many-to-many collection may be instances of the
+        // target entity's subclasses: close the element match downwards.
+        foreach (array_keys($manyToManyTargetClasses) as $targetClass) {
+            foreach ($this->em->getClassMetadata($targetClass)->subClasses as $subClass) {
+                $manyToManyTargetClasses[$subClass] = true;
+            }
+        }
+
+        $planner = new EarlyDeletionPlanner(
+            fn (string $class): ClassMetadata => $this->em->getClassMetadata($class),
+            $this->em->getConnection()->getDatabasePlatform(),
+        );
+
+        return $planner->planEarlyDeletions(
+            $candidates,
+            $this->entityInsertions,
+            $this->entityUpdates,
+            $this->entityDeletions,
+            $this->originalEntityData,
+            $this->entityChangeSets,
+            $manyToManyTargetClasses,
+            $manyToManyOwnerIds,
+        );
+    }
+
+    /**
+     * Executes the given batch of entity deletions.
+     *
+     * The commit runs this method twice: once for the early batch of
+     * deletions that must precede the insertions, and once for the
+     * remaining deletions at the end of the flush. Within a batch, all
+     * DELETE statements of the batch run before the batch's postRemove
+     * listeners are dispatched: a listener observes a consistent state of
+     * its batch, the deleted entity's identifier is already reset when its
+     * postRemove listener runs, and the entity is no longer scheduled for
+     * deletion. The postRemove listeners of the early batch therefore run
+     * before the insertions' postPersist listeners.
+     *
+     * @param array<int, object>|null $deletions Subset of the scheduled entity deletions to execute; null for all of them.
+     */
+    private function executeDeletions(array|null $deletions = null): void
+    {
+        $entities         = $this->computeDeleteExecutionOrder($deletions);
         $eventsToDispatch = [];
 
         foreach ($entities as $entity) {
@@ -1371,13 +1453,19 @@ class UnitOfWork implements PropertyChangedListener
         return $entities;
     }
 
-    /** @return list<object> */
-    private function computeDeleteExecutionOrder(): array
+    /**
+     * @param array<int, object>|null $deletions Subset of the scheduled entity deletions to order; null for all of them.
+     *
+     * @return list<object>
+     */
+    private function computeDeleteExecutionOrder(array|null $deletions = null): array
     {
         $stronglyConnectedComponents = new StronglyConnectedComponents();
         $sort                        = new TopologicalSort();
 
-        foreach ($this->entityDeletions as $entity) {
+        $deletions ??= $this->entityDeletions;
+
+        foreach ($deletions as $entity) {
             $stronglyConnectedComponents->addNode($entity);
             $sort->addNode($entity);
         }
@@ -1387,7 +1475,7 @@ class UnitOfWork implements PropertyChangedListener
         // in such a group, _all_ of the other entities will be removed as well. So,
         // we need to treat those groups like a single entity when performing delete
         // order topological sorting.
-        foreach ($this->entityDeletions as $entity) {
+        foreach ($deletions as $entity) {
             $class = $this->em->getClassMetadata($entity::class);
 
             foreach ($class->associationMappings as $assoc) {
@@ -1424,7 +1512,7 @@ class UnitOfWork implements PropertyChangedListener
         $stronglyConnectedComponents->findStronglyConnectedComponents();
 
         // Now do the actual topological sorting to find the delete order.
-        foreach ($this->entityDeletions as $entity) {
+        foreach ($deletions as $entity) {
             $class = $this->em->getClassMetadata($entity::class);
 
             // Get the entities representing the SCC
