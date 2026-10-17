@@ -20,12 +20,12 @@ class CacheKeyCollisionOwner
 
     public function __construct(
         #[ORM\Id]
-        #[ORM\Column(name: 'first_id')]
+        #[ORM\Column(name: 'first_id', length: 32)]
         public string $first,
         #[ORM\Id]
-        #[ORM\Column(name: 'second_id')]
+        #[ORM\Column(name: 'second_id', length: 32)]
         public string $second,
-        #[ORM\Column]
+        #[ORM\Column(length: 32)]
         public string $label,
     ) {
         $this->children = new ArrayCollection();

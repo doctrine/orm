@@ -20,7 +20,7 @@ class CacheKeyCollisionChild
         #[ORM\JoinColumn(name: 'owner_second', referencedColumnName: 'second_id')]
         #[ORM\Cache]
         public CacheKeyCollisionOwner $owner,
-        #[ORM\Column]
+        #[ORM\Column(length: 32)]
         public string $label,
     ) {
     }
