@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Cache\Persister\Collection;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Cache\CollectionCacheKey;
+use Doctrine\ORM\Cache\CollectionCacheVersionEntry;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Cache\Persister\Collection\AbstractCollectionPersister;
 use Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister;
@@ -124,6 +126,31 @@ abstract class CollectionPersisterTestCase extends OrmTestCase
             ->willReturn(0);
 
         self::assertSame(0, $persister->count($collection));
+    }
+
+    public function testLoadMissesWhenCollectionVersionCannotBeStored(): void
+    {
+        $persister  = $this->createPersisterDefault();
+        $collection = $this->createCollection(new State('Foo'));
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
+        $this->region->expects(self::once())->method('get')->with(self::equalTo($key))->willReturn(null);
+        $this->region->expects(self::once())->method('put')
+            ->with(self::equalTo($key), self::isInstanceOf(CollectionCacheVersionEntry::class))
+            ->willReturn(false);
+
+        self::assertNull($persister->loadCollectionCache($collection, $key));
+    }
+
+    public function testStoreDoesNotUseAnUnpersistedCollectionVersion(): void
+    {
+        $persister = $this->createPersisterDefault();
+        $key       = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
+        $this->region->expects(self::once())->method('get')->with(self::equalTo($key))->willReturn(null);
+        $this->region->expects(self::once())->method('put')
+            ->with(self::equalTo($key), self::isInstanceOf(CollectionCacheVersionEntry::class))
+            ->willReturn(false);
+
+        $persister->storeCollectionCache($key, []);
     }
 
     public function testInvokeSlice(): void

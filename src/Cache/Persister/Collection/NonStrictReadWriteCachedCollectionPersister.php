@@ -15,13 +15,14 @@ class NonStrictReadWriteCachedCollectionPersister extends AbstractCollectionPers
     {
         if (isset($this->queuedCache['update'])) {
             foreach ($this->queuedCache['update'] as $item) {
+                $this->evictCollectionCache($item['key']);
                 $this->storeCollectionCache($item['key'], $item['list']);
             }
         }
 
         if (isset($this->queuedCache['delete'])) {
             foreach ($this->queuedCache['delete'] as $key) {
-                $this->region->evict($key);
+                $this->evictCollectionCache($key);
             }
         }
 
@@ -55,8 +56,13 @@ class NonStrictReadWriteCachedCollectionPersister extends AbstractCollectionPers
         $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
         $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association->fieldName, $ownerId, $this->filters->getHash());
 
-       // Invalidate non initialized collections OR ordered collection
-        if ($isDirty && ! $isInitialized || $this->association->isOrdered()) {
+        // Filtered collections must be reloaded: new elements may not match the SQL filter.
+        if (
+            $isDirty && ! $isInitialized ||
+            $this->association->isOrdered() ||
+            $key->filterHash !== '' ||
+            ($this->collectionFilterHashes[$collection] ?? '') !== ''
+        ) {
             $this->persister->update($collection);
 
             $this->queuedCache['delete'][spl_object_id($collection)] = $key;
