@@ -39,7 +39,14 @@ final class GH12674Test extends OrmFunctionalTestCase
     {
         $item = $this->_em->find(Item::class, 1);
 
-        self::assertNotNull($item);
+        self::assertInstanceOf(Item::class, $item);
+        self::assertTrue($this->isUninitializedObject($item->category));
+
+        // The identifier stays readable, and reading it must not initialize the proxy.
+        self::assertSame(
+            ['id.value' => 'c1'],
+            $this->_em->getClassMetadata(Category::class)->getIdentifierValues($item->category),
+        );
         self::assertTrue($this->isUninitializedObject($item->category));
     }
 
