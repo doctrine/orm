@@ -20,6 +20,7 @@ use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\UnitOfWork;
 
 use function array_map;
+use function array_push;
 use function array_shift;
 use function array_unshift;
 use function assert;
@@ -347,7 +348,7 @@ class DefaultQueryCache implements QueryCache
         ];
     }
 
-    /** @phpstan-return list<mixed>|object|null */
+    /** @phpstan-return list<object>|object|null */
     private function getAssociationValue(
         ResultSetMapping $rsm,
         string $assocAlias,
@@ -375,7 +376,7 @@ class DefaultQueryCache implements QueryCache
     /**
      * @phpstan-param array<array-key, array{field: string, class: string}> $path
      *
-     * @phpstan-return list<mixed>|object|null
+     * @phpstan-return list<object>|object|null
      */
     private function getAssociationPathValue(mixed $value, array $path): array|object|null
     {
@@ -400,7 +401,19 @@ class DefaultQueryCache implements QueryCache
         $values = [];
 
         foreach ($value as $item) {
-            $values[] = $this->getAssociationPathValue($item, $path);
+            $associationValue = $this->getAssociationPathValue($item, $path);
+
+            if ($associationValue === null) {
+                continue;
+            }
+
+            // Flatten intermediate to-many paths, retaining each terminal
+            // association (including collections) as a separate value.
+            if (is_array($associationValue)) {
+                array_push($values, ...$associationValue);
+            } else {
+                $values[] = $associationValue;
+            }
         }
 
         return $values;
