@@ -78,6 +78,9 @@ class GH8054Test extends OrmFunctionalTestCase
             $this->_em->persist($schedule);
         }
 
+        // Sequence generators can assign an ID during persist(), before INSERT.
+        $identifierBeforeQuery = $schedule->id;
+
         // Inverse one-to-one mappings are valid even though the new target
         // has not been inserted yet, as during UniqueEntity validation.
         $validator = new SchemaValidator($this->_em);
@@ -98,10 +101,9 @@ class GH8054Test extends OrmFunctionalTestCase
         self::assertSame($schedule, $association === 'schedules' ? $user->schedules->first() : $user->{$association});
         self::assertSame(0, (int) $this->_em->getConnection()->fetchOne('SELECT COUNT(*) FROM GH8054Schedule'));
         self::assertSame(0, (int) $this->_em->getConnection()->fetchOne('SELECT COUNT(*) FROM GH8054AssignedSchedule'));
-        if ($association === 'assignedSchedule') {
-            self::assertFalse($this->_em->getCache()->containsEntity(GH8054AssignedSchedule::class, 42));
-        } else {
-            self::assertNull($schedule->id);
+        self::assertSame($identifierBeforeQuery, $schedule->id);
+        if ($identifierBeforeQuery !== null) {
+            self::assertFalse($this->_em->getCache()->containsEntity($schedule::class, $identifierBeforeQuery));
         }
 
         $this->_em->flush();
