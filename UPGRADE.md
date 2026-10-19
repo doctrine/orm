@@ -29,6 +29,18 @@ and directly start using native lazy objects.
 
 # Upgrade to 3.7
 
+## Indexed second-level cache collections
+
+Collections with `indexBy` are now invalidated after writes instead of being
+cached directly from their in-memory contents. The next load rebuilds their
+indexes from the database, and subsequent loads use the indexed cache entry.
+This also applies to the initial persistence of `READ_ONLY` collections.
+
+Clear existing second-level cache regions for indexed associations when deploying
+this fix, so entries previously stored with numeric keys are not reused. The cache
+entry format is unchanged. Applications remain responsible for maintaining the
+keys of managed collections with `Collection::set()`.
+
 ## Deprecated `Doctrine\ORM\Mapping\JoinColumns` attribute
 
 Using it has no effect, it should have been removed in 3.0.0. Instead, use the

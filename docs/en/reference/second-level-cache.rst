@@ -316,6 +316,13 @@ Association cache definition
 The most common use case is to cache entities. But we can also cache relationships.
 It caches the primary keys of association and cache each element will be cached into its region.
 
+After a collection with ``indexBy`` is inserted or changed, its cache entry is
+invalidated rather than populated from the in-memory collection. The next load
+rebuilds the indexes through SQL hydration and caches the indexed result for
+subsequent reads. As with ``orderBy``, this requires a database read after a write.
+The keys of an already managed collection are not changed: applications should
+use ``Collection::set()`` to maintain its indexes in memory.
+
 
 .. configuration-block::
 

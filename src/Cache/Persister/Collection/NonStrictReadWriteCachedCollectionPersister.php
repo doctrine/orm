@@ -55,8 +55,8 @@ class NonStrictReadWriteCachedCollectionPersister extends AbstractCollectionPers
         $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
         $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association->fieldName, $ownerId, $this->filters->getHash());
 
-       // Invalidate non initialized collections OR ordered collection
-        if ($isDirty && ! $isInitialized || $this->association->isOrdered()) {
+        // Reload ordered and indexed collections through SQL hydration.
+        if ($isDirty && ! $isInitialized || $this->association->isOrdered() || $this->association->isIndexed()) {
             $this->persister->update($collection);
 
             $this->queuedCache['delete'][spl_object_id($collection)] = $key;
