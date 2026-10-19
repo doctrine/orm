@@ -301,8 +301,14 @@ class DefaultQueryCache implements QueryCache
     private function storeAssociationCache(QueryCacheKey $key, AssociationMapping $assoc, mixed $assocValue): array|null
     {
         $assocPersister = $this->uow->getEntityPersister($assoc->targetEntity);
-        $assocMetadata  = $assocPersister->getClassMetadata();
-        $assocRegion    = $assocPersister->getCacheRegion();
+
+        // A result containing uncached associations must be loaded from the database.
+        if (! $assocPersister instanceof CachedEntityPersister) {
+            return null;
+        }
+
+        $assocMetadata = $assocPersister->getClassMetadata();
+        $assocRegion   = $assocPersister->getCacheRegion();
 
         // Handle *-to-one associations
         if ($assoc->isToOne()) {

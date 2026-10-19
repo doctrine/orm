@@ -169,18 +169,6 @@ parameters:
 			path: src/Cache/DefaultQueryCache.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\ORM\\Persisters\\Entity\\EntityPersister\:\:getCacheRegion\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Cache/DefaultQueryCache.php
-
-		-
-			message: '#^Call to an undefined method Doctrine\\ORM\\Persisters\\Entity\\EntityPersister\:\:storeEntityCache\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: src/Cache/DefaultQueryCache.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Cache\\DefaultQueryCache\:\:storeAssociationCache\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 2
