@@ -106,6 +106,15 @@ class DefaultQueryCache implements QueryCache
                 continue;
             }
 
+            // Back-references from fetched associations must resolve to this
+            // instance, even when the root class has subclasses.
+            if ($cm->subClasses && $this->uow->tryGetById($entry['identifier'], $cm->rootEntityName) === false) {
+                $this->uow->registerManagedProxy(
+                    $this->em->getProxyFactory()->getProxy($entityEntry->class, $entry['identifier']),
+                    $entry['identifier'],
+                );
+            }
+
             $data = $entityEntry->data;
 
             foreach ($entry['associations'] as $name => $assoc) {
