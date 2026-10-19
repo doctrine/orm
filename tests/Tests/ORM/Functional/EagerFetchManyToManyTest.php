@@ -11,10 +11,12 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use SortDirection;
 
 use function array_map;
 
+#[Group('non-cacheable')]
 class EagerFetchManyToManyTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void

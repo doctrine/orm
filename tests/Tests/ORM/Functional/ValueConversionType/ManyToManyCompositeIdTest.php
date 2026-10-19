@@ -21,6 +21,7 @@ use PHPUnit\Framework\Attributes\Group;
 #[Group('DDC-3380')]
 class ManyToManyCompositeIdTest extends OrmFunctionalTestCase
 {
+    #[Group('non-cacheable')]
     public function testEagerFetchWithCompositeIdentifiers(): void
     {
         foreach ([OwningManyToManyCompositeIdEntity::class, InversedManyToManyCompositeIdEntity::class] as $class) {

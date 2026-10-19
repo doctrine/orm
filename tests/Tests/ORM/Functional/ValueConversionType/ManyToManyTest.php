@@ -30,6 +30,7 @@ class ManyToManyTest extends OrmFunctionalTestCase
     }
 
     #[DataProvider('associationSides')]
+    #[Group('non-cacheable')]
     public function testBatchEagerFetchConvertsIdentifiers(bool $inverse): void
     {
         $owning   = $this->_em->find(OwningManyToManyEntity::class, 'def');
