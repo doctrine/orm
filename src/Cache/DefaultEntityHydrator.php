@@ -11,6 +11,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 
+use function array_diff_key;
 use function assert;
 use function is_array;
 use function is_object;
@@ -36,7 +37,8 @@ class DefaultEntityHydrator implements EntityHydrator
 
     public function buildCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, object $entity): EntityCacheEntry
     {
-        $data = $this->uow->getOriginalEntityData($entity);
+        // Embeddables are hydrated from their flattened fields, not snapshot objects.
+        $data = array_diff_key($this->uow->getOriginalEntityData($entity), $metadata->embeddedClasses);
         $data = [...$data, ...$metadata->getIdentifierValues($entity)]; // why update has no identifier values ?
 
         if ($metadata->requiresFetchAfterChange) {

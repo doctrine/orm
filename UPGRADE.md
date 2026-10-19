@@ -29,6 +29,16 @@ and directly start using native lazy objects.
 
 # Upgrade to 3.7
 
+## Second-level cache entries containing embeddables
+
+Entity cache entries now store only the flattened mapped fields of embeddables,
+excluding the embedded objects held in UnitOfWork snapshots. This prevents false
+changesets after a cache hit and unnecessary updates when no fields changed.
+
+After upgrading all application instances, clear the entity cache regions of
+classes containing embeddables so older entries containing snapshot objects are
+not reused.
+
 ## Deprecated `Doctrine\ORM\Mapping\JoinColumns` attribute
 
 Using it has no effect, it should have been removed in 3.0.0. Instead, use the
