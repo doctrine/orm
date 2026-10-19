@@ -914,6 +914,10 @@ class UnitOfWork implements PropertyChangedListener
             $this->visitedCollections[$coid] = $value;
         }
 
+        if ($value instanceof PersistentCollection && $value->isEmptyWithoutInitialization()) {
+            return;
+        }
+
         // Look through the entities, and in any of their associations,
         // for transient (new) entities, recursively. ("Persistence by reachability")
         // Unwrap. Uninitialized collections will simply be empty.
@@ -2782,7 +2786,7 @@ class UnitOfWork implements PropertyChangedListener
                     }
 
                     // Inject collection
-                    $pColl = new PersistentCollection($this->em, $targetClass, new ArrayCollection());
+                    $pColl = new PersistentCollection($this->em, $targetClass, null);
                     $pColl->setOwner($entity, $assoc);
                     $pColl->setInitialized(false);
 

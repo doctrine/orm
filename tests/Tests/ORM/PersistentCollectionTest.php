@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\Common\Collections\AbstractLazyCollection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
@@ -77,6 +78,69 @@ class PersistentCollectionTest extends OrmTestCase
         $collection = new PersistentCollection($this->_emMock, $class, new ArrayCollection());
         $collection->setInitialized(false);
         self::assertFalse($collection->isInitialized());
+    }
+
+    public function testDeferredCollectionCanBeUsedWithoutAnOwner(): void
+    {
+        $class      = $this->_emMock->getClassMetadata(ECommerceProduct::class);
+        $collection = new PersistentCollection($this->_emMock, $class, null);
+
+        self::assertFalse($collection->isInitialized());
+        self::assertTrue($collection->isEmptyWithoutInitialization());
+        self::assertFalse($collection->isInitialized());
+        self::assertCount(0, $collection);
+        self::assertTrue($collection->isInitialized());
+    }
+
+    public function testUnwrappingDeferredStorageDoesNotInitializeTheAssociation(): void
+    {
+        $class = $this->_emMock->getClassMetadata(ECommerceProduct::class);
+        $first = new PersistentCollection($this->_emMock, $class, null);
+        $other = new PersistentCollection($this->_emMock, $class, null);
+
+        self::assertSame($first->unwrap(), $first->unwrap());
+        self::assertNotSame($first->unwrap(), $other->unwrap());
+        self::assertFalse($first->isInitialized());
+
+        $element = new ECommerceProduct();
+        $first->hydrateAdd($element);
+
+        self::assertFalse($first->isEmptyWithoutInitialization());
+        self::assertTrue($other->isEmptyWithoutInitialization());
+        self::assertFalse($first->isInitialized());
+        self::assertFalse($first->isDirty());
+    }
+
+    public function testSuppliedBackingCollectionIsPreserved(): void
+    {
+        $class      = $this->_emMock->getClassMetadata(ECommerceProduct::class);
+        $backing    = new ArrayCollection([new ECommerceProduct()]);
+        $collection = new PersistentCollection($this->_emMock, $class, $backing);
+
+        self::assertSame($backing, $collection->unwrap());
+        self::assertTrue($collection->isInitialized());
+        self::assertFalse($collection->isEmptyWithoutInitialization());
+    }
+
+    public function testUnownedExistingCollectionKeepsItsInitializationState(): void
+    {
+        $class      = $this->_emMock->getClassMetadata(ECommerceProduct::class);
+        $collection = new PersistentCollection($this->_emMock, $class, new ArrayCollection());
+        $collection->setInitialized(false);
+
+        self::assertCount(0, $collection);
+        self::assertFalse($collection->isInitialized());
+    }
+
+    public function testCheckingForEmptyStorageDoesNotInspectLazyBackingCollection(): void
+    {
+        $class   = $this->_emMock->getClassMetadata(ECommerceProduct::class);
+        $backing = $this->createMock(AbstractLazyCollection::class);
+        $backing->method('isInitialized')->willReturn(false);
+        $backing->expects(self::never())->method('isEmpty');
+        $collection = new PersistentCollection($this->_emMock, $class, $backing);
+
+        self::assertFalse($collection->isEmptyWithoutInitialization());
     }
 
     /**

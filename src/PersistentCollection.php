@@ -82,15 +82,15 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @param EntityManagerInterface $em        The EntityManager the collection will be associated with.
      * @param ClassMetadata          $typeClass The class descriptor of the entity type of this collection.
-     * @phpstan-param Collection<TKey, T>&Selectable<TKey, T> $collection The collection elements.
+     * @phpstan-param (Collection<TKey, T>&Selectable<TKey, T>)|null $collection The collection elements.
      */
     public function __construct(
         private EntityManagerInterface|null $em,
         private readonly ClassMetadata|null $typeClass,
-        Collection $collection,
+        Collection|null $collection,
     ) {
         $this->collection  = $collection;
-        $this->initialized = true;
+        $this->initialized = $collection !== null;
     }
 
     /**
@@ -181,7 +181,16 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      */
     public function initialize(): void
     {
-        if ($this->initialized || ! $this->association) {
+        if ($this->initialized) {
+            return;
+        }
+
+        if (! $this->association) {
+            if ($this->collection === null) {
+                $this->collection  = new ArrayCollection();
+                $this->initialized = true;
+            }
+
             return;
         }
 
@@ -605,15 +614,33 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     }
 
     /**
+     * Checks for in-memory elements without initializing the collection.
+     *
+     * @internal
+     */
+    public function isEmptyWithoutInitialization(): bool
+    {
+        if ($this->collection === null) {
+            return true;
+        }
+
+        // A lazy backing collection may issue a query even for isEmpty().
+        // Leave it to the existing unwrap/iteration path to inspect its contents.
+        if ($this->collection instanceof AbstractLazyCollection && ! $this->collection->isInitialized()) {
+            return false;
+        }
+
+        return $this->collection->isEmpty();
+    }
+
+    /**
      * Retrieves the wrapped Collection instance.
      *
      * @return Collection<TKey, T>&Selectable<TKey, T>
      */
     public function unwrap(): Selectable&Collection
     {
-        assert($this->collection instanceof Collection);
-
-        return $this->collection;
+        return $this->collection ??= new ArrayCollection();
     }
 
     protected function doInitialize(): void
