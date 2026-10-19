@@ -306,6 +306,10 @@ class DefaultQueryCache implements QueryCache
 
         // Handle *-to-one associations
         if ($assoc->isToOne()) {
+            if (! $this->uow->isInIdentityMap($assocValue) || $this->uow->isScheduledForInsert($assocValue)) {
+                return null;
+            }
+
             $assocIdentifier = $this->uow->getEntityIdentifier($assocValue);
             $entityKey       = new EntityCacheKey($assocMetadata->rootEntityName, $assocIdentifier);
 
@@ -327,6 +331,10 @@ class DefaultQueryCache implements QueryCache
         $list = [];
 
         foreach ($assocValue as $assocItemIndex => $assocItem) {
+            if (! $this->uow->isInIdentityMap($assocItem) || $this->uow->isScheduledForInsert($assocItem)) {
+                return null;
+            }
+
             $assocIdentifier = $this->uow->getEntityIdentifier($assocItem);
             $entityKey       = new EntityCacheKey($assocMetadata->rootEntityName, $assocIdentifier);
 

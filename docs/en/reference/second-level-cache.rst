@@ -316,6 +316,11 @@ Association cache definition
 The most common use case is to cache entities. But we can also cache relationships.
 It caches the primary keys of association and cache each element will be cached into its region.
 
+If a fetched association references a new entity that has not been flushed,
+the result is returned normally but is not stored in the second-level query
+cache. This also applies to pending inserts with assigned identifiers. Once the
+associated entities have been flushed, subsequent query results can be cached.
+
 
 .. configuration-block::
 
