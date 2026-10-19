@@ -28,10 +28,13 @@ use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\Utility\IdentifierFlattener;
 use SortDirection;
 
 use function array_merge;
 use function func_get_args;
+use function is_object;
+use function reset;
 use function serialize;
 use function sha1;
 
@@ -41,6 +44,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
 
     protected UnitOfWork $uow;
     protected ClassMetadataFactory $metadataFactory;
+    private readonly IdentifierFlattener $identifierFlattener;
 
     /** @var mixed[] */
     protected array $queuedCache = [];
@@ -79,6 +83,8 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $this->timestampRegion = $cacheFactory->getTimestampRegion();
         $this->hydrator        = $cacheFactory->buildEntityHydrator($em, $class);
         $this->timestampKey    = new TimestampCacheKey($this->class->rootEntityName);
+
+        $this->identifierFlattener = new IdentifierFlattener($this->uow, $this->metadataFactory);
     }
 
     public function addInsert(object $entity): void
@@ -132,7 +138,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     public function exists(object $entity, Criteria|null $extraConditions = null): bool
     {
         if ($extraConditions === null) {
-            $key = new EntityCacheKey($this->class->rootEntityName, $this->class->getIdentifierValues($entity));
+            $key = new EntityCacheKey($this->class->rootEntityName, $this->normalizeCacheIdentifier($this->class->getIdentifierValues($entity)));
 
             if ($this->region->contains($key)) {
                 return true;
@@ -374,11 +380,35 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     }
 
     /**
+     * @param array<string, mixed> $identifier
+     *
+     * @return array<string, mixed>
+     */
+    private function normalizeCacheIdentifier(array $identifier): array
+    {
+        if (! $this->class->containsForeignIdentifier) {
+            return $identifier;
+        }
+
+        foreach ($identifier as $field => $value) {
+            if (! is_object($value) || ! isset($this->class->associationMappings[$field])) {
+                continue;
+            }
+
+            $target             = $this->metadataFactory->getMetadataFor($this->class->associationMappings[$field]->targetEntity);
+            $targetIdentifier   = $this->identifierFlattener->flattenIdentifier($target, $target->getIdentifierValues($value));
+            $identifier[$field] = reset($targetIdentifier);
+        }
+
+        return $identifier;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function loadById(array $identifier, object|null $entity = null): object|null
     {
-        $cacheKey   = new EntityCacheKey($this->class->rootEntityName, $identifier);
+        $cacheKey   = new EntityCacheKey($this->class->rootEntityName, $this->normalizeCacheIdentifier($identifier));
         $cacheEntry = $this->region->get($cacheKey);
         $class      = $this->class;
 

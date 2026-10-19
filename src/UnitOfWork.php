@@ -3475,11 +3475,13 @@ class UnitOfWork implements PropertyChangedListener
      * Given a flat identifier, this method will produce another flat identifier, but with all
      * association fields that are mapped as identifiers replaced by entity references, recursively.
      *
+     * @internal
+     *
      * @param mixed[] $flatIdentifier
      *
      * @return array<string, mixed>
      */
-    private function normalizeIdentifier(ClassMetadata $targetClass, array $flatIdentifier): array
+    public function normalizeIdentifier(ClassMetadata $targetClass, array $flatIdentifier): array
     {
         $normalizedAssociatedId = [];
 
