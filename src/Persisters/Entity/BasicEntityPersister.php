@@ -1892,15 +1892,25 @@ class BasicEntityPersister implements EntityPersister
             if (is_array($value)) {
                 $nonNullValues = array_diff_key($value, array_flip(array_keys($value, null, true)));
                 foreach ($nonNullValues as $item) {
-                    $types  = [...$types, ...PersisterHelper::inferParameterTypes($field, $item, $this->class, $this->em)];
-                    $params = [...$params, ...PersisterHelper::convertToParameterValue($item, $this->em)];
+                    foreach (PersisterHelper::inferParameterTypes($field, $item, $this->class, $this->em) as $type) {
+                        $types[] = $type;
+                    }
+
+                    foreach (PersisterHelper::convertToParameterValue($item, $this->em) as $parameter) {
+                        $params[] = $parameter;
+                    }
                 }
 
                 continue;
             }
 
-            $types  = [...$types, ...PersisterHelper::inferParameterTypes($field, $value, $this->class, $this->em)];
-            $params = [...$params, ...PersisterHelper::convertToParameterValue($value, $this->em)];
+            foreach (PersisterHelper::inferParameterTypes($field, $value, $this->class, $this->em) as $type) {
+                $types[] = $type;
+            }
+
+            foreach (PersisterHelper::convertToParameterValue($value, $this->em) as $parameter) {
+                $params[] = $parameter;
+            }
         }
 
         return [$params, $types];
