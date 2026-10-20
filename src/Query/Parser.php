@@ -81,6 +81,23 @@ final class Parser
         'bit_and'   => Functions\BitAndFunction::class,
         'bit_or'    => Functions\BitOrFunction::class,
 
+        // Spatial functions
+        'st_area'       => Functions\StAreaFunction::class,
+        'st_contains'   => Functions\StContainsFunction::class,
+        'st_crosses'    => Functions\StCrossesFunction::class,
+        'st_disjoint'   => Functions\StDisjointFunction::class,
+        'st_distance'   => Functions\StDistanceFunction::class,
+        'st_dwithin'    => Functions\StDWithinFunction::class,
+        'st_equals'     => Functions\StEqualsFunction::class,
+        'st_intersects' => Functions\StIntersectsFunction::class,
+        'st_length'     => Functions\StLengthFunction::class,
+        'st_overlaps'   => Functions\StOverlapsFunction::class,
+        'st_srid'       => Functions\StSridFunction::class,
+        'st_touches'    => Functions\StTouchesFunction::class,
+        'st_within'     => Functions\StWithinFunction::class,
+        'st_x'          => Functions\StXFunction::class,
+        'st_y'          => Functions\StYFunction::class,
+
         // Aggregate functions
         'min'       => Functions\MinFunction::class,
         'max'       => Functions\MaxFunction::class,

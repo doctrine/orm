@@ -10,6 +10,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Spatial\Geometry;
 use Doctrine\DBAL\Types\Types;
 
 use function current;
@@ -49,6 +50,10 @@ final class ParameterTypeInferer
 
         if ($value instanceof DateInterval) {
             return Types::DATEINTERVAL;
+        }
+
+        if ($value instanceof Geometry) {
+            return Types::GEOMETRY;
         }
 
         if ($value instanceof BackedEnum) {

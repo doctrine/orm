@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
+use Doctrine\DBAL\Platforms\SQLServerPlatform;
+use Doctrine\DBAL\Spatial\Geometry;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Column;
@@ -33,8 +36,11 @@ use Doctrine\Tests\OrmTestCase;
 use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RequiresMethod;
 
 use function class_exists;
+use function str_contains;
+use function strtoupper;
 
 // DBAL 3 compatibility
 class_exists('Doctrine\\DBAL\\Platforms\\SqlitePlatform');
@@ -1108,6 +1114,71 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT MYABS(p.phonenumber) FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p',
             'SELECT ABS(c0_.phonenumber) AS sclr_0 FROM cms_phonenumbers c0_',
+        );
+
+        $config->setCustomNumericFunctions([]);
+    }
+
+    #[DataProvider('spatialFunctionProvider')]
+    #[RequiresMethod(AbstractPlatform::class, 'getSpatialRelationExpression')]
+    public function testSpatialFunctions(string $dqlCondition, string $sqlCondition): void
+    {
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new PostgreSQLPlatform());
+
+        $this->assertSqlGeneration(
+            'SELECT p.name FROM Doctrine\Tests\Models\Spatial\Place p WHERE ' . $dqlCondition,
+            'SELECT s0_.name AS name_0 FROM spatial_places s0_ WHERE ' . $sqlCondition,
+            [],
+            str_contains($dqlCondition, ':point') ? ['point' => Geometry::point(1, 2, 4326)] : [],
+        );
+    }
+
+    /** @return iterable<string, array{string, string}> */
+    public static function spatialFunctionProvider(): iterable
+    {
+        foreach (['Contains', 'Crosses', 'Disjoint', 'Equals', 'Intersects', 'Overlaps', 'Touches', 'Within'] as $name) {
+            yield 'ST_' . strtoupper($name) => [
+                'ST_' . strtoupper($name) . '(p.area, :point) = true',
+                'ST_' . $name . '(s0_.area, CAST(? AS geometry)) = true',
+            ];
+        }
+
+        yield 'ST_DWITHIN' => [
+            'ST_DWITHIN(p.location, :point, 0.5 * 2) = true',
+            'ST_DWithin(s0_.location, CAST(? AS geometry), 0.5 * 2) = true',
+        ];
+
+        yield 'ST_DISTANCE' => [
+            'ST_DISTANCE(p.location, :point) < 1',
+            'ST_Distance(s0_.location, CAST(? AS geometry)) < 1',
+        ];
+
+        yield 'ST_AREA' => ['ST_AREA(p.area) > 1', 'ST_Area(s0_.area) > 1'];
+        yield 'ST_LENGTH' => ['ST_LENGTH(p.area) > 1', 'ST_Length(s0_.area) > 1'];
+        yield 'ST_X' => ['ST_X(p.location) > 1', 'ST_X(s0_.location) > 1'];
+        yield 'ST_Y' => ['ST_Y(p.location) > 1', 'ST_Y(s0_.location) > 1'];
+        yield 'ST_SRID' => ['ST_SRID(p.location) = 4326', 'ST_SRID(s0_.location) = 4326'];
+    }
+
+    #[RequiresMethod(AbstractPlatform::class, 'getSpatialRelationExpression')]
+    public function testSpatialFunctionsAreGeneratedByThePlatform(): void
+    {
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new SQLServerPlatform());
+
+        $this->assertSqlGeneration(
+            'SELECT ST_DISTANCE(p.location, p.area) FROM Doctrine\Tests\Models\Spatial\Place p',
+            'SELECT (s0_.location).STDistance(s0_.area) AS sclr_0 FROM spatial_places s0_',
+        );
+    }
+
+    public function testCustomFunctionsTakePrecedenceOverSpatialFunctions(): void
+    {
+        $config = $this->entityManager->getConfiguration();
+        $config->addCustomNumericFunction('ST_X', MyAbsFunction::class);
+
+        $this->assertSqlGeneration(
+            'SELECT ST_X(p.id) FROM Doctrine\Tests\Models\Spatial\Place p',
+            'SELECT ABS(s0_.id) AS sclr_0 FROM spatial_places s0_',
         );
 
         $config->setCustomNumericFunctions([]);

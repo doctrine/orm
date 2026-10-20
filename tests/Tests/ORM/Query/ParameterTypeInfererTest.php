@@ -9,6 +9,7 @@ use DateTime;
 use DateTimeImmutable;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Spatial\Geometry;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\Tests\Models\Enums\AccessLevel;
@@ -16,6 +17,7 @@ use Doctrine\Tests\Models\Enums\UserStatus;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresMethod;
 
 class ParameterTypeInfererTest extends OrmTestCase
 {
@@ -43,5 +45,11 @@ class ParameterTypeInfererTest extends OrmTestCase
     public function testParameterTypeInferer(mixed $value, ParameterType|ArrayParameterType|int|string $expected): void
     {
         self::assertEquals($expected, ParameterTypeInferer::inferType($value));
+    }
+
+    #[RequiresMethod(Geometry::class, 'point')]
+    public function testGeometryParameterTypeInferer(): void
+    {
+        self::assertSame(Types::GEOMETRY, ParameterTypeInferer::inferType(Geometry::point(1, 2)));
     }
 }

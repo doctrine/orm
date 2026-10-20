@@ -852,6 +852,48 @@ clauses:
 -  ``DATE_DIFF(date1, date2)`` - Calculate the difference in days
    between date1-date2.
 
+Spatial functions
+~~~~~~~~~~~~~~~~~
+
+The following functions apply to fields and parameters of the ``geometry``
+type of DBAL, which requires PostGIS on PostgreSQL, SpatiaLite on SQLite and
+Spatial Analytics on Db2:
+
+-  ``ST_CONTAINS(geometry1, geometry2)``, ``ST_CROSSES(geometry1, geometry2)``,
+   ``ST_DISJOINT(geometry1, geometry2)``, ``ST_EQUALS(geometry1, geometry2)``,
+   ``ST_INTERSECTS(geometry1, geometry2)``, ``ST_OVERLAPS(geometry1, geometry2)``,
+   ``ST_TOUCHES(geometry1, geometry2)`` and ``ST_WITHIN(geometry1, geometry2)`` -
+   Test whether two geometries are in the given spatial relationship of the
+   OGC Simple Features specification.
+-  ``ST_DWITHIN(geometry1, geometry2, distance)`` - Test whether two geometries
+   are within the given distance of each other.
+-  ``ST_DISTANCE(geometry1, geometry2)`` - Return the distance between two
+   geometries.
+-  ``ST_AREA(geometry)`` - Return the area of a polygon or a multi-polygon.
+-  ``ST_LENGTH(geometry)`` - Return the length of a line string or a
+   multi-line string.
+-  ``ST_X(point)`` and ``ST_Y(point)`` - Return the coordinates of a point.
+-  ``ST_SRID(geometry)`` - Return the SRID of a geometry.
+
+The tests return booleans, which have to be compared with ``true`` in
+conditions. The parameters holding a ``Doctrine\DBAL\Spatial\Geometry`` are
+bound with the ``geometry`` type:
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\DBAL\Spatial\Geometry;
+
+    $query = $em->createQuery('SELECT p FROM Place p WHERE ST_DWITHIN(p.location, :here, 0.01) = true');
+    $query->setParameter('here', Geometry::point(2.3522219, 48.856614, 4326));
+    $places = $query->getResult();
+
+The measures are computed in the plane of the coordinates and are expressed
+in their unit, whatever the spatial reference system: for instance, the
+distance between two longitude and latitude pairs is expressed in degrees.
+The geometries must have the same SRID. The documentation of DBAL details the
+behavior of each database.
+
 Arithmetic operators
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -1857,7 +1899,14 @@ Functions
             "SIZE" "(" CollectionValuedPathExpression ")" |
             "DATE_DIFF" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
             "BIT_AND" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
-            "BIT_OR" "(" ArithmeticPrimary "," ArithmeticPrimary ")"
+            "BIT_OR" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
+            SpatialFunction
+
+    SpatialFunction ::=
+            ("ST_CONTAINS" | "ST_CROSSES" | "ST_DISJOINT" | "ST_DISTANCE" | "ST_EQUALS" | "ST_INTERSECTS" |
+                "ST_OVERLAPS" | "ST_TOUCHES" | "ST_WITHIN") "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
+            "ST_DWITHIN" "(" ArithmeticPrimary "," ArithmeticPrimary "," SimpleArithmeticExpression ")" |
+            ("ST_AREA" | "ST_LENGTH" | "ST_SRID" | "ST_X" | "ST_Y") "(" ArithmeticPrimary ")"
 
     FunctionsReturningDatetime ::=
             "CURRENT_DATE" |
