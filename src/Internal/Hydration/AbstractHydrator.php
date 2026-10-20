@@ -405,7 +405,7 @@ abstract class AbstractHydrator
      * @phpstan-param array<string, mixed> $data
      *
      * @return mixed[] The processed row.
-     * @phpstan-return array<string, mixed>
+     * @phpstan-return array<string|int, mixed>
      */
     protected function gatherScalarRowData(array &$data): array
     {
