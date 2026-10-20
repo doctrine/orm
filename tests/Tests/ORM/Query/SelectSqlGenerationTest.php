@@ -1158,6 +1158,29 @@ class SelectSqlGenerationTest extends OrmTestCase
         yield 'ST_X' => ['ST_X(p.location) > 1', 'ST_X(s0_.location) > 1'];
         yield 'ST_Y' => ['ST_Y(p.location) > 1', 'ST_Y(s0_.location) > 1'];
         yield 'ST_SRID' => ['ST_SRID(p.location) = 4326', 'ST_SRID(s0_.location) = 4326'];
+
+        $geography = 'CAST(s0_.location AS geography)';
+        $parameter = 'CAST(CAST(? AS geometry) AS geography)';
+
+        yield 'ST_GEODESIC_DISTANCE' => [
+            'ST_GEODESIC_DISTANCE(p.location, :point) < 1000',
+            'ST_Distance(' . $geography . ', ' . $parameter . ') < 1000',
+        ];
+
+        yield 'ST_GEODESIC_DWITHIN' => [
+            'ST_GEODESIC_DWITHIN(p.location, :point, 1000) = true',
+            'ST_DWithin(' . $geography . ', ' . $parameter . ', 1000) = true',
+        ];
+
+        yield 'ST_GEODESIC_AREA' => [
+            'ST_GEODESIC_AREA(p.area) > 1',
+            'ST_Area(CAST(s0_.area AS geography)) > 1',
+        ];
+
+        yield 'ST_GEODESIC_LENGTH' => [
+            'ST_GEODESIC_LENGTH(p.area) > 1',
+            'ST_Length(CAST(s0_.area AS geography)) > 1',
+        ];
     }
 
     #[RequiresMethod(AbstractPlatform::class, 'getSpatialRelationExpression')]

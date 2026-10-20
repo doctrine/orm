@@ -874,6 +874,11 @@ Spatial Analytics on Db2:
    multi-line string.
 -  ``ST_X(point)`` and ``ST_Y(point)`` - Return the coordinates of a point.
 -  ``ST_SRID(geometry)`` - Return the SRID of a geometry.
+-  ``ST_GEODESIC_DISTANCE(geometry1, geometry2)``,
+   ``ST_GEODESIC_DWITHIN(geometry1, geometry2, distance)``,
+   ``ST_GEODESIC_AREA(geometry)`` and ``ST_GEODESIC_LENGTH(geometry)`` - Measure
+   geometries in meters on the Earth, their coordinates being interpreted as
+   longitudes and latitudes on the WGS 84 ellipsoid.
 
 The tests return booleans, which have to be compared with ``true`` in
 conditions. The parameters holding a ``Doctrine\DBAL\Spatial\Geometry`` are
@@ -884,13 +889,13 @@ bound with the ``geometry`` type:
     <?php
     use Doctrine\DBAL\Spatial\Geometry;
 
-    $query = $em->createQuery('SELECT p FROM Place p WHERE ST_DWITHIN(p.location, :here, 0.01) = true');
+    $query = $em->createQuery('SELECT p FROM Place p WHERE ST_GEODESIC_DWITHIN(p.location, :here, 1000) = true');
     $query->setParameter('here', Geometry::point(2.3522219, 48.856614, 4326));
     $places = $query->getResult();
 
-The measures are computed in the plane of the coordinates and are expressed
-in their unit, whatever the spatial reference system: for instance, the
-distance between two longitude and latitude pairs is expressed in degrees.
+The other measures are computed in the plane of the coordinates and are
+expressed in their unit, whatever the spatial reference system: for instance,
+the distance between two longitude and latitude pairs is expressed in degrees.
 The geometries must have the same SRID. The documentation of DBAL details the
 behavior of each database.
 
@@ -1905,8 +1910,9 @@ Functions
     SpatialFunction ::=
             ("ST_CONTAINS" | "ST_CROSSES" | "ST_DISJOINT" | "ST_DISTANCE" | "ST_EQUALS" | "ST_INTERSECTS" |
                 "ST_OVERLAPS" | "ST_TOUCHES" | "ST_WITHIN") "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
-            "ST_DWITHIN" "(" ArithmeticPrimary "," ArithmeticPrimary "," SimpleArithmeticExpression ")" |
-            ("ST_AREA" | "ST_LENGTH" | "ST_SRID" | "ST_X" | "ST_Y") "(" ArithmeticPrimary ")"
+            ("ST_DWITHIN" | "ST_GEODESIC_DWITHIN") "(" ArithmeticPrimary "," ArithmeticPrimary "," SimpleArithmeticExpression ")" |
+            "ST_GEODESIC_DISTANCE" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
+            ("ST_AREA" | "ST_GEODESIC_AREA" | "ST_GEODESIC_LENGTH" | "ST_LENGTH" | "ST_SRID" | "ST_X" | "ST_Y") "(" ArithmeticPrimary ")"
 
     FunctionsReturningDatetime ::=
             "CURRENT_DATE" |

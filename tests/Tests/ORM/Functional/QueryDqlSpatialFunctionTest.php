@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Exception\DriverException;
+use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
 use Doctrine\DBAL\Platforms\DB2Platform;
 use Doctrine\DBAL\Platforms\Exception\NotSupported;
+use Doctrine\DBAL\Platforms\MySQL80Platform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\DBAL\Spatial\Geometry;
@@ -135,6 +137,49 @@ class QueryDqlSpatialFunctionTest extends OrmFunctionalTestCase
         self::assertSame(4326, $result['srid']);
         self::assertEqualsWithDelta(0.03, $result['area'], 1e-9);
         self::assertEqualsWithDelta(5.0, $result['length'], 1e-9);
+    }
+
+    public function testGeodesicFunctions(): void
+    {
+        $platform = static::$sharedConn->getDatabasePlatform();
+
+        // the geodesic functions of SpatiaLite read the ellipsoids from its spatial_ref_sys table
+        if (
+            $platform instanceof SQLitePlatform
+            && static::$sharedConn->fetchOne("SELECT 1 FROM sqlite_master WHERE name = 'spatial_ref_sys'") === false
+        ) {
+            static::$sharedConn->executeQuery("SELECT InitSpatialMetadata(1, 'WGS84_ONLY')");
+        }
+
+        $names = $this->_em->createQuery(sprintf(
+            'SELECT p.name FROM %s p WHERE ST_GEODESIC_DWITHIN(p.location, :paris, 350000) = true ORDER BY p.name',
+            Place::class,
+        ))
+            ->setParameter('paris', Geometry::point(2.3522, 48.8566, 4326))
+            ->getSingleColumnResult();
+
+        self::assertSame(['London', 'Paris'], $names);
+
+        $distance = $this->_em->createQuery(sprintf(
+            'SELECT ST_GEODESIC_DISTANCE(p.location, :paris) FROM %s p WHERE p.id = 3',
+            Place::class,
+        ))
+            ->setParameter('paris', Geometry::point(2.3522, 48.8566, 4326))
+            ->getSingleScalarResult();
+
+        // MySQL 5.7 and MariaDB compute on a sphere
+        self::assertEqualsWithDelta(879699.316, $distance, 879699.316 * 0.005);
+
+        if ($platform instanceof AbstractMySQLPlatform && ! $platform instanceof MySQL80Platform) {
+            return;
+        }
+
+        $area = $this->_em->createQuery(sprintf(
+            'SELECT ST_GEODESIC_AREA(p.area) FROM %s p WHERE p.id = 1',
+            Place::class,
+        ))->getSingleScalarResult();
+
+        self::assertEqualsWithDelta(244847896.807, $area, 244847896.807 * 0.001);
     }
 
     public function testEntityHydration(): void
