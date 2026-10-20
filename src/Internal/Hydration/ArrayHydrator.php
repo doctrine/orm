@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use BackedEnum;
+use Doctrine\DBAL\Types\Type;
+
 use function array_key_last;
+use function array_unique;
 use function count;
 use function is_array;
 use function key;
@@ -32,8 +36,84 @@ class ArrayHydrator extends AbstractHydrator
 
     private int $resultCounter = 0;
 
+    /** @var array<string, array{string, Type|null, bool, class-string<BackedEnum>|null}> */
+    private array $simpleColumns = [];
+
+    protected function cleanup(): void
+    {
+        parent::cleanup();
+
+        $this->simpleColumns = [];
+    }
+
+    private function prepareSimpleColumns(): void
+    {
+        $rsm                 = $this->resultSetMapping();
+        $this->simpleColumns = [];
+
+        // Graph construction and duplicate-field resolution still use the general path.
+        if (
+            count($rsm->aliasMap) !== 1 || $rsm->isMixed || $rsm->fieldMappings === [] ||
+            $rsm->parentAliasMap !== [] || $rsm->relationMap !== [] || $rsm->indexByMap !== [] ||
+            $rsm->scalarMappings !== [] || $rsm->metaMappings !== [] ||
+            $rsm->newObjectMappings !== [] || $rsm->newObject !== [] ||
+            $rsm->nestedNewObjectArguments !== [] ||
+            count(array_unique($rsm->fieldMappings)) !== count($rsm->fieldMappings)
+        ) {
+            return;
+        }
+
+        $className = reset($rsm->aliasMap);
+        if (! $this->getClassMetadata($className)->isInheritanceTypeNone()) {
+            return;
+        }
+
+        foreach ($rsm->fieldMappings as $column => $fieldName) {
+            $info = $this->hydrateColumnInfo($column);
+            if ($info === null) {
+                continue;
+            }
+
+            $this->simpleColumns[$column] = [$fieldName, $info['type'], $info['isIdentifier'], $info['enumType'] ?? null];
+            unset($this->cache[$column]);
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     * @param mixed[]              $result
+     */
+    private function hydrateSimpleRow(array $row, array &$result): void
+    {
+        $data     = [];
+        $nonempty = false;
+
+        foreach ($row as $column => $value) {
+            if (! isset($this->simpleColumns[$column])) {
+                continue;
+            }
+
+            [$fieldName, $type, $isIdentifier, $enumType] = $this->simpleColumns[$column];
+            if ($isIdentifier && $value !== null) {
+                $nonempty = true;
+            }
+
+            $value            = $type === null ? $value : $type->convertToPHPValue($value, $this->platform);
+            $data[$fieldName] = $value !== null && $enumType !== null ? $this->buildEnum($value, $enumType) : $value;
+        }
+
+        if ($data !== []) {
+            $result[] = $nonempty ? $data : null;
+        }
+    }
+
     protected function prepare(): void
     {
+        $this->prepareSimpleColumns();
+        if ($this->simpleColumns !== []) {
+            return;
+        }
+
         $this->isSimpleQuery = count($this->resultSetMapping()->aliasMap) <= 1;
 
         foreach ($this->resultSetMapping()->aliasMap as $dqlAlias => $className) {
@@ -62,6 +142,12 @@ class ArrayHydrator extends AbstractHydrator
      */
     protected function hydrateRowData(array $row, array &$result): void
     {
+        if ($this->simpleColumns !== []) {
+            $this->hydrateSimpleRow($row, $result);
+
+            return;
+        }
+
         // 1) Initialize
         $id                 = $this->idTemplate; // initialize the id-memory
         $nonemptyComponents = [];
