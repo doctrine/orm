@@ -57,6 +57,18 @@ class AttributeDriverTest extends MappingDriverTestCase
         self::assertEquals(['assoz_id', 'assoz_id'], $metadata->associationMappings['assoc']->joinTableColumns);
     }
 
+    public function testVersionFieldTypeIsInferredFromTypedProperty(): void
+    {
+        $factory = $this->createClassMetadataFactory();
+
+        $metadata = $factory->getMetadataFor(AttributeEntityWithTypedVersion::class);
+
+        self::assertTrue($metadata->isVersioned);
+        self::assertSame('version', $metadata->versionField);
+        self::assertSame('integer', $metadata->getTypeOfField('version'));
+        self::assertSame(1, $metadata->fieldMappings['version']->options['default']);
+    }
+
     public function testIsTransient(): void
     {
         $driver = $this->loadDriver();
@@ -138,6 +150,18 @@ class AttributeEntityWithoutOriginalParents
     #[ORM\JoinColumn(name: 'assoz_id', referencedColumnName: 'assoz_id')]
     #[ORM\InverseJoinColumn(name: 'assoz_id', referencedColumnName: 'assoz_id')]
     public $assoc;
+}
+
+#[ORM\Entity]
+class AttributeEntityWithTypedVersion
+{
+    #[ORM\Id]
+    #[ORM\Column]
+    public int $id;
+
+    #[ORM\Version]
+    #[ORM\Column]
+    public int $version;
 }
 
 #[ORM\Index(name: 'bar', columns: ['id'])]

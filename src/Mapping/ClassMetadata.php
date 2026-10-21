@@ -2510,6 +2510,18 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         $this->versionField             = $mapping['fieldName'];
         $this->requiresFetchAfterChange = true;
 
+        // Drivers call this before mapField(), which would infer the type from the typed property.
+        if (! isset($mapping['type'])) {
+            $fieldName = $mapping['fieldName'];
+            assert(is_string($fieldName));
+
+            if ($this->isTypedProperty($fieldName)) {
+                $mapping['type'] = $this->validateAndCompleteTypedFieldMapping(['fieldName' => $fieldName])['type'] ?? null;
+            }
+
+            $mapping['type'] ??= 'string';
+        }
+
         if (! isset($mapping['default'])) {
             if (in_array($mapping['type'], ['integer', 'bigint', 'smallint'], true)) {
                 $mapping['options']['default'] = 1;
