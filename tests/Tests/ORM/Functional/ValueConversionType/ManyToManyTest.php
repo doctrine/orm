@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\ValueConversionType as Entity;
 use Doctrine\Tests\Models\ValueConversionType\InversedManyToManyEntity;
 use Doctrine\Tests\Models\ValueConversionType\OwningManyToManyEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\Attributes\Group;
 
@@ -20,6 +22,48 @@ use PHPUnit\Framework\Attributes\Group;
 #[Group('DDC-3380')]
 class ManyToManyTest extends OrmFunctionalTestCase
 {
+    /** @return iterable<string, array{bool}> */
+    public static function associationSides(): iterable
+    {
+        yield 'owning side' => [false];
+        yield 'inverse side' => [true];
+    }
+
+    #[DataProvider('associationSides')]
+    #[Group('non-cacheable')]
+    public function testBatchEagerFetchConvertsIdentifiers(bool $inverse): void
+    {
+        $owning   = $this->_em->find(OwningManyToManyEntity::class, 'def');
+        $inversed = $this->_em->find(InversedManyToManyEntity::class, 'abc');
+
+        $otherOwning      = new OwningManyToManyEntity();
+        $otherOwning->id2 = 'ghi';
+        $otherOwning->associatedEntities->add($inversed);
+        $otherInversed      = new InversedManyToManyEntity();
+        $otherInversed->id1 = 'jkl';
+        $owning->associatedEntities->add($otherInversed);
+        $this->_em->persist($otherOwning);
+        $this->_em->persist($otherInversed);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $class   = $inverse ? InversedManyToManyEntity::class : OwningManyToManyEntity::class;
+        $idField = $inverse ? 'id1' : 'id2';
+        $query   = $this->_em->createQuery('SELECT e FROM ' . $class . ' e ORDER BY e.' . $idField);
+        $query->setFetchMode($class, 'associatedEntities', ClassMetadata::FETCH_EAGER);
+
+        $this->getQueryLog()->reset()->enable();
+        $entities = $query->getResult();
+
+        self::assertCount(2, $entities);
+        self::assertSame($inverse ? 'abc' : 'def', $entities[0]->$idField);
+        self::assertSame($inverse ? 'jkl' : 'ghi', $entities[1]->$idField);
+        self::assertCount(2, $entities[0]->associatedEntities);
+        self::assertCount(1, $entities[1]->associatedEntities);
+        self::assertTrue($entities[0]->associatedEntities->contains($entities[1]->associatedEntities->first()));
+        $this->assertQueryCount(2);
+    }
+
     protected function setUp(): void
     {
         $this->useModelSet('vct_manytomany');

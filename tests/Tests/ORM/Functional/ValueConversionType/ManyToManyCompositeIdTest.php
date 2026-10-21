@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\ValueConversionType as Entity;
 use Doctrine\Tests\Models\ValueConversionType\InversedManyToManyCompositeIdEntity;
 use Doctrine\Tests\Models\ValueConversionType\OwningManyToManyCompositeIdEntity;
@@ -20,6 +21,24 @@ use PHPUnit\Framework\Attributes\Group;
 #[Group('DDC-3380')]
 class ManyToManyCompositeIdTest extends OrmFunctionalTestCase
 {
+    #[Group('non-cacheable')]
+    public function testEagerFetchWithCompositeIdentifiers(): void
+    {
+        foreach ([OwningManyToManyCompositeIdEntity::class, InversedManyToManyCompositeIdEntity::class] as $class) {
+            $query = $this->_em->createQuery('SELECT e FROM ' . $class . ' e');
+            $query->setFetchMode($class, 'associatedEntities', ClassMetadata::FETCH_EAGER);
+            $this->getQueryLog()->reset()->enable();
+
+            $entities = $query->getResult();
+
+            self::assertCount(1, $entities);
+            self::assertTrue($entities[0]->associatedEntities->isInitialized());
+            self::assertCount(1, $entities[0]->associatedEntities);
+            $this->assertQueryCount(2);
+            $this->_em->clear();
+        }
+    }
+
     protected function setUp(): void
     {
         $this->useModelSet('vct_manytomany_compositeid');
