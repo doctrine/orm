@@ -563,11 +563,13 @@ class QueryBuilder implements Stringable
     {
         $key = Parameter::normalizeName($key);
 
-        $filteredParameters = $this->parameters->filter(
-            static fn (Parameter $parameter): bool => $key === $parameter->getName(),
-        );
+        foreach ($this->parameters->toArray() as $parameter) {
+            if ($parameter->getName() === $key) {
+                return $parameter;
+            }
+        }
 
-        return ! $filteredParameters->isEmpty() ? $filteredParameters->first() : null;
+        return null;
     }
 
     /**

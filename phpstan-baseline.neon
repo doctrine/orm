@@ -1,12 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Method Doctrine\\ORM\\AbstractQuery\:\:getParameter\(\) should return Doctrine\\ORM\\Query\\Parameter\|null but returns Doctrine\\ORM\\Query\\Parameter\|false\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: src/AbstractQuery.php
-
-		-
 			message: '#^Parameter \#1 \$stmt of method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:toIterable\(\) expects Doctrine\\DBAL\\Result, Doctrine\\DBAL\\Result\|int given\.$#'
 			identifier: argument.type
 			count: 1
@@ -2511,12 +2505,6 @@ parameters:
 		-
 			message: '#^Argument of an invalid type array\<int\|string, array\<int\|string, object\>\|object\|string\>\|object\|string\|false supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
-			count: 1
-			path: src/QueryBuilder.php
-
-		-
-			message: '#^Method Doctrine\\ORM\\QueryBuilder\:\:getParameter\(\) should return Doctrine\\ORM\\Query\\Parameter\|null but returns Doctrine\\ORM\\Query\\Parameter\|false\|null\.$#'
-			identifier: return.type
 			count: 1
 			path: src/QueryBuilder.php
 
