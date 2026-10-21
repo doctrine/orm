@@ -122,6 +122,20 @@ class QueryDqlSpatialFunctionTest extends OrmFunctionalTestCase
         self::assertEqualsWithDelta(11.644092382, $result[2]['distance'], 1e-8);
     }
 
+    public function testNearestNeighbours(): void
+    {
+        $names = $this->_em->createQuery(sprintf(
+            'SELECT p.name FROM %s p WHERE ST_DISTANCE(p.location, :here) IS NOT NULL'
+                . ' ORDER BY ST_DISTANCE(p.location, :here)',
+            Place::class,
+        ))
+            ->setParameter('here', Geometry::point(0, 51, 4326))
+            ->setMaxResults(2)
+            ->getSingleColumnResult();
+
+        self::assertSame(['London', 'Paris'], $names);
+    }
+
     public function testMeasuresAndCoordinates(): void
     {
         $result = $this->_em->createQuery(sprintf(

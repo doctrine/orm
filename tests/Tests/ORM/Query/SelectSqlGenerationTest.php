@@ -1150,7 +1150,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
         yield 'ST_DISTANCE' => [
             'ST_DISTANCE(p.location, :point) < 1',
-            'ST_Distance(s0_.location, CAST(? AS geometry)) < 1',
+            '(s0_.location <-> CAST(? AS geometry)) < 1',
         ];
 
         yield 'ST_AREA' => ['ST_AREA(p.area) > 1', 'ST_Area(s0_.area) > 1'];
