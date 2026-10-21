@@ -8,6 +8,7 @@ use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
 use Doctrine\DBAL\Platforms\DB2Platform;
 use Doctrine\DBAL\Platforms\Exception\NotSupported;
+use Doctrine\DBAL\Platforms\MariaDBPlatform;
 use Doctrine\DBAL\Platforms\MySQL80Platform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
@@ -177,6 +178,28 @@ class QueryDqlSpatialFunctionTest extends OrmFunctionalTestCase
         self::assertEqualsWithDelta([2.35, 48.85], $result['centroid']->getCoordinates(), 1e-9);
         self::assertEqualsWithDelta(0.03, $result['hull'], 1e-9);
         self::assertEqualsWithDelta(0.03, $result['envelope'], 1e-9);
+    }
+
+    public function testGeometryTypeEmptinessAndValidity(): void
+    {
+        $platform = static::$sharedConn->getDatabasePlatform();
+        $validity = $platform instanceof MariaDBPlatform ? '' : ', ST_ISVALID(p.area) AS valid';
+
+        $result = $this->_em->createQuery(sprintf(
+            'SELECT ST_GEOMETRYTYPE(p.area) AS kind, ST_ISEMPTY(p.area) AS empty%s FROM %s p'
+                . " WHERE ST_GEOMETRYTYPE(p.location) = 'POINT' AND p.id = 1",
+            $validity,
+            Place::class,
+        ))->getSingleResult();
+
+        self::assertSame('POLYGON', $result['kind']);
+        self::assertFalse($result['empty']);
+
+        if ($validity === '') {
+            return;
+        }
+
+        self::assertTrue($result['valid']);
     }
 
     public function testMeasuresAndCoordinates(): void

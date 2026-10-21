@@ -64,6 +64,9 @@ final class Parser
         'lower'     => Functions\LowerFunction::class,
         'upper'     => Functions\UpperFunction::class,
         'identity'  => Functions\IdentityFunction::class,
+
+        // Spatial functions
+        'st_geometrytype' => Functions\StGeometryTypeFunction::class,
     ];
 
     /**
@@ -100,6 +103,8 @@ final class Parser
         'st_geodesic_length'   => Functions\StGeodesicLengthFunction::class,
         'st_intersection'      => Functions\StIntersectionFunction::class,
         'st_intersects'        => Functions\StIntersectsFunction::class,
+        'st_isempty'           => Functions\StIsEmptyFunction::class,
+        'st_isvalid'           => Functions\StIsValidFunction::class,
         'st_length'            => Functions\StLengthFunction::class,
         'st_overlaps'          => Functions\StOverlapsFunction::class,
         'st_srid'              => Functions\StSridFunction::class,

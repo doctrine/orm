@@ -875,6 +875,10 @@ Db2:
    multi-line string.
 -  ``ST_X(point)`` and ``ST_Y(point)`` - Return the coordinates of a point.
 -  ``ST_SRID(geometry)`` - Return the SRID of a geometry.
+-  ``ST_GEOMETRYTYPE(geometry)`` - Return the kind of a geometry, as the value
+   of a ``Doctrine\DBAL\Spatial\GeometryKind`` case (e.g. ``POLYGON``).
+-  ``ST_ISEMPTY(geometry)`` and ``ST_ISVALID(geometry)`` - Test whether a
+   geometry is empty and valid (not supported by MariaDB).
 -  ``ST_DIFFERENCE(geometry1, geometry2)``,
    ``ST_INTERSECTION(geometry1, geometry2)``,
    ``ST_SYMDIFFERENCE(geometry1, geometry2)`` and
@@ -1952,7 +1956,7 @@ Functions
             "ST_GEODESIC_DISTANCE" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
             "ST_BUFFER" "(" ArithmeticPrimary "," SimpleArithmeticExpression ")" |
             ("ST_AREA" | "ST_CENTROID" | "ST_CONVEXHULL" | "ST_ENVELOPE" | "ST_GEODESIC_AREA" | "ST_GEODESIC_LENGTH" |
-                "ST_LENGTH" | "ST_SRID" | "ST_X" | "ST_Y") "(" ArithmeticPrimary ")"
+                "ST_ISEMPTY" | "ST_ISVALID" | "ST_LENGTH" | "ST_SRID" | "ST_X" | "ST_Y") "(" ArithmeticPrimary ")"
 
     FunctionsReturningDatetime ::=
             "CURRENT_DATE" |
@@ -1967,4 +1971,5 @@ Functions
             "TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")" |
             "LOWER" "(" StringPrimary ")" |
             "UPPER" "(" StringPrimary ")" |
-            "IDENTITY" "(" SingleValuedAssociationPathExpression {"," string} ")"
+            "IDENTITY" "(" SingleValuedAssociationPathExpression {"," string} ")" |
+            "ST_GEOMETRYTYPE" "(" ArithmeticPrimary ")"

@@ -1195,6 +1195,13 @@ class SelectSqlGenerationTest extends OrmTestCase
         ];
 
         yield 'ST_CENTROID' => ['ST_X(ST_CENTROID(p.area)) > 1', 'ST_X(ST_Centroid(s0_.area)) > 1'];
+        yield 'ST_GEOMETRYTYPE' => [
+            "ST_GEOMETRYTYPE(p.area) = 'POLYGON'",
+            "UPPER(SUBSTR(ST_GeometryType(s0_.area), 4)) = 'POLYGON'",
+        ];
+
+        yield 'ST_ISEMPTY' => ['ST_ISEMPTY(p.area) = false', 'ST_IsEmpty(s0_.area) = false'];
+        yield 'ST_ISVALID' => ['ST_ISVALID(p.area) = true', 'ST_IsValid(s0_.area) = true'];
         yield 'ST_CONVEXHULL' => ['ST_AREA(ST_CONVEXHULL(p.area)) > 1', 'ST_Area(ST_ConvexHull(s0_.area)) > 1'];
         yield 'ST_ENVELOPE' => ['ST_AREA(ST_ENVELOPE(p.area)) > 1', 'ST_Area(ST_Envelope(s0_.area)) > 1'];
     }
