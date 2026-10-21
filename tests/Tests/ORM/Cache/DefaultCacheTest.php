@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Cache;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\CollectionCacheKey;
+use Doctrine\ORM\Cache\CollectionCacheVersionEntry;
 use Doctrine\ORM\Cache\DefaultCache;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
@@ -56,7 +57,15 @@ class DefaultCacheTest extends OrmTestCase
         $cacheEntry = new CollectionCacheEntry($data);
         $persister  = $this->em->getUnitOfWork()->getCollectionPersister($metadata->getAssociationMapping($association));
 
-        $persister->getCacheRegion()->put($cacheKey, $cacheEntry);
+        $version = new CollectionCacheVersionEntry();
+        $persister->getCacheRegion()->put($cacheKey, $version);
+        $persister->getCacheRegion()->put(new CollectionCacheKey(
+            $metadata->name,
+            $association,
+            $ownerIdentifier,
+            '',
+            $version->version,
+        ), $cacheEntry);
     }
 
     public function testImplementsCache(): void
@@ -173,6 +182,18 @@ class DefaultCacheTest extends OrmTestCase
         $this->cache->evictCollection(CmsUser::class, 'phonenumbers', 1);
 
         self::assertFalse($this->cache->containsCollection(State::class, $association, 1));
+    }
+
+    public function testContainsUnversionedCollectionEntry(): void
+    {
+        $key    = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
+        $region = $this->cache->getCollectionCacheRegion(State::class, 'cities');
+        self::assertNotNull($region);
+        $region->put($key, new CollectionCacheEntry([]));
+
+        self::assertTrue($this->cache->containsCollection(State::class, 'cities', 1));
+        $this->cache->evictCollection(State::class, 'cities', 1);
+        self::assertFalse($this->cache->containsCollection(State::class, 'cities', 1));
     }
 
     public function testEvictCollectionRegion(): void

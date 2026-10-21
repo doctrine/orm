@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Cache\Persister\Collection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Cache\CollectionCacheKey;
+use Doctrine\ORM\Cache\CollectionCacheVersionEntry;
 use Doctrine\ORM\Cache\CollectionHydrator;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
@@ -20,6 +21,7 @@ use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\UnitOfWork;
+use WeakMap;
 
 use function array_values;
 use function assert;
@@ -40,6 +42,9 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     protected CollectionHydrator $hydrator;
     protected CacheLogger|null $cacheLogger;
 
+    /** @var WeakMap<object, string> Filter contexts indexed by collection identity. */
+    protected WeakMap $collectionFilterHashes;
+
     public function __construct(
         protected CollectionPersister $persister,
         protected Region $region,
@@ -50,17 +55,18 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
         $cacheConfig   = $configuration->getSecondLevelCacheConfiguration();
         $cacheFactory  = $cacheConfig->getCacheFactory();
 
-        $this->region          = $region;
-        $this->persister       = $persister;
-        $this->association     = $association;
-        $this->filters         = $em->getFilters();
-        $this->regionName      = $region->getName();
-        $this->uow             = $em->getUnitOfWork();
-        $this->metadataFactory = $em->getMetadataFactory();
-        $this->cacheLogger     = $cacheConfig->getCacheLogger();
-        $this->hydrator        = $cacheFactory->buildCollectionHydrator($em, $association);
-        $this->sourceEntity    = $em->getClassMetadata($association->sourceEntity);
-        $this->targetEntity    = $em->getClassMetadata($association->targetEntity);
+        $this->region                 = $region;
+        $this->persister              = $persister;
+        $this->association            = $association;
+        $this->filters                = $em->getFilters();
+        $this->regionName             = $region->getName();
+        $this->uow                    = $em->getUnitOfWork();
+        $this->metadataFactory        = $em->getMetadataFactory();
+        $this->cacheLogger            = $cacheConfig->getCacheLogger();
+        $this->hydrator               = $cacheFactory->buildCollectionHydrator($em, $association);
+        $this->sourceEntity           = $em->getClassMetadata($association->sourceEntity);
+        $this->targetEntity           = $em->getClassMetadata($association->targetEntity);
+        $this->collectionFilterHashes = new WeakMap();
     }
 
     public function getCacheRegion(): Region
@@ -80,7 +86,13 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
 
     public function loadCollectionCache(PersistentCollection $collection, CollectionCacheKey $key): array|null
     {
-        $cache = $this->region->get($key);
+        $this->collectionFilterHashes[$collection] = $key->filterHash;
+        $versionedKey                              = $this->getVersionedCacheKey($key);
+        if ($versionedKey === null) {
+            return null;
+        }
+
+        $cache = $this->region->get($versionedKey);
 
         if ($cache === null) {
             return null;
@@ -91,6 +103,11 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
 
     public function storeCollectionCache(CollectionCacheKey $key, Collection|array $elements): void
     {
+        $versionedKey = $this->getVersionedCacheKey($key);
+        if ($versionedKey === null) {
+            return;
+        }
+
         $associationMapping = $this->sourceEntity->associationMappings[$key->association];
         $targetPersister    = $this->uow->getEntityPersister($this->targetEntity->rootEntityName);
         assert($targetPersister instanceof CachedEntityPersister);
@@ -123,7 +140,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
             $targetRegion->put($entityKey, $entityEntry);
         }
 
-        if ($this->region->put($key, $entry)) {
+        if ($this->region->put($versionedKey, $entry)) {
             $this->cacheLogger?->collectionCachePut($this->regionName, $key);
         }
     }
@@ -140,15 +157,41 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
 
     public function count(PersistentCollection $collection): int
     {
-        $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
-        $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association->fieldName, $ownerId, $this->filters->getHash());
-        $entry   = $this->region->get($key);
+        $ownerId      = $this->uow->getEntityIdentifier($collection->getOwner());
+        $key          = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association->fieldName, $ownerId, $this->filters->getHash());
+        $versionedKey = $this->getVersionedCacheKey($key);
+        $entry        = $versionedKey === null ? null : $this->region->get($versionedKey);
 
         if ($entry !== null) {
             return count($entry->identifiers);
         }
 
         return $this->persister->count($collection);
+    }
+
+    protected function evictCollectionCache(CollectionCacheKey $key): void
+    {
+        $this->region->evict(new CollectionCacheKey($key->entityClass, $key->association, $key->ownerIdentifier));
+    }
+
+    private function getVersionedCacheKey(CollectionCacheKey $key): CollectionCacheKey|null
+    {
+        $versionKey = new CollectionCacheKey($key->entityClass, $key->association, $key->ownerIdentifier);
+        $version    = $this->region->get($versionKey);
+        if (! $version instanceof CollectionCacheVersionEntry) {
+            $version = new CollectionCacheVersionEntry();
+            if (! $this->region->put($versionKey, $version)) {
+                return null;
+            }
+        }
+
+        return new CollectionCacheKey(
+            $key->entityClass,
+            $key->association,
+            $key->ownerIdentifier,
+            $key->filterHash,
+            $version->version,
+        );
     }
 
     public function get(PersistentCollection $collection, mixed $index): mixed
