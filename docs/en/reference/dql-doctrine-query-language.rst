@@ -856,8 +856,9 @@ Spatial functions
 ~~~~~~~~~~~~~~~~~
 
 The following functions apply to fields and parameters of the ``geometry``
-type of DBAL, which requires PostGIS on PostgreSQL, SpatiaLite on SQLite and
-Spatial Analytics on Db2:
+type of DBAL, and of its ``geography`` type for the geodesic functions, which
+require PostGIS on PostgreSQL, SpatiaLite on SQLite and Spatial Analytics on
+Db2:
 
 -  ``ST_CONTAINS(geometry1, geometry2)``, ``ST_CROSSES(geometry1, geometry2)``,
    ``ST_DISJOINT(geometry1, geometry2)``, ``ST_EQUALS(geometry1, geometry2)``,
@@ -874,6 +875,16 @@ Spatial Analytics on Db2:
    multi-line string.
 -  ``ST_X(point)`` and ``ST_Y(point)`` - Return the coordinates of a point.
 -  ``ST_SRID(geometry)`` - Return the SRID of a geometry.
+-  ``ST_DIFFERENCE(geometry1, geometry2)``,
+   ``ST_INTERSECTION(geometry1, geometry2)``,
+   ``ST_SYMDIFFERENCE(geometry1, geometry2)`` and
+   ``ST_UNION(geometry1, geometry2)`` - Return the geometry resulting from the
+   given set-theoretic operation of the OGC Simple Features specification.
+-  ``ST_BUFFER(geometry, distance)`` - Return the polygon covering the points
+   within the given distance of a geometry.
+-  ``ST_CENTROID(geometry)``, ``ST_CONVEXHULL(geometry)`` and
+   ``ST_ENVELOPE(geometry)`` - Return the centroid of a polygon or a
+   multi-polygon, and the convex hull and the bounding box of a geometry.
 -  ``ST_GEODESIC_DISTANCE(geometry1, geometry2)``,
    ``ST_GEODESIC_DWITHIN(geometry1, geometry2, distance)``,
    ``ST_GEODESIC_AREA(geometry)`` and ``ST_GEODESIC_LENGTH(geometry)`` - Measure
@@ -893,11 +904,37 @@ bound with the ``geometry`` type:
     $query->setParameter('here', Geometry::point(2.3522219, 48.856614, 4326));
     $places = $query->getResult();
 
-The other measures are computed in the plane of the coordinates and are
-expressed in their unit, whatever the spatial reference system: for instance,
-the distance between two longitude and latitude pairs is expressed in degrees.
-The geometries must have the same SRID. The documentation of DBAL details the
-behavior of each database.
+On PostgreSQL, ``ST_GEODESIC_DWITHIN()`` uses the spatial index of a
+``geography`` field. The other functions are computed in the plane of the
+coordinates, and the measures are expressed in their unit, whatever the spatial
+reference system: for instance, the distance between two longitude and latitude
+pairs is expressed in degrees. The geometries must have the same SRID. The
+documentation of DBAL details the behavior of each database.
+
+The geometries returned by functions are hydrated as
+``Doctrine\DBAL\Spatial\Geometry`` objects, and can be passed to the other
+functions:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT ST_INTERSECTION(p.area, :zone) FROM Place p WHERE p.id = :id');
+    $query->setParameter('zone', $zone)->setParameter('id', $id);
+    $intersection = $query->getSingleScalarResult();
+
+    $query = $em->createQuery('SELECT p FROM Place p WHERE ST_WITHIN(p.location, ST_BUFFER(:here, 0.01)) = true');
+
+Ordering by ``ST_DISTANCE()`` with a limit finds the nearest neighbours of a
+geometry. PostgreSQL and SQL Server use the spatial index if the query also
+filters out the ``NULL`` distances, which SQL Server requires:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery(
+        'SELECT p FROM Place p WHERE ST_DISTANCE(p.location, :here) IS NOT NULL ORDER BY ST_DISTANCE(p.location, :here)',
+    );
+    $query->setParameter('here', $here)->setMaxResults(5);
 
 Arithmetic operators
 ~~~~~~~~~~~~~~~~~~~~
@@ -1908,11 +1945,14 @@ Functions
             SpatialFunction
 
     SpatialFunction ::=
-            ("ST_CONTAINS" | "ST_CROSSES" | "ST_DISJOINT" | "ST_DISTANCE" | "ST_EQUALS" | "ST_INTERSECTS" |
-                "ST_OVERLAPS" | "ST_TOUCHES" | "ST_WITHIN") "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
+            ("ST_CONTAINS" | "ST_CROSSES" | "ST_DIFFERENCE" | "ST_DISJOINT" | "ST_DISTANCE" | "ST_EQUALS" |
+                "ST_INTERSECTION" | "ST_INTERSECTS" | "ST_OVERLAPS" | "ST_SYMDIFFERENCE" | "ST_TOUCHES" | "ST_UNION" |
+                "ST_WITHIN") "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
             ("ST_DWITHIN" | "ST_GEODESIC_DWITHIN") "(" ArithmeticPrimary "," ArithmeticPrimary "," SimpleArithmeticExpression ")" |
             "ST_GEODESIC_DISTANCE" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
-            ("ST_AREA" | "ST_GEODESIC_AREA" | "ST_GEODESIC_LENGTH" | "ST_LENGTH" | "ST_SRID" | "ST_X" | "ST_Y") "(" ArithmeticPrimary ")"
+            "ST_BUFFER" "(" ArithmeticPrimary "," SimpleArithmeticExpression ")" |
+            ("ST_AREA" | "ST_CENTROID" | "ST_CONVEXHULL" | "ST_ENVELOPE" | "ST_GEODESIC_AREA" | "ST_GEODESIC_LENGTH" |
+                "ST_LENGTH" | "ST_SRID" | "ST_X" | "ST_Y") "(" ArithmeticPrimary ")"
 
     FunctionsReturningDatetime ::=
             "CURRENT_DATE" |

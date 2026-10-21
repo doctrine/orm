@@ -1181,6 +1181,37 @@ class SelectSqlGenerationTest extends OrmTestCase
             'ST_GEODESIC_LENGTH(p.area) > 1',
             'ST_Length(CAST(s0_.area AS geography)) > 1',
         ];
+
+        foreach (['Difference', 'Intersection', 'SymDifference', 'Union'] as $name) {
+            yield 'ST_' . strtoupper($name) => [
+                'ST_AREA(ST_' . strtoupper($name) . '(p.area, :point)) > 1',
+                'ST_Area(ST_' . $name . '(s0_.area, CAST(? AS geometry))) > 1',
+            ];
+        }
+
+        yield 'ST_BUFFER' => [
+            'ST_INTERSECTS(p.location, ST_BUFFER(:point, 0.5 * 2)) = true',
+            'ST_Intersects(s0_.location, ST_Buffer(CAST(? AS geometry), 0.5 * 2)) = true',
+        ];
+
+        yield 'ST_CENTROID' => ['ST_X(ST_CENTROID(p.area)) > 1', 'ST_X(ST_Centroid(s0_.area)) > 1'];
+        yield 'ST_CONVEXHULL' => ['ST_AREA(ST_CONVEXHULL(p.area)) > 1', 'ST_Area(ST_ConvexHull(s0_.area)) > 1'];
+        yield 'ST_ENVELOPE' => ['ST_AREA(ST_ENVELOPE(p.area)) > 1', 'ST_Area(ST_Envelope(s0_.area)) > 1'];
+    }
+
+    #[RequiresMethod(AbstractPlatform::class, 'getSpatialCentroidExpression')]
+    public function testSelectedGeometriesAreConvertedLikeColumns(): void
+    {
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new OraclePlatform());
+
+        $sql = $this->entityManager
+            ->createQuery('SELECT ST_CENTROID(p.area) FROM Doctrine\Tests\Models\Spatial\Place p')
+            ->getSQL();
+
+        // Oracle selects the components of the SDO_GEOMETRY object as JSON
+        self::assertStringStartsWith('SELECT (SELECT CASE WHEN s.g IS NULL THEN NULL ELSE JSON_OBJECT(', $sql);
+        self::assertStringContainsString('SDO_GEOM.SDO_CENTROID(', $sql);
+        self::assertStringEndsWith(' AS SCLR_0 FROM spatial_places s0_', $sql);
     }
 
     #[RequiresMethod(AbstractPlatform::class, 'getSpatialRelationExpression')]

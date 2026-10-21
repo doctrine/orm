@@ -12,6 +12,7 @@ use Doctrine\DBAL\Platforms\MySQL80Platform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\DBAL\Spatial\Geometry;
+use Doctrine\DBAL\Spatial\GeometryKind;
 use Doctrine\DBAL\Spatial\SpatialRelation;
 use Doctrine\Tests\Models\Spatial\Place;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -134,6 +135,48 @@ class QueryDqlSpatialFunctionTest extends OrmFunctionalTestCase
             ->getSingleColumnResult();
 
         self::assertSame(['London', 'Paris'], $names);
+    }
+
+    public function testSetOperation(): void
+    {
+        $result = $this->_em->createQuery(sprintf(
+            'SELECT ST_INTERSECTION(p.area, :zone) AS intersection, ST_AREA(ST_INTERSECTION(p.area, :zone)) AS area'
+                . ' FROM %s p WHERE p.id = 1',
+            Place::class,
+        ))
+            ->setParameter('zone', Geometry::fromWkt('SRID=4326;POLYGON((2.3 48.7,2.6 48.7,2.6 48.85,2.3 48.85,2.3 48.7))'))
+            ->getSingleResult();
+
+        self::assertInstanceOf(Geometry::class, $result['intersection']);
+        self::assertSame(GeometryKind::POLYGON, $result['intersection']->getKind());
+        self::assertEqualsWithDelta(0.01, $result['area'], 1e-9);
+    }
+
+    public function testGeometryFunctionsAsArguments(): void
+    {
+        $names = $this->_em->createQuery(sprintf(
+            'SELECT p.name FROM %s p WHERE ST_WITHIN(p.location, ST_BUFFER(:here, 1)) = true ORDER BY p.name',
+            Place::class,
+        ))
+            ->setParameter('here', Geometry::point(2, 48.5, 4326))
+            ->getSingleColumnResult();
+
+        self::assertSame(['Paris'], $names);
+    }
+
+    public function testCentroidConvexHullAndEnvelope(): void
+    {
+        $result = $this->_em->createQuery(sprintf(
+            'SELECT ST_CENTROID(p.area) AS centroid, ST_AREA(ST_CONVEXHULL(p.area)) AS hull,'
+                . ' ST_AREA(ST_ENVELOPE(p.area)) AS envelope FROM %s p WHERE p.id = 1',
+            Place::class,
+        ))->getSingleResult();
+
+        self::assertInstanceOf(Geometry::class, $result['centroid']);
+        self::assertSame(4326, $result['centroid']->getSrid());
+        self::assertEqualsWithDelta([2.35, 48.85], $result['centroid']->getCoordinates(), 1e-9);
+        self::assertEqualsWithDelta(0.03, $result['hull'], 1e-9);
+        self::assertEqualsWithDelta(0.03, $result['envelope'], 1e-9);
     }
 
     public function testMeasuresAndCoordinates(): void
