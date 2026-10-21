@@ -23,6 +23,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\MockObject\Stub;
 
 use function enum_exists;
+use function method_exists;
 
 class OffsetPaginatorTest extends OrmTestCase
 {
@@ -35,6 +36,10 @@ class OffsetPaginatorTest extends OrmTestCase
         $platform = $this->getMockBuilder(AbstractPlatform::class)
             ->setConstructorArgs(enum_exists(UnquotedIdentifierFolding::class) ? [UnquotedIdentifierFolding::UPPER] : [])
             ->getMock();
+        if (method_exists($platform, 'getUnquotedIdentifierFolding')) {
+            $platform->method('getUnquotedIdentifierFolding')->willReturn(UnquotedIdentifierFolding::NONE);
+        }
+
         $platform->method('supportsIdentityColumns')
             ->willReturn(true);
 
