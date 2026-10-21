@@ -304,12 +304,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         $this->changed();
 
-        if (
-            $this->association !== null &&
-            $this->association->isToMany() &&
-            $this->owner &&
-            $this->getMapping()->orphanRemoval
-        ) {
+        if ($this->managesOrphanRemoval()) {
             $this->getUnitOfWork()->scheduleOrphanRemoval($removed);
         }
 
@@ -326,12 +321,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         $this->changed();
 
-        if (
-            $this->association !== null &&
-            $this->association->isToMany() &&
-            $this->owner &&
-            $this->getMapping()->orphanRemoval
-        ) {
+        if ($this->managesOrphanRemoval()) {
             $this->getUnitOfWork()->scheduleOrphanRemoval($element);
         }
 
@@ -393,15 +383,57 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         return parent::count();
     }
 
+    /**
+     * Sets the element at the given key; when the mapping enables orphanRemoval,
+     * the displaced element is scheduled for orphan removal, like an explicit
+     * remove() of it.
+     */
     public function set(string|int $key, mixed $value): void
     {
+        $replaced = parent::get($key);
+
         parent::set($key, $value);
 
         $this->changed();
 
+        $this->orphanReplacedElement($replaced);
+
         if (is_object($value) && $this->em) {
             $this->getUnitOfWork()->cancelOrphanRemoval($value);
         }
+    }
+
+    /**
+     * Schedules the element displaced by a set() for orphan removal, like an
+     * explicit remove() does.
+     */
+    private function orphanReplacedElement(mixed $replaced): void
+    {
+        if (! is_object($replaced)) {
+            return;
+        }
+
+        if (! $this->managesOrphanRemoval()) {
+            return;
+        }
+
+        if ($this->unwrap()->contains($replaced)) {
+            return;
+        }
+
+        $this->getUnitOfWork()->scheduleOrphanRemoval($replaced);
+    }
+
+    /**
+     * Whether elements dropped from this collection are subject to orphan
+     * removal.
+     */
+    private function managesOrphanRemoval(): bool
+    {
+        return $this->association !== null
+            && $this->association->isToMany()
+            && $this->owner
+            && $this->getMapping()->orphanRemoval;
     }
 
     private function doAdd(mixed $value): void
