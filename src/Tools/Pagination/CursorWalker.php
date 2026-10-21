@@ -18,7 +18,9 @@ use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
 use LogicException;
 
+use function array_unshift;
 use function count;
+use function reset;
 
 /**
  * @internal
@@ -54,18 +56,25 @@ class CursorWalker extends TreeWalkerAdapter
             throw new LogicException('No ORDER BY clause found. Cursor pagination requires a deterministic sort order.');
         }
 
+        $from      = $selectStatement->fromClause->identificationVariableDeclarations;
+        $rootAlias = reset($from)->rangeVariableDeclaration->aliasIdentificationVariable;
+
         $orderByItems    = [];
         $newOrderByItems = [];
 
         foreach ($selectStatement->orderByClause->orderByItems as $orderByItem) {
             $direction = OrderDirection::fromOrderByItem($orderByItem, $shouldReverse);
 
-            $paramKey = $this->getParameterKey($orderByItem->expression);
-            $metadata = $orderByItem->expression instanceof PathExpression
-                ? $this->getMetadataForDqlAlias($orderByItem->expression->identificationVariable)
-                : null;
+            $paramKey        = $this->getParameterKey($orderByItem->expression);
+            $metadata        = null;
+            $associationPath = [];
 
-            $orderByItems[] = new CursorOrderByItem($orderByItem->expression, $direction, $paramKey, $metadata);
+            if ($orderByItem->expression instanceof PathExpression) {
+                $metadata        = $this->getMetadataForDqlAlias($orderByItem->expression->identificationVariable);
+                $associationPath = $this->getAssociationPath($orderByItem->expression->identificationVariable, $rootAlias);
+            }
+
+            $orderByItems[] = new CursorOrderByItem($orderByItem->expression, $direction, $paramKey, $metadata, $associationPath);
 
             $newItem           = new OrderByItem($orderByItem->expression);
             $newItem->type     = $direction->value;
@@ -230,6 +239,31 @@ class CursorWalker extends TreeWalkerAdapter
         return new ConditionalExpression([
             new ConditionalTerm([$boundPrimary, $conditionPrimary]),
         ]);
+    }
+
+    /**
+     * Returns the single-valued associations to follow from the root alias to
+     * the given alias, or null if the given alias cannot be reached that way
+     * (e.g. it is joined through a collection, or not joined from the root alias).
+     *
+     * @return list<string>|null
+     */
+    private function getAssociationPath(string $dqlAlias, string $rootAlias): array|null
+    {
+        $associationPath = [];
+
+        while ($dqlAlias !== $rootAlias) {
+            $queryComponent = $this->getQueryComponents()[$dqlAlias];
+
+            if (! isset($queryComponent['parent'], $queryComponent['relation']) || ! $queryComponent['relation']->isToOne()) {
+                return null;
+            }
+
+            array_unshift($associationPath, $queryComponent['relation']->fieldName);
+            $dqlAlias = $queryComponent['parent'];
+        }
+
+        return $associationPath;
     }
 
     /**
