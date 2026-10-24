@@ -20,9 +20,6 @@ use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Index\IndexedColumn;
 use Doctrine\DBAL\Schema\Index\IndexType;
 use Doctrine\DBAL\Schema\IndexEditor;
-use Doctrine\DBAL\Schema\Name\Identifier;
-use Doctrine\DBAL\Schema\Name\Parsers;
-use Doctrine\DBAL\Schema\Name\UnqualifiedName;
 use Doctrine\DBAL\Schema\NamedObject;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Schema;
@@ -32,6 +29,7 @@ use Doctrine\DBAL\Schema\TableEditor;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Internal\Name\NameParser;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\DiscriminatorColumnMapping;
@@ -64,7 +62,6 @@ use function interface_exists;
 use function is_int;
 use function is_numeric;
 use function method_exists;
-use function preg_match;
 use function sprintf;
 use function strtolower;
 
@@ -173,7 +170,7 @@ final class ExperimentalSchemaTool
             $tableName = $this->quoteStrategy->getTableName($class, $this->platform);
 
             $table = Table::editor()
-                ->setName(Parsers::parseOptionallyQualifiedName($tableName))
+                ->setName(NameParser::parseOptionallyQualifiedName($tableName))
                 ->setConfiguration($metadataSchemaConfig->toTableConfiguration())
                 ->setOptions($metadataSchemaConfig->getDefaultTableOptions());
 
@@ -377,7 +374,7 @@ final class ExperimentalSchemaTool
 
                     foreach ($this->getIndexColumns($class, $indexData) as $columnName) {
                         $indexEditor->addColumn(new IndexedColumn(
-                            Parsers::parseUnqualifiedName($columnName),
+                            NameParser::parseUnqualifiedName($columnName),
                             null,
                         ));
                     }
@@ -389,7 +386,7 @@ final class ExperimentalSchemaTool
                     }
 
                     if (! is_numeric($indexName)) {
-                        $indexEditor->setName(Parsers::parseUnqualifiedName($indexName));
+                        $indexEditor->setName(NameParser::parseUnqualifiedName($indexName));
                     }
 
                     $indexEditor->addToTable($table);
@@ -478,7 +475,7 @@ final class ExperimentalSchemaTool
             // the table might have been dropped by a listener, so we ignore this error
             if ($schema->hasTable($fkData['tableName'])) {
                 $schema = $schema->edit()->modifyTable(
-                    Parsers::parseOptionallyQualifiedName($fkData['tableName']),
+                    NameParser::parseOptionallyQualifiedName($fkData['tableName']),
                     static function (TableEditor $tableEditor) use ($fkData): void {
                         $tableEditor->addForeignKeyConstraint(new ForeignKeyConstraint(
                             localColumnNames: $fkData['localColumns'],
@@ -696,11 +693,11 @@ final class ExperimentalSchemaTool
 
         $editor = Index::editor();
         if ($indexName !== null) {
-            $editor->setName(Parsers::parseUnqualifiedName($indexName));
+            $editor->setName(NameParser::parseUnqualifiedName($indexName));
         }
 
         foreach ($columnNames as $columnName) {
-            $editor->addColumn(new IndexedColumn(Parsers::parseUnqualifiedName($columnName), null));
+            $editor->addColumn(new IndexedColumn(NameParser::parseUnqualifiedName($columnName), null));
         }
 
         if (isset($indexOptions['flags']['clustered'])) {
@@ -729,11 +726,11 @@ final class ExperimentalSchemaTool
 
         $editor = Index::editor()->setType(IndexType::UNIQUE);
         if ($indexName !== null) {
-            $editor->setName(Parsers::parseUnqualifiedName($indexName));
+            $editor->setName(NameParser::parseUnqualifiedName($indexName));
         }
 
         foreach ($columnNames as $columnName) {
-            $editor->addColumn(new IndexedColumn(Parsers::parseUnqualifiedName($columnName), null));
+            $editor->addColumn(new IndexedColumn(NameParser::parseUnqualifiedName($columnName), null));
         }
 
         $table->addIndex($editor);
@@ -750,7 +747,7 @@ final class ExperimentalSchemaTool
         }
 
         $column = Column::editor()
-            ->setName(Parsers::parseUnqualifiedName($name))
+            ->setName(NameParser::parseUnqualifiedName($name))
             ->setTypeName($typeName);
         self::setColumnOptions($column, $options);
         $column = $column->create();
@@ -834,7 +831,7 @@ final class ExperimentalSchemaTool
             return;
         }
 
-        $table->modifyColumn(Parsers::parseUnqualifiedName($columnName), static function (ColumnEditor $column) use ($options): void {
+        $table->modifyColumn(NameParser::parseUnqualifiedName($columnName), static function (ColumnEditor $column) use ($options): void {
             self::setColumnOptions($column, $options);
         });
     }
@@ -896,7 +893,7 @@ final class ExperimentalSchemaTool
                 $tableName = $this->quoteStrategy->getJoinTableName($mapping, $foreignClass, $this->platform);
 
                 $theJoinTable = Table::editor()
-                    ->setName(Parsers::parseOptionallyQualifiedName($tableName))
+                    ->setName(NameParser::parseOptionallyQualifiedName($tableName))
                     ->setConfiguration($schemaConfig->toTableConfiguration())
                     ->setOptions($joinTable->options + $schemaConfig->getDefaultTableOptions());
 
@@ -1215,11 +1212,7 @@ final class ExperimentalSchemaTool
 
         $primaryKeyColumnNames = [];
         foreach ($primaryKeyColumns as $primaryKeyColumn) {
-            if (preg_match('/^"(.+)"$/', $primaryKeyColumn, $matches) === 1) {
-                $primaryKeyColumnNames[] = new UnqualifiedName(Identifier::quoted($matches[1]));
-            } else {
-                $primaryKeyColumnNames[] = new UnqualifiedName(Identifier::unquoted($primaryKeyColumn));
-            }
+            $primaryKeyColumnNames[] = NameParser::parseUnqualifiedName($primaryKeyColumn);
         }
 
         /** @phpstan-ignore method.deprecated (todo) */
