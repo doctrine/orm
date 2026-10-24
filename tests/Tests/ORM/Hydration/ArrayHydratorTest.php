@@ -10,13 +10,82 @@ use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\Enums\CardWithNullable;
+use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Forum\ForumBoard;
 use Doctrine\Tests\Models\Forum\ForumCategory;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 
+use function iterator_to_array;
+
 class ArrayHydratorTest extends HydrationTestCase
 {
+    public function testSimpleRowsPreserveColumnOrderDuplicateIdentifiersAndNulls(): void
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addEntityResult(CmsUser::class, 'u');
+        $rsm->addFieldResult('u', 'user_id', 'id');
+        $rsm->addFieldResult('u', 'user_name', 'name');
+        $rows     = [
+            ['user_name' => 'first', 'user_id' => '1', 'ignored' => 'unused'],
+            ['user_name' => null, 'user_id' => '1', 'ignored' => 'unused'],
+            ['user_name' => null, 'user_id' => null, 'ignored' => 'unused'],
+        ];
+        $hydrator = new ArrayHydrator($this->entityManager);
+        $expected = [['name' => 'first', 'id' => 1], ['name' => null, 'id' => 1], null];
+
+        self::assertSame($expected, $hydrator->hydrateAll($this->createResultMock($rows), $rsm));
+        self::assertSame($expected, iterator_to_array($hydrator->toIterable($this->createResultMock($rows), $rsm)));
+        self::assertSame([], $hydrator->hydrateAll($this->createResultMock([]), $rsm));
+
+        $rsm->addIndexBy('u', 'id');
+        self::assertSame([2 => ['id' => 2, 'name' => 'indexed']], $hydrator->hydrateAll(
+            $this->createResultMock([['user_id' => '2', 'user_name' => 'indexed']]),
+            $rsm,
+        ));
+
+        $scalars = new ResultSetMapping();
+        $scalars->addScalarResult('user_id', 'number', 'integer');
+        self::assertSame([['number' => 3]], $hydrator->hydrateAll(
+            $this->createResultMock([['user_id' => '3']]),
+            $scalars,
+        ));
+    }
+
+    public function testDuplicateFieldMappingsKeepFirstNonNullValue(): void
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addEntityResult(CmsUser::class, 'u');
+        $rsm->addFieldResult('u', 'user_id', 'id');
+        $rsm->addFieldResult('u', 'first_name', 'name');
+        $rsm->addFieldResult('u', 'second_name', 'name');
+        $hydrator = new ArrayHydrator($this->entityManager);
+
+        self::assertSame([['id' => 1, 'name' => 'first'], ['id' => 2, 'name' => 'second']], $hydrator->hydrateAll(
+            $this->createResultMock([
+                ['user_id' => '1', 'first_name' => 'first', 'second_name' => 'second'],
+                ['user_id' => '2', 'first_name' => null, 'second_name' => 'second'],
+            ]),
+            $rsm,
+        ));
+    }
+
+    public function testSimpleRowsConvertNullableEnums(): void
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addEntityResult(CardWithNullable::class, 'c');
+        $rsm->addFieldResult('c', 'card_id', 'id');
+        $rsm->addFieldResult('c', 'card_suit', 'suit');
+        $rsm->addEnumResult('card_suit', Suit::class);
+        $hydrator = new ArrayHydrator($this->entityManager);
+
+        self::assertSame([['id' => 1, 'suit' => Suit::Hearts], ['id' => 2, 'suit' => null]], $hydrator->hydrateAll(
+            $this->createResultMock([['card_id' => '1', 'card_suit' => 'H'], ['card_id' => '2', 'card_suit' => null]]),
+            $rsm,
+        ));
+    }
+
     /** @phpstan-return list<array{int|string}> */
     public static function provideDataForUserEntityResult(): array
     {
