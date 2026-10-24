@@ -18,9 +18,11 @@ use function method_exists;
  */
 class GenerateSchemaEventArgs extends EventArgs
 {
+    /** @param 'create'|'drop'|'update'|null $operation */
     public function __construct(
         private readonly EntityManagerInterface $em,
         private Schema $schema,
+        private readonly string|null $operation = null,
     ) {
     }
 
@@ -32,6 +34,16 @@ class GenerateSchemaEventArgs extends EventArgs
     public function getSchema(): Schema
     {
         return $this->schema;
+    }
+
+    /**
+     * Returns the schema operation, or null for direct schema generation.
+     *
+     * @return 'create'|'drop'|'update'|null
+     */
+    public function getOperation(): string|null
+    {
+        return $this->operation;
     }
 
     public function setSchema(Schema $schema): void
