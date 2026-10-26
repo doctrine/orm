@@ -933,15 +933,25 @@ class BasicEntityPersister implements EntityPersister
                         continue;
                     }
 
-                    $sqlParams = [...$sqlParams, ...PersisterHelper::convertToParameterValue($item, $this->em)];
-                    $sqlTypes  = [...$sqlTypes, ...PersisterHelper::inferParameterTypes($field, $item, $this->class, $this->em)];
+                    foreach (PersisterHelper::convertToParameterValue($item, $this->em) as $parameter) {
+                        $sqlParams[] = $parameter;
+                    }
+
+                    foreach (PersisterHelper::inferParameterTypes($field, $item, $this->class, $this->em) as $parameterType) {
+                        $sqlTypes[] = $parameterType;
+                    }
                 }
 
                 continue;
             }
 
-            $sqlParams = [...$sqlParams, ...PersisterHelper::convertToParameterValue($value, $this->em)];
-            $sqlTypes  = [...$sqlTypes, ...PersisterHelper::inferParameterTypes($field, $value, $this->class, $this->em)];
+            foreach (PersisterHelper::convertToParameterValue($value, $this->em) as $parameter) {
+                $sqlParams[] = $parameter;
+            }
+
+            foreach (PersisterHelper::inferParameterTypes($field, $value, $this->class, $this->em) as $parameterType) {
+                $sqlTypes[] = $parameterType;
+            }
         }
 
         return [$sqlParams, $sqlTypes];
