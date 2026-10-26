@@ -82,6 +82,8 @@ class SchemaTool
     private readonly QuoteStrategy $quoteStrategy;
     private readonly AbstractSchemaManager $schemaManager;
     private readonly bool $useDbalEditorApi;
+    /** @var 'create'|'drop'|'update'|null */
+    private string|null $pendingSchemaOperation = null;
 
     /**
      * Initializes a new SchemaTool instance that uses the connection of the
@@ -126,7 +128,7 @@ class SchemaTool
      */
     public function getCreateSchemaSql(array $classes): array
     {
-        $schema = $this->getSchemaFromMetadata($classes);
+        $schema = $this->getSchemaForOperation($classes, 'create');
 
         return $schema->toSql($this->platform);
     }
@@ -201,8 +203,24 @@ class SchemaTool
      */
     public function getSchemaFromMetadata(array $classes): Schema
     {
+        $operation                    = $this->pendingSchemaOperation;
+        $this->pendingSchemaOperation = null;
+
+        try {
+            return $this->generateSchemaFromMetadata($classes, $operation);
+        } finally {
+            $this->pendingSchemaOperation = $operation;
+        }
+    }
+
+    /**
+     * @param list<ClassMetadata<object>>   $classes
+     * @param 'create'|'drop'|'update'|null $operation
+     */
+    private function generateSchemaFromMetadata(array $classes, string|null $operation): Schema
+    {
         if ($this->useDbalEditorApi) {
-            return $this->experimentalGetSchemaFromMetadata($classes);
+            return $this->experimentalGetSchemaFromMetadata($classes, $operation);
         }
 
         Deprecation::ignoreDeprecations('https://github.com/doctrine/dbal/pull/7373');
@@ -508,7 +526,7 @@ class SchemaTool
             );
         }
 
-        $schemaEventArgs = new GenerateSchemaEventArgs($this->em, $schema);
+        $schemaEventArgs = new GenerateSchemaEventArgs($this->em, $schema, $operation);
         $eventManager->dispatchEvent(
             ToolEvents::postGenerateSchema,
             $schemaEventArgs,
@@ -522,10 +540,11 @@ class SchemaTool
      * Creates a Schema instance from a given set of metadata classes, using the DBAL editor API
      *
      * @phpstan-param list<ClassMetadata> $classes
+     * @phpstan-param 'create'|'drop'|'update'|null $operation
      *
      * @throws NotSupported
      */
-    private function experimentalGetSchemaFromMetadata(array $classes): Schema
+    private function experimentalGetSchemaFromMetadata(array $classes, string|null $operation): Schema
     {
         // Reminder for processed classes, used for hierarchies
         $processedClasses     = [];
@@ -860,7 +879,7 @@ class SchemaTool
             }
         }
 
-        $schemaEventArgs = new GenerateSchemaEventArgs($this->em, $schema);
+        $schemaEventArgs = new GenerateSchemaEventArgs($this->em, $schema, $operation);
         $eventManager->dispatchEvent(
             ToolEvents::postGenerateSchema,
             $schemaEventArgs,
@@ -1468,7 +1487,7 @@ class SchemaTool
      */
     public function getDropSchemaSQL(array $classes): array
     {
-        $schema = $this->getSchemaFromMetadata($classes);
+        $schema = $this->getSchemaForOperation($classes, 'drop');
 
         $deployedSchema = $this->schemaManager->introspectSchema();
 
@@ -1542,7 +1561,7 @@ class SchemaTool
      */
     public function getUpdateSchemaSql(array $classes): array
     {
-        $toSchema   = $this->getSchemaFromMetadata($classes);
+        $toSchema   = $this->getSchemaForOperation($classes, 'update');
         $fromSchema = $this->createSchemaForComparison($toSchema);
 
         if (class_exists(ComparatorConfig::class)) {
@@ -1689,5 +1708,21 @@ class SchemaTool
             ? $asset->getObjectName()->toString()
             // @phpstan-ignore method.deprecated (DBAL < 4.4)
             : $asset->getName();
+    }
+
+    /**
+     * @param list<ClassMetadata<object>> $classes
+     * @param 'create'|'drop'|'update'    $operation
+     */
+    private function getSchemaForOperation(array $classes, string $operation): Schema
+    {
+        $previousOperation            = $this->pendingSchemaOperation;
+        $this->pendingSchemaOperation = $operation;
+
+        try {
+            return $this->getSchemaFromMetadata($classes);
+        } finally {
+            $this->pendingSchemaOperation = $previousOperation;
+        }
     }
 }
