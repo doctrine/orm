@@ -24,10 +24,14 @@ use function max;
  */
 final class Window
 {
-    public function __construct(
-        private readonly int $firstResult,
-        private readonly int $maxResults,
-    ) {
+    /** @var int<0, max> */
+    private readonly int $firstResult;
+
+    /** @var int<1, max> */
+    private readonly int $maxResults;
+
+    public function __construct(int $firstResult, int $maxResults)
+    {
         if ($firstResult < 0) {
             throw new InvalidArgumentException('firstResult must be greater than or equal to 0.');
         }
@@ -35,6 +39,9 @@ final class Window
         if ($maxResults < 1) {
             throw new InvalidArgumentException('maxResults must be greater than or equal to 1.');
         }
+
+        $this->firstResult = $firstResult;
+        $this->maxResults  = $maxResults;
     }
 
     /**
@@ -49,11 +56,13 @@ final class Window
         return new self(($pageNumber - 1) * $pageSize, $pageSize);
     }
 
+    /** @return int<0, max> */
     public function getFirstResult(): int
     {
         return $this->firstResult;
     }
 
+    /** @return int<1, max> */
     public function getMaxResults(): int
     {
         return $this->maxResults;
