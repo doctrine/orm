@@ -64,6 +64,9 @@ final class Parser
         'lower'     => Functions\LowerFunction::class,
         'upper'     => Functions\UpperFunction::class,
         'identity'  => Functions\IdentityFunction::class,
+
+        // Spatial functions
+        'st_geometrytype' => Functions\StGeometryTypeFunction::class,
     ];
 
     /**
@@ -80,6 +83,37 @@ final class Parser
         'date_diff' => Functions\DateDiffFunction::class,
         'bit_and'   => Functions\BitAndFunction::class,
         'bit_or'    => Functions\BitOrFunction::class,
+
+        // Spatial functions
+        'st_area'              => Functions\StAreaFunction::class,
+        'st_buffer'            => Functions\StBufferFunction::class,
+        'st_centroid'          => Functions\StCentroidFunction::class,
+        'st_contains'          => Functions\StContainsFunction::class,
+        'st_convexhull'        => Functions\StConvexHullFunction::class,
+        'st_crosses'           => Functions\StCrossesFunction::class,
+        'st_difference'        => Functions\StDifferenceFunction::class,
+        'st_disjoint'          => Functions\StDisjointFunction::class,
+        'st_distance'          => Functions\StDistanceFunction::class,
+        'st_dwithin'           => Functions\StDWithinFunction::class,
+        'st_envelope'          => Functions\StEnvelopeFunction::class,
+        'st_equals'            => Functions\StEqualsFunction::class,
+        'st_geodesic_area'     => Functions\StGeodesicAreaFunction::class,
+        'st_geodesic_distance' => Functions\StGeodesicDistanceFunction::class,
+        'st_geodesic_dwithin'  => Functions\StGeodesicDWithinFunction::class,
+        'st_geodesic_length'   => Functions\StGeodesicLengthFunction::class,
+        'st_intersection'      => Functions\StIntersectionFunction::class,
+        'st_intersects'        => Functions\StIntersectsFunction::class,
+        'st_isempty'           => Functions\StIsEmptyFunction::class,
+        'st_isvalid'           => Functions\StIsValidFunction::class,
+        'st_length'            => Functions\StLengthFunction::class,
+        'st_overlaps'          => Functions\StOverlapsFunction::class,
+        'st_srid'              => Functions\StSridFunction::class,
+        'st_symdifference'     => Functions\StSymDifferenceFunction::class,
+        'st_touches'           => Functions\StTouchesFunction::class,
+        'st_union'             => Functions\StUnionFunction::class,
+        'st_within'            => Functions\StWithinFunction::class,
+        'st_x'                 => Functions\StXFunction::class,
+        'st_y'                 => Functions\StYFunction::class,
 
         // Aggregate functions
         'min'       => Functions\MinFunction::class,

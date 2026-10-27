@@ -852,6 +852,94 @@ clauses:
 -  ``DATE_DIFF(date1, date2)`` - Calculate the difference in days
    between date1-date2.
 
+Spatial functions
+~~~~~~~~~~~~~~~~~
+
+The following functions apply to fields and parameters of the ``geometry``
+type of DBAL, and of its ``geography`` type for the geodesic functions, which
+require PostGIS on PostgreSQL, SpatiaLite on SQLite and Spatial Analytics on
+Db2:
+
+-  ``ST_CONTAINS(geometry1, geometry2)``, ``ST_CROSSES(geometry1, geometry2)``,
+   ``ST_DISJOINT(geometry1, geometry2)``, ``ST_EQUALS(geometry1, geometry2)``,
+   ``ST_INTERSECTS(geometry1, geometry2)``, ``ST_OVERLAPS(geometry1, geometry2)``,
+   ``ST_TOUCHES(geometry1, geometry2)`` and ``ST_WITHIN(geometry1, geometry2)`` -
+   Test whether two geometries are in the given spatial relationship of the
+   OGC Simple Features specification.
+-  ``ST_DWITHIN(geometry1, geometry2, distance)`` - Test whether two geometries
+   are within the given distance of each other.
+-  ``ST_DISTANCE(geometry1, geometry2)`` - Return the distance between two
+   geometries.
+-  ``ST_AREA(geometry)`` - Return the area of a polygon or a multi-polygon.
+-  ``ST_LENGTH(geometry)`` - Return the length of a line string or a
+   multi-line string.
+-  ``ST_X(point)`` and ``ST_Y(point)`` - Return the coordinates of a point.
+-  ``ST_SRID(geometry)`` - Return the SRID of a geometry.
+-  ``ST_GEOMETRYTYPE(geometry)`` - Return the kind of a geometry, as the value
+   of a ``Doctrine\DBAL\Spatial\GeometryKind`` case (e.g. ``POLYGON``).
+-  ``ST_ISEMPTY(geometry)`` and ``ST_ISVALID(geometry)`` - Test whether a
+   geometry is empty and valid (not supported by MariaDB).
+-  ``ST_DIFFERENCE(geometry1, geometry2)``,
+   ``ST_INTERSECTION(geometry1, geometry2)``,
+   ``ST_SYMDIFFERENCE(geometry1, geometry2)`` and
+   ``ST_UNION(geometry1, geometry2)`` - Return the geometry resulting from the
+   given set-theoretic operation of the OGC Simple Features specification.
+-  ``ST_BUFFER(geometry, distance)`` - Return the polygon covering the points
+   within the given distance of a geometry.
+-  ``ST_CENTROID(geometry)``, ``ST_CONVEXHULL(geometry)`` and
+   ``ST_ENVELOPE(geometry)`` - Return the centroid of a polygon or a
+   multi-polygon, and the convex hull and the bounding box of a geometry.
+-  ``ST_GEODESIC_DISTANCE(geometry1, geometry2)``,
+   ``ST_GEODESIC_DWITHIN(geometry1, geometry2, distance)``,
+   ``ST_GEODESIC_AREA(geometry)`` and ``ST_GEODESIC_LENGTH(geometry)`` - Measure
+   geometries in meters on the Earth, their coordinates being interpreted as
+   longitudes and latitudes on the WGS 84 ellipsoid.
+
+The tests return booleans, which have to be compared with ``true`` in
+conditions. The parameters holding a ``Doctrine\DBAL\Spatial\Geometry`` are
+bound with the ``geometry`` type:
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\DBAL\Spatial\Geometry;
+
+    $query = $em->createQuery('SELECT p FROM Place p WHERE ST_GEODESIC_DWITHIN(p.location, :here, 1000) = true');
+    $query->setParameter('here', Geometry::point(2.3522219, 48.856614, 4326));
+    $places = $query->getResult();
+
+On PostgreSQL, ``ST_GEODESIC_DWITHIN()`` uses the spatial index of a
+``geography`` field. The other functions are computed in the plane of the
+coordinates, and the measures are expressed in their unit, whatever the spatial
+reference system: for instance, the distance between two longitude and latitude
+pairs is expressed in degrees. The geometries must have the same SRID. The
+documentation of DBAL details the behavior of each database.
+
+The geometries returned by functions are hydrated as
+``Doctrine\DBAL\Spatial\Geometry`` objects, and can be passed to the other
+functions:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT ST_INTERSECTION(p.area, :zone) FROM Place p WHERE p.id = :id');
+    $query->setParameter('zone', $zone)->setParameter('id', $id);
+    $intersection = $query->getSingleScalarResult();
+
+    $query = $em->createQuery('SELECT p FROM Place p WHERE ST_WITHIN(p.location, ST_BUFFER(:here, 0.01)) = true');
+
+Ordering by ``ST_DISTANCE()`` with a limit finds the nearest neighbours of a
+geometry. PostgreSQL and SQL Server use the spatial index if the query also
+filters out the ``NULL`` distances, which SQL Server requires:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery(
+        'SELECT p FROM Place p WHERE ST_DISTANCE(p.location, :here) IS NOT NULL ORDER BY ST_DISTANCE(p.location, :here)',
+    );
+    $query->setParameter('here', $here)->setMaxResults(5);
+
 Arithmetic operators
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -1857,7 +1945,18 @@ Functions
             "SIZE" "(" CollectionValuedPathExpression ")" |
             "DATE_DIFF" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
             "BIT_AND" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
-            "BIT_OR" "(" ArithmeticPrimary "," ArithmeticPrimary ")"
+            "BIT_OR" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
+            SpatialFunction
+
+    SpatialFunction ::=
+            ("ST_CONTAINS" | "ST_CROSSES" | "ST_DIFFERENCE" | "ST_DISJOINT" | "ST_DISTANCE" | "ST_EQUALS" |
+                "ST_INTERSECTION" | "ST_INTERSECTS" | "ST_OVERLAPS" | "ST_SYMDIFFERENCE" | "ST_TOUCHES" | "ST_UNION" |
+                "ST_WITHIN") "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
+            ("ST_DWITHIN" | "ST_GEODESIC_DWITHIN") "(" ArithmeticPrimary "," ArithmeticPrimary "," SimpleArithmeticExpression ")" |
+            "ST_GEODESIC_DISTANCE" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
+            "ST_BUFFER" "(" ArithmeticPrimary "," SimpleArithmeticExpression ")" |
+            ("ST_AREA" | "ST_CENTROID" | "ST_CONVEXHULL" | "ST_ENVELOPE" | "ST_GEODESIC_AREA" | "ST_GEODESIC_LENGTH" |
+                "ST_ISEMPTY" | "ST_ISVALID" | "ST_LENGTH" | "ST_SRID" | "ST_X" | "ST_Y") "(" ArithmeticPrimary ")"
 
     FunctionsReturningDatetime ::=
             "CURRENT_DATE" |
@@ -1872,4 +1971,5 @@ Functions
             "TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")" |
             "LOWER" "(" StringPrimary ")" |
             "UPPER" "(" StringPrimary ")" |
-            "IDENTITY" "(" SingleValuedAssociationPathExpression {"," string} ")"
+            "IDENTITY" "(" SingleValuedAssociationPathExpression {"," string} ")" |
+            "ST_GEOMETRYTYPE" "(" ArithmeticPrimary ")"

@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
+use Doctrine\DBAL\Platforms\SQLServerPlatform;
+use Doctrine\DBAL\Spatial\Geometry;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Column;
@@ -16,7 +19,9 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Query as ORMQuery;
+use Doctrine\ORM\Query\AST\ExpressionWithReturnType;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
+use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\QueryException;
@@ -31,8 +36,11 @@ use Doctrine\Tests\OrmTestCase;
 use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RequiresMethod;
 
 use function class_exists;
+use function str_contains;
+use function strtoupper;
 
 // DBAL 3 compatibility
 class_exists('Doctrine\\DBAL\\Platforms\\SqlitePlatform');
@@ -1111,6 +1119,132 @@ class SelectSqlGenerationTest extends OrmTestCase
         $config->setCustomNumericFunctions([]);
     }
 
+    #[DataProvider('spatialFunctionProvider')]
+    #[RequiresMethod(AbstractPlatform::class, 'getSpatialRelationExpression')]
+    public function testSpatialFunctions(string $dqlCondition, string $sqlCondition): void
+    {
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new PostgreSQLPlatform());
+
+        $this->assertSqlGeneration(
+            'SELECT p.name FROM Doctrine\Tests\Models\Spatial\Place p WHERE ' . $dqlCondition,
+            'SELECT s0_.name AS name_0 FROM spatial_places s0_ WHERE ' . $sqlCondition,
+            [],
+            str_contains($dqlCondition, ':point') ? ['point' => Geometry::point(1, 2, 4326)] : [],
+        );
+    }
+
+    /** @return iterable<string, array{string, string}> */
+    public static function spatialFunctionProvider(): iterable
+    {
+        foreach (['Contains', 'Crosses', 'Disjoint', 'Equals', 'Intersects', 'Overlaps', 'Touches', 'Within'] as $name) {
+            yield 'ST_' . strtoupper($name) => [
+                'ST_' . strtoupper($name) . '(p.area, :point) = true',
+                'ST_' . $name . '(s0_.area, CAST(? AS geometry)) = true',
+            ];
+        }
+
+        yield 'ST_DWITHIN' => [
+            'ST_DWITHIN(p.location, :point, 0.5 * 2) = true',
+            'ST_DWithin(s0_.location, CAST(? AS geometry), 0.5 * 2) = true',
+        ];
+
+        yield 'ST_DISTANCE' => [
+            'ST_DISTANCE(p.location, :point) < 1',
+            '(s0_.location <-> CAST(? AS geometry)) < 1',
+        ];
+
+        yield 'ST_AREA' => ['ST_AREA(p.area) > 1', 'ST_Area(s0_.area) > 1'];
+        yield 'ST_LENGTH' => ['ST_LENGTH(p.area) > 1', 'ST_Length(s0_.area) > 1'];
+        yield 'ST_X' => ['ST_X(p.location) > 1', 'ST_X(s0_.location) > 1'];
+        yield 'ST_Y' => ['ST_Y(p.location) > 1', 'ST_Y(s0_.location) > 1'];
+        yield 'ST_SRID' => ['ST_SRID(p.location) = 4326', 'ST_SRID(s0_.location) = 4326'];
+
+        $geography = 'CAST(s0_.location AS geography)';
+        $parameter = 'CAST(CAST(? AS geometry) AS geography)';
+
+        yield 'ST_GEODESIC_DISTANCE' => [
+            'ST_GEODESIC_DISTANCE(p.location, :point) < 1000',
+            'ST_Distance(' . $geography . ', ' . $parameter . ') < 1000',
+        ];
+
+        yield 'ST_GEODESIC_DWITHIN' => [
+            'ST_GEODESIC_DWITHIN(p.location, :point, 1000) = true',
+            'ST_DWithin(' . $geography . ', ' . $parameter . ', 1000) = true',
+        ];
+
+        yield 'ST_GEODESIC_AREA' => [
+            'ST_GEODESIC_AREA(p.area) > 1',
+            'ST_Area(CAST(s0_.area AS geography)) > 1',
+        ];
+
+        yield 'ST_GEODESIC_LENGTH' => [
+            'ST_GEODESIC_LENGTH(p.area) > 1',
+            'ST_Length(CAST(s0_.area AS geography)) > 1',
+        ];
+
+        foreach (['Difference', 'Intersection', 'SymDifference', 'Union'] as $name) {
+            yield 'ST_' . strtoupper($name) => [
+                'ST_AREA(ST_' . strtoupper($name) . '(p.area, :point)) > 1',
+                'ST_Area(ST_' . $name . '(s0_.area, CAST(? AS geometry))) > 1',
+            ];
+        }
+
+        yield 'ST_BUFFER' => [
+            'ST_INTERSECTS(p.location, ST_BUFFER(:point, 0.5 * 2)) = true',
+            'ST_Intersects(s0_.location, ST_Buffer(CAST(? AS geometry), 0.5 * 2)) = true',
+        ];
+
+        yield 'ST_CENTROID' => ['ST_X(ST_CENTROID(p.area)) > 1', 'ST_X(ST_Centroid(s0_.area)) > 1'];
+        yield 'ST_GEOMETRYTYPE' => [
+            "ST_GEOMETRYTYPE(p.area) = 'POLYGON'",
+            "UPPER(SUBSTR(ST_GeometryType(s0_.area), 4)) = 'POLYGON'",
+        ];
+
+        yield 'ST_ISEMPTY' => ['ST_ISEMPTY(p.area) = false', 'ST_IsEmpty(s0_.area) = false'];
+        yield 'ST_ISVALID' => ['ST_ISVALID(p.area) = true', 'ST_IsValid(s0_.area) = true'];
+        yield 'ST_CONVEXHULL' => ['ST_AREA(ST_CONVEXHULL(p.area)) > 1', 'ST_Area(ST_ConvexHull(s0_.area)) > 1'];
+        yield 'ST_ENVELOPE' => ['ST_AREA(ST_ENVELOPE(p.area)) > 1', 'ST_Area(ST_Envelope(s0_.area)) > 1'];
+    }
+
+    #[RequiresMethod(AbstractPlatform::class, 'getSpatialCentroidExpression')]
+    public function testSelectedGeometriesAreConvertedLikeColumns(): void
+    {
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new OraclePlatform());
+
+        $sql = $this->entityManager
+            ->createQuery('SELECT ST_CENTROID(p.area) FROM Doctrine\Tests\Models\Spatial\Place p')
+            ->getSQL();
+
+        // Oracle selects the components of the SDO_GEOMETRY object as JSON
+        self::assertStringStartsWith('SELECT (SELECT CASE WHEN s.g IS NULL THEN NULL ELSE JSON_OBJECT(', $sql);
+        self::assertStringContainsString('SDO_GEOM.SDO_CENTROID(', $sql);
+        self::assertStringEndsWith(' AS SCLR_0 FROM spatial_places s0_', $sql);
+    }
+
+    #[RequiresMethod(AbstractPlatform::class, 'getSpatialRelationExpression')]
+    public function testSpatialFunctionsAreGeneratedByThePlatform(): void
+    {
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new SQLServerPlatform());
+
+        $this->assertSqlGeneration(
+            'SELECT ST_DISTANCE(p.location, p.area) FROM Doctrine\Tests\Models\Spatial\Place p',
+            'SELECT (s0_.location).STDistance(s0_.area) AS sclr_0 FROM spatial_places s0_',
+        );
+    }
+
+    public function testCustomFunctionsTakePrecedenceOverSpatialFunctions(): void
+    {
+        $config = $this->entityManager->getConfiguration();
+        $config->addCustomNumericFunction('ST_X', MyAbsFunction::class);
+
+        $this->assertSqlGeneration(
+            'SELECT ST_X(p.id) FROM Doctrine\Tests\Models\Spatial\Place p',
+            'SELECT ABS(s0_.id) AS sclr_0 FROM spatial_places s0_',
+        );
+
+        $config->setCustomNumericFunctions([]);
+    }
+
     #[Group('DDC-826')]
     public function testMappedSuperclassAssociationJoin(): void
     {
@@ -1822,6 +1956,32 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
+    public function testCustomTypeValueSqlForFunctionReturnType(): void
+    {
+        if (DBALType::hasType('negative_to_positive')) {
+            DBALType::overrideType('negative_to_positive', NegativeToPositiveType::class);
+        } else {
+            DBALType::addType('negative_to_positive', NegativeToPositiveType::class);
+        }
+
+        $this->entityManager->getConfiguration()->addCustomNumericFunction(
+            'NEGATIVE_ABS',
+            MyNegativeAbsFunction::class,
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT NEGATIVE_ABS(p.customInteger) FROM Doctrine\Tests\Models\CustomType\CustomTypeParent p',
+            'SELECT -(ABS(c0_.customInteger)) AS sclr_0 FROM customtype_parents c0_',
+        );
+
+        // a hidden result is only used to order the rows
+        $this->assertSqlGeneration(
+            'SELECT p.id, NEGATIVE_ABS(p.customInteger) AS HIDDEN v'
+                . ' FROM Doctrine\Tests\Models\CustomType\CustomTypeParent p ORDER BY v',
+            'SELECT c0_.id AS id_0, ABS(c0_.customInteger) AS sclr_1 FROM customtype_parents c0_ ORDER BY sclr_1 ASC',
+        );
+    }
+
     public function testCustomTypeValueSqlForAllFields(): void
     {
         if (DBALType::hasType('negative_to_positive')) {
@@ -2198,6 +2358,31 @@ SQL,
     public static function mathematicOperatorsProvider(): array
     {
         return [['+'], ['-'], ['*'], ['/']];
+    }
+}
+
+class MyNegativeAbsFunction extends FunctionNode implements ExpressionWithReturnType
+{
+    public SimpleArithmeticExpression|Node|string $simpleArithmeticExpression;
+
+    public function getSql(SqlWalker $sqlWalker): string
+    {
+        return 'ABS(' . $sqlWalker->walkSimpleArithmeticExpression($this->simpleArithmeticExpression) . ')';
+    }
+
+    public function parse(Parser $parser): void
+    {
+        $parser->match(TokenType::T_IDENTIFIER);
+        $parser->match(TokenType::T_OPEN_PARENTHESIS);
+
+        $this->simpleArithmeticExpression = $parser->SimpleArithmeticExpression();
+
+        $parser->match(TokenType::T_CLOSE_PARENTHESIS);
+    }
+
+    public function getReturnTypeName(): string
+    {
+        return NegativeToPositiveType::NAME;
     }
 }
 

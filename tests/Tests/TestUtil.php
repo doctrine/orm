@@ -8,6 +8,7 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Configuration as DbalConfiguration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\AbstractSQLiteDriver\Middleware\EnableForeignKeys;
+use Doctrine\DBAL\Driver\AbstractSQLiteDriver\Middleware\LoadExtension;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception\DatabaseObjectNotFoundException;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
@@ -49,6 +50,7 @@ class TestUtil
      *               (optional, some vendors allow multiple server instances with different names on the same host).
      * 'db_dbname' : The name of the database to connect to.
      * 'db_port' : The port of the database to connect to.
+     * 'sqlite_extension' : The path of an SQLite extension to load, such as SpatiaLite.
      *
      * These variables of the $GLOBALS array are filled by PHPUnit based on an XML configuration file.
      *
@@ -71,6 +73,12 @@ class TestUtil
             }
 
             $config->setMiddlewares([...$config->getMiddlewares(), new EnableForeignKeys()]);
+        }
+
+        // loads an extension such as SpatiaLite into SQLite
+        if (isset($GLOBALS['sqlite_extension']) && class_exists(LoadExtension::class)) {
+            $config ??= new DbalConfiguration();
+            $config->setMiddlewares([...$config->getMiddlewares(), new LoadExtension($GLOBALS['sqlite_extension'])]);
         }
 
         $connection = DriverManager::getConnection($connectionParameters, $config);
