@@ -656,11 +656,11 @@ class MappingException extends PersistenceMappingException implements ORMExcepti
         );
     }
 
-    public static function invalidOverrideType(string $expectdType, mixed $givenValue): self
+    public static function invalidOverrideType(string $expectedType, mixed $givenValue): self
     {
         return new self(sprintf(
             'Expected %s, but %s was given.',
-            $expectdType,
+            $expectedType,
             get_debug_type($givenValue),
         ));
     }
