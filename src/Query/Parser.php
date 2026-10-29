@@ -81,6 +81,9 @@ final class Parser
         'bit_and'   => Functions\BitAndFunction::class,
         'bit_or'    => Functions\BitOrFunction::class,
 
+        // Array functions
+        'arrays_overlap' => Functions\ArraysOverlapFunction::class,
+
         // Aggregate functions
         'min'       => Functions\MinFunction::class,
         'max'       => Functions\MaxFunction::class,
@@ -3421,7 +3424,8 @@ final class Parser
      *      "SIZE" "(" CollectionValuedPathExpression ")" |
      *      "DATE_DIFF" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
      *      "BIT_AND" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
-     *      "BIT_OR" "(" ArithmeticPrimary "," ArithmeticPrimary ")"
+     *      "BIT_OR" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
+     *      "ARRAYS_OVERLAP" "(" ArithmeticPrimary "," ArithmeticPrimary ")"
      */
     public function FunctionsReturningNumerics(): AST\Functions\FunctionNode
     {

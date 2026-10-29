@@ -825,6 +825,14 @@ clauses:
 -  ``IDENTITY(single_association_path_expression [, fieldMapping])`` -
    Retrieve the foreign key column of association of the owning side
 -  ``ABS(arithmetic_expression)``
+-  ``ARRAYS_OVERLAP(array1, array2)`` - Test whether the arrays have
+   an element in common, like the ``&&`` operator of PostgreSQL:
+   PostgreSQL arrays, or JSON arrays on the other platforms, as stored
+   by the ``json`` type. Returns a boolean, or ``NULL`` if an array is
+   ``NULL``, for instance ``ARRAYS_OVERLAP(a.tags, :tags) = true``. The
+   elements are compared exactly, whatever the collation, and ``NULL``
+   elements are never in common. Requires ``doctrine/dbal`` 4.6,
+   MySQL 8.0 or MariaDB 10.6, and is not supported on Db2.
 -  ``CONCAT(str1, str2)``
 -  ``CURRENT_DATE()`` - Return the current date
 -  ``CURRENT_TIME()`` - Returns the current time
@@ -1857,7 +1865,8 @@ Functions
             "SIZE" "(" CollectionValuedPathExpression ")" |
             "DATE_DIFF" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
             "BIT_AND" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
-            "BIT_OR" "(" ArithmeticPrimary "," ArithmeticPrimary ")"
+            "BIT_OR" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
+            "ARRAYS_OVERLAP" "(" ArithmeticPrimary "," ArithmeticPrimary ")"
 
     FunctionsReturningDatetime ::=
             "CURRENT_DATE" |

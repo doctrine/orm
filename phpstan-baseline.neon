@@ -2185,6 +2185,18 @@ parameters:
 			path: src/Query.php
 
 		-
+			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform'' and ''getArraysOverlapExp…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Query/AST/Functions/ArraysOverlapFunction.php
+
+		-
+			message: '#^Call to function method_exists\(\) with Doctrine\\DBAL\\Platforms\\AbstractPlatform and ''getArraysOverlapExp…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Query/AST/Functions/ArraysOverlapFunction.php
+
+		-
 			message: '#^Property Doctrine\\ORM\\Query\\AST\\Functions\\BitAndFunction\:\:\$firstArithmetic \(Doctrine\\ORM\\Query\\AST\\Node\) does not accept Doctrine\\ORM\\Query\\AST\\Node\|string\.$#'
 			identifier: assign.propertyType
 			count: 1

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
@@ -31,6 +32,7 @@ use Doctrine\Tests\OrmTestCase;
 use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RequiresMethod;
 
 use function class_exists;
 
@@ -1659,6 +1661,18 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT BIT_OR(u.id,2), BIT_AND(u.id,2) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE BIT_OR(u.id , 2) > 0 OR BIT_AND(u.id , 4) > 0',
             'SELECT (c0_.id | 2) AS sclr_0, (c0_.id & 2) AS sclr_1 FROM cms_users c0_ WHERE (c0_.id | 2) > 0 OR (c0_.id & 4) > 0',
+        );
+    }
+
+    #[RequiresMethod(AbstractPlatform::class, 'getArraysOverlapExpression')]
+    public function testSupportsArraysOverlapFunction(): void
+    {
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new PostgreSQLPlatform());
+
+        $this->assertSqlGeneration(
+            'SELECT ARRAYS_OVERLAP(:first, :second) AS overlap FROM Doctrine\Tests\Models\CMS\CmsUser u'
+                . ' WHERE ARRAYS_OVERLAP(:first, :second) = true',
+            'SELECT (? && ?) AS sclr_0 FROM cms_users c0_ WHERE (? && ?) = true',
         );
     }
 

@@ -621,4 +621,17 @@ class Expr
     {
         return new Expr\Comparison($x, 'INSTANCE OF', $y);
     }
+
+    /**
+     * Creates an ARRAYS_OVERLAP() function expression with the given arguments.
+     *
+     * @param mixed $x First array to be compared by ARRAYS_OVERLAP() function.
+     * @param mixed $y Second array to be compared by ARRAYS_OVERLAP() function.
+     *
+     * @return Expr\Func An ARRAYS_OVERLAP function expression.
+     */
+    public function arraysOverlap(mixed $x, mixed $y): Expr\Func
+    {
+        return new Expr\Func('ARRAYS_OVERLAP', [$x, $y]);
+    }
 }
