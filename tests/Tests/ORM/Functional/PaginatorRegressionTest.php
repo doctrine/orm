@@ -66,7 +66,6 @@ final class PaginatorRegressionTest extends OrmFunctionalTestCase
         parent::tearDown();
     }
 
-    /** #3887: order is lost when fetchJoinCollection is true. */
     #[DataProvider('useOutputWalkers')]
     public function testOrderIsKeptWithFetchJoinCollection(bool $useOutputWalkers): void
     {
@@ -90,7 +89,6 @@ final class PaginatorRegressionTest extends OrmFunctionalTestCase
         self::assertSame([0, 1, 2, 3, 4], $ids);
     }
 
-    /** #6553: order is random when ordering by a joined column, with fetchJoinCollection true. */
     #[DataProvider('useOutputWalkers')]
     public function testOrderByJoinedColumnIsStable(bool $useOutputWalkers): void
     {
@@ -117,7 +115,6 @@ final class PaginatorRegressionTest extends OrmFunctionalTestCase
         }
     }
 
-    /** #3717: items are lost when ordering by a joined collection and paginating. */
     #[DataProvider('useOutputWalkers')]
     public function testOrderByCollectionFieldDoesNotLoseItems(bool $useOutputWalkers): void
     {
@@ -126,8 +123,6 @@ final class PaginatorRegressionTest extends OrmFunctionalTestCase
         );
 
         if (! $useOutputWalkers) {
-            // Without output walkers, the tree walker refuses this query instead
-            // of returning a wrong page.
             $this->expectException(RuntimeException::class);
             $this->expectExceptionMessage('Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.');
 
@@ -160,7 +155,6 @@ final class PaginatorRegressionTest extends OrmFunctionalTestCase
         self::assertSame([0, 1, 2, 3, 4], $positions, 'Every root must appear exactly once across the pages');
     }
 
-    /** #4520: ORDER BY a field of an entity with an EAGER association and custom column names. */
     #[DataProvider('useOutputWalkers')]
     public function testOrderByFieldWithEagerAssociationAndCustomColumnNames(bool $useOutputWalkers): void
     {
