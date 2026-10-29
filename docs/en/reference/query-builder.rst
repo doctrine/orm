@@ -527,6 +527,9 @@ complete list of supported helper methods available:
         // Example - $qb->expr()->length('u.firstname')
         public function length($x); // Returns Expr\Func
 
+        // Example - $qb->expr()->stringToArray('u.tags', $qb->expr()->literal(','))
+        public function stringToArray($x, $delimiter); // Returns Expr\Func
+
         // Example - $qb->expr()->avg('u.age')
         public function avg($x); // Returns Expr\Func
 

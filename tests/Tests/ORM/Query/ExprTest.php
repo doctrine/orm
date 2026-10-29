@@ -224,6 +224,11 @@ class ExprTest extends OrmTestCase
         self::assertEquals('LENGTH(u.first_name)', (string) $this->expr->length('u.first_name'));
     }
 
+    public function testStringToArrayExpr(): void
+    {
+        self::assertEquals("STRING_TO_ARRAY(u.tags, ',')", (string) $this->expr->stringToArray('u.tags', $this->expr->literal(',')));
+    }
+
     public function testGreaterThanExpr(): void
     {
         self::assertEquals('5 > 2', (string) $this->expr->gt(5, 2));
