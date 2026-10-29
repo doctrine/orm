@@ -57,7 +57,15 @@ final class GH5839Test extends OrmFunctionalTestCase
             'SELECT z FROM ' . GH5839Zone::class . ' z ORDER BY LENGTH(z.boundary) ASC',
         );
 
+        $this->getQueryLog()->reset()->enable();
+
         $page = (new OffsetPaginator(true, $useOutputWalkers))->paginate($query, new Window(0, 2));
+
+        $queries = $this->getQueryLog()->queries;
+
+        self::assertCount(2, $queries);
+        self::assertStringNotContainsString('TRIM(', $queries[0]['sql'], 'The identifier subquery must order on the stored column');
+        self::assertStringContainsString('TRIM(', $queries[1]['sql'], 'The hydration query must apply the conversion');
 
         self::assertSame(
             ['B', 'A'],
