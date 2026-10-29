@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
@@ -31,6 +32,7 @@ use Doctrine\Tests\OrmTestCase;
 use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RequiresMethod;
 
 use function class_exists;
 
@@ -648,6 +650,19 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT CONCAT(u.id, u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1',
             'SELECT c0_.id || c0_.name AS sclr_0 FROM cms_users c0_ WHERE c0_.id = ?',
+        );
+    }
+
+    #[RequiresMethod(AbstractPlatform::class, 'getStringToArrayExpression')]
+    public function testSupportsStringToArrayFunction(): void
+    {
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new PostgreSQLPlatform());
+
+        $this->assertSqlGeneration(
+            "SELECT STRING_TO_ARRAY(u.name, ',') FROM Doctrine\Tests\Models\CMS\CmsUser u"
+                . ' WHERE STRING_TO_ARRAY(:names, :delimiter) IS NOT NULL',
+            "SELECT string_to_array(c0_.name, ',') AS sclr_0 FROM cms_users c0_"
+                . ' WHERE string_to_array(?, ?) IS NOT NULL',
         );
     }
 

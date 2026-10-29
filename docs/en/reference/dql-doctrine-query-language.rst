@@ -838,6 +838,13 @@ clauses:
 -  ``SIZE(collection)`` - Return the number of elements in the
    specified collection
 -  ``SQRT(q)`` - Return the square-root of q.
+-  ``STRING_TO_ARRAY(str, delimiter)`` - Split the string into an
+   array of the substrings separated by the delimiter, like
+   ``string_to_array()`` of PostgreSQL: a PostgreSQL array, or a JSON
+   array on the other platforms, as stored by the ``json`` type, for
+   instance to split the value of a ``simple_array`` field. The
+   delimiter is compared character by character, whatever the
+   collation. Requires ``doctrine/dbal`` 4.6.
 -  ``SUBSTRING(str, start [, length])`` - Return substring of given
    string.
 -  ``TRIM([LEADING | TRAILING | BOTH] ['trchar' FROM] str)`` - Trim
@@ -1872,4 +1879,5 @@ Functions
             "TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")" |
             "LOWER" "(" StringPrimary ")" |
             "UPPER" "(" StringPrimary ")" |
-            "IDENTITY" "(" SingleValuedAssociationPathExpression {"," string} ")"
+            "IDENTITY" "(" SingleValuedAssociationPathExpression {"," string} ")" |
+            "STRING_TO_ARRAY" "(" StringPrimary "," StringPrimary ")"
