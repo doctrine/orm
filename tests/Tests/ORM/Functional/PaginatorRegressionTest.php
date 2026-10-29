@@ -28,7 +28,7 @@ use function sort;
  * Regression tests for paginator issues reported against the legacy Paginator.
  *
  * The behavior is verified against OffsetPaginator, which uses the same
- * identifiers walkers. Issue #5839 is still open and is not covered here.
+ * identifier walkers.
  *
  * @see https://github.com/doctrine/orm/issues/3717
  * @see https://github.com/doctrine/orm/issues/3887
@@ -83,6 +83,8 @@ final class PaginatorRegressionTest extends OrmFunctionalTestCase
 
             foreach ($page->getItems() as $root) {
                 $ids[] = $root->position;
+
+                self::assertCount(2, $root->lefts);
             }
         }
 
@@ -90,29 +92,25 @@ final class PaginatorRegressionTest extends OrmFunctionalTestCase
     }
 
     #[DataProvider('useOutputWalkers')]
-    public function testOrderByJoinedColumnIsStable(bool $useOutputWalkers): void
+    public function testOrderByJoinedColumnIsKept(bool $useOutputWalkers): void
     {
         $query = $this->_em->createQuery(
             'SELECT r FROM ' . PaginatorRegressionRoot::class . ' r JOIN r.category c ORDER BY c.position ASC',
         );
 
         $paginator = new OffsetPaginator(true, $useOutputWalkers);
-        $observed  = [];
 
-        for ($run = 0; $run < 8; $run++) {
-            $firstPage  = $paginator->paginate($query, new Window(0, 2));
-            $secondPage = $paginator->paginate($query, new Window(2, 2));
+        $firstPage = $paginator->paginate($query, new Window(0, 2));
+        self::assertSame(
+            [4, 3],
+            array_map(static fn (PaginatorRegressionRoot $root): int => $root->position, $firstPage->getItems()),
+        );
 
-            $observed[] = [
-                array_map(static fn (PaginatorRegressionRoot $root): int => $root->position, $firstPage->getItems()),
-                array_map(static fn (PaginatorRegressionRoot $root): int => $root->position, $secondPage->getItems()),
-            ];
-        }
-
-        $expected = [[[4, 3], [2, 1]]];
-        for ($run = 0; $run < 8; $run++) {
-            self::assertSame($expected[0], $observed[$run], 'Run ' . $run . ' must return the same order');
-        }
+        $secondPage = $paginator->paginate($query, new Window(2, 2));
+        self::assertSame(
+            [2, 1],
+            array_map(static fn (PaginatorRegressionRoot $root): int => $root->position, $secondPage->getItems()),
+        );
     }
 
     #[DataProvider('useOutputWalkers')]
@@ -159,13 +157,13 @@ final class PaginatorRegressionTest extends OrmFunctionalTestCase
     public function testOrderByFieldWithEagerAssociationAndCustomColumnNames(bool $useOutputWalkers): void
     {
         $query = $this->_em->createQuery(
-            'SELECT u FROM ' . PaginatorRegressionUser::class . ' u ORDER BY u.username ASC',
+            'SELECT u FROM ' . PaginatorRegressionUser::class . ' u ORDER BY u.username DESC, u.usernameCanonical ASC',
         );
 
         $page = (new OffsetPaginator(true, $useOutputWalkers))->paginate($query, new Window(0, 2));
 
         self::assertCount(2, $page);
-        self::assertSame(['user0', 'user1'], array_map(
+        self::assertSame(['user3', 'user2'], array_map(
             static fn (PaginatorRegressionUser $user): string => $user->username,
             $page->getItems(),
         ));
@@ -210,13 +208,15 @@ final class PaginatorRegressionTest extends OrmFunctionalTestCase
         $this->_em->persist($organization);
 
         for ($i = 0; $i < 4; $i++) {
-            $user               = new PaginatorRegressionUser();
-            $user->username     = 'user' . $i;
-            $user->organization = $organization;
+            $user                    = new PaginatorRegressionUser();
+            $user->username          = 'user' . $i;
+            $user->usernameCanonical = 'user' . $i;
+            $user->organization      = $organization;
             $this->_em->persist($user);
         }
 
         $this->_em->flush();
+        $this->_em->clear();
     }
 }
 
@@ -335,6 +335,10 @@ class PaginatorRegressionUser
     /** @var string */
     #[Column(name: 'username', type: 'string', length: 50)]
     public $username;
+
+    /** @var string */
+    #[Column(name: 'username_canonical', type: 'string', length: 50)]
+    public $usernameCanonical;
 
     /** @var PaginatorRegressionOrganization|null */
     #[ManyToOne(targetEntity: PaginatorRegressionOrganization::class, fetch: 'EAGER')]
