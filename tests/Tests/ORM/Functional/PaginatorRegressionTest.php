@@ -185,7 +185,9 @@ final class PaginatorRegressionTest extends OrmFunctionalTestCase
 
     private function populate(): void
     {
-        for ($i = 0; $i < 5; $i++) {
+        // Insert the roots out of position order, so a lost ORDER BY cannot
+        // produce the expected pages from the primary key order by accident.
+        foreach ([2, 0, 4, 1, 3] as $i) {
             $category           = new PaginatorRegressionCategory();
             $category->position = 4 - $i;
             $this->_em->persist($category);
