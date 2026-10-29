@@ -747,6 +747,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertQueryCount(1);
     }
 
+    #[Group('non-cacheable')]
     public function testCountReportsLazyLoadingCollection(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -759,6 +760,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertSame(['collection'], $this->capturedLazyLoadKinds());
     }
 
+    #[Group('non-cacheable')]
     public function testContainsReportsLazyLoadingCollection(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -773,6 +775,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertSame(['collection'], $this->capturedLazyLoadKinds());
     }
 
+    #[Group('non-cacheable')]
     public function testGetReportsLazyLoadingCollection(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -785,6 +788,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertSame(['collection'], $this->capturedLazyLoadKinds());
     }
 
+    #[Group('non-cacheable')]
     public function testSliceReportsLazyLoadingCollection(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -797,6 +801,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertSame(['collection'], $this->capturedLazyLoadKinds());
     }
 
+    #[Group('non-cacheable')]
     public function testMatchingReportsLazyLoadingCollection(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -809,6 +814,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertSame(['collection'], $this->capturedLazyLoadKinds());
     }
 
+    #[Group('non-cacheable')]
     public function testCollectionInitializationReportsLazyLoadingCollection(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -821,6 +827,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertSame(['collection'], $this->capturedLazyLoadKinds());
     }
 
+    #[Group('non-cacheable')]
     public function testRegularQueryDoesNotReportLazyLoading(): void
     {
         $this->enableLazyLoadKindCapture();
@@ -830,6 +837,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertSame([null], $this->capturedLazyLoadKinds());
     }
 
+    #[Group('non-cacheable')]
     public function testPostLoadReceivesLazyLoadingKindForLazyCollection(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -843,6 +851,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertSame(['collection'], $kinds);
     }
 
+    #[Group('non-cacheable')]
     public function testPostLoadIsNotALazyLoadForRegularQueries(): void
     {
         $em     = $this->_em;
@@ -855,6 +864,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertSame([null], $kinds);
     }
 
+    #[Group('non-cacheable')]
     public function testNoPostLoadWhenTheEntityIsAlreadyManaged(): void
     {
         $em     = $this->_em;
@@ -869,6 +879,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertSame([], $kinds);
     }
 
+    #[Group('non-cacheable')]
     public function testExtraLazyCountDoesNotDispatchPostLoad(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);

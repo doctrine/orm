@@ -143,6 +143,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertFalse($this->isUninitializedObject($entity), 'Should be initialized after called UnitOfWork::initializeObject()');
     }
 
+    #[Group('non-cacheable')]
     public function testInitializingAProxyReportsLazyLoadingToOne(): void
     {
         $id = $this->createProduct();
