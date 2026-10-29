@@ -50,8 +50,7 @@ final class GH5839Test extends OrmFunctionalTestCase
         parent::tearDown();
     }
 
-    #[DataProvider('useOutputWalkers')]
-    public function testOrderOnConvertedColumn(bool $useOutputWalkers): void
+    public function testOrderOnConvertedColumn(): void
     {
         $query = $this->_em->createQuery(
             'SELECT z FROM ' . GH5839Zone::class . ' z ORDER BY LENGTH(z.boundary) ASC',
@@ -59,7 +58,7 @@ final class GH5839Test extends OrmFunctionalTestCase
 
         $this->getQueryLog()->reset()->enable();
 
-        $page = (new OffsetPaginator(true, $useOutputWalkers))->paginate($query, new Window(0, 2));
+        $page = (new OffsetPaginator())->paginate($query, new Window(0, 2));
 
         $queries = $this->getQueryLog()->queries;
 
