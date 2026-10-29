@@ -41,6 +41,7 @@ final class GH12697Test extends OrmFunctionalTestCase
         }
 
         $this->_em->flush();
+        $this->_em->clear();
     }
 
     protected function tearDown(): void
