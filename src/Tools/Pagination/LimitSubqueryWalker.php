@@ -91,6 +91,15 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
                         $item->expression,
                     );
                 }
+
+                continue;
+            }
+
+            if ($item->expression instanceof Node) {
+                $selectStatement->selectClause->selectExpressions[] = new SelectExpression(
+                    $item->expression,
+                    '_dctrn_ord' . $this->aliasCounter++,
+                );
             }
         }
     }
