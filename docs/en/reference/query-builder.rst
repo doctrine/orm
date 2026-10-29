@@ -550,6 +550,9 @@ complete list of supported helper methods available:
 
         // Example - $qb->expr()->countDistinct('u.surname')
         public function countDistinct($x); // Returns Expr\Func
+
+        // Example - $qb->expr()->eq($qb->expr()->arraysOverlap('a.tags', ':tags'), 'true')
+        public function arraysOverlap($x, $y); // Returns Expr\Func
     }
 
 Adding a Criteria to a Query

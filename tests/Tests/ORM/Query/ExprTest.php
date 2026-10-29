@@ -291,6 +291,11 @@ class ExprTest extends OrmTestCase
         self::assertEquals(':groupId MEMBER OF u.groups', (string) $this->expr->isMemberOf(':groupId', 'u.groups'));
     }
 
+    public function testArraysOverlapExpr(): void
+    {
+        self::assertEquals('ARRAYS_OVERLAP(a.tags, :tags)', (string) $this->expr->arraysOverlap('a.tags', ':tags'));
+    }
+
     public static function provideIterableValue(): Generator
     {
         $gen = static function () {
