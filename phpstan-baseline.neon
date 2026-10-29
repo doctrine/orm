@@ -2257,6 +2257,18 @@ parameters:
 			path: src/Query/AST/Functions/LocateFunction.php
 
 		-
+			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform'' and ''getStringToArrayExp…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Query/AST/Functions/StringToArrayFunction.php
+
+		-
+			message: '#^Call to function method_exists\(\) with Doctrine\\DBAL\\Platforms\\AbstractPlatform and ''getStringToArrayExp…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Query/AST/Functions/StringToArrayFunction.php
+
+		-
 			message: '#^Parameter \#2 \$mode of method Doctrine\\DBAL\\Platforms\\AbstractPlatform\:\:getTrimExpression\(\) expects Doctrine\\DBAL\\Platforms\\TrimMode, Doctrine\\DBAL\\Platforms\\TrimMode\:\:BOTH\|Doctrine\\DBAL\\Platforms\\TrimMode\:\:LEADING\|Doctrine\\DBAL\\Platforms\\TrimMode\:\:TRAILING\|Doctrine\\DBAL\\Platforms\\TrimMode\:\:UNSPECIFIED\|int given\.$#'
 			identifier: argument.type
 			count: 2

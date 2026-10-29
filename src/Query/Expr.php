@@ -547,6 +547,19 @@ class Expr
     }
 
     /**
+     * Creates a STRING_TO_ARRAY() function expression with the given arguments.
+     *
+     * @param mixed $x         Argument to be split by STRING_TO_ARRAY() function.
+     * @param mixed $delimiter Delimiter of the substrings.
+     *
+     * @return Expr\Func A STRING_TO_ARRAY function expression.
+     */
+    public function stringToArray(mixed $x, mixed $delimiter): Expr\Func
+    {
+        return new Expr\Func('STRING_TO_ARRAY', [$x, $delimiter]);
+    }
+
+    /**
      * Creates a literal expression of the given argument.
      *
      * @param scalar $literal Argument to be converted to literal.

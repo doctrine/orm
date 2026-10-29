@@ -64,6 +64,9 @@ final class Parser
         'lower'     => Functions\LowerFunction::class,
         'upper'     => Functions\UpperFunction::class,
         'identity'  => Functions\IdentityFunction::class,
+
+        // Array functions
+        'string_to_array' => Functions\StringToArrayFunction::class,
     ];
 
     /**
@@ -3501,7 +3504,8 @@ final class Parser
      *   "TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")" |
      *   "LOWER" "(" StringPrimary ")" |
      *   "UPPER" "(" StringPrimary ")" |
-     *   "IDENTITY" "(" SingleValuedAssociationPathExpression {"," string} ")"
+     *   "IDENTITY" "(" SingleValuedAssociationPathExpression {"," string} ")" |
+     *   "STRING_TO_ARRAY" "(" StringPrimary "," StringPrimary ")"
      */
     public function FunctionsReturningStrings(): AST\Functions\FunctionNode
     {
