@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Event\PostLoadEventArgs;
+use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsGroup;
@@ -742,6 +745,185 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertFalse($contains);
         self::assertFalse($user->groups->isInitialized());
         $this->assertQueryCount(1);
+    }
+
+    public function testCountReportsLazyLoadingCollection(): void
+    {
+        $user = $this->_em->find(CmsUser::class, $this->userId);
+        assert($user instanceof CmsUser);
+
+        $this->enableLazyLoadKindCapture();
+
+        self::assertCount(3, $user->groups);
+
+        self::assertSame(['collection'], $this->capturedLazyLoadKinds());
+    }
+
+    public function testContainsReportsLazyLoadingCollection(): void
+    {
+        $user = $this->_em->find(CmsUser::class, $this->userId);
+        assert($user instanceof CmsUser);
+
+        $group = $this->_em->find(CmsGroup::class, $this->groupId);
+
+        $this->enableLazyLoadKindCapture();
+
+        self::assertTrue($user->groups->contains($group));
+
+        self::assertSame(['collection'], $this->capturedLazyLoadKinds());
+    }
+
+    public function testGetReportsLazyLoadingCollection(): void
+    {
+        $user = $this->_em->find(CmsUser::class, $this->userId);
+        assert($user instanceof CmsUser);
+
+        $this->enableLazyLoadKindCapture();
+
+        $user->phonenumbers->get($this->phonenumber);
+
+        self::assertSame(['collection'], $this->capturedLazyLoadKinds());
+    }
+
+    public function testSliceReportsLazyLoadingCollection(): void
+    {
+        $user = $this->_em->find(CmsUser::class, $this->userId);
+        assert($user instanceof CmsUser);
+
+        $this->enableLazyLoadKindCapture();
+
+        $user->groups->slice(0, 2);
+
+        self::assertSame(['collection'], $this->capturedLazyLoadKinds());
+    }
+
+    public function testMatchingReportsLazyLoadingCollection(): void
+    {
+        $user = $this->_em->find(CmsUser::class, $this->userId);
+        assert($user instanceof CmsUser);
+
+        $this->enableLazyLoadKindCapture();
+
+        $user->groups->matching(Criteria::create()->where(Criteria::expr()->eq('name', 'Test1')));
+
+        self::assertSame(['collection'], $this->capturedLazyLoadKinds());
+    }
+
+    public function testCollectionInitializationReportsLazyLoadingCollection(): void
+    {
+        $user = $this->_em->find(CmsUser::class, $this->userId);
+        assert($user instanceof CmsUser);
+
+        $this->enableLazyLoadKindCapture();
+
+        $user->phonenumbers->initialize();
+
+        self::assertSame(['collection'], $this->capturedLazyLoadKinds());
+    }
+
+    public function testRegularQueryDoesNotReportLazyLoading(): void
+    {
+        $this->enableLazyLoadKindCapture();
+
+        $this->_em->find(CmsUser::class, $this->userId);
+
+        self::assertSame([null], $this->capturedLazyLoadKinds());
+    }
+
+    public function testPostLoadReceivesLazyLoadingKindForLazyCollection(): void
+    {
+        $user = $this->_em->find(CmsUser::class, $this->userId);
+        assert($user instanceof CmsUser);
+        $phonenumber = $this->phonenumber;
+
+        $kinds = $this->capturePostLoadKinds(static function () use ($user, $phonenumber): void {
+            $user->phonenumbers->get($phonenumber);
+        });
+
+        self::assertSame(['collection'], $kinds);
+    }
+
+    public function testPostLoadIsNotALazyLoadForRegularQueries(): void
+    {
+        $em     = $this->_em;
+        $userId = $this->userId;
+
+        $kinds = $this->capturePostLoadKinds(static function () use ($em, $userId): void {
+            $em->find(CmsUser::class, $userId);
+        });
+
+        self::assertSame([null], $kinds);
+    }
+
+    public function testNoPostLoadWhenTheEntityIsAlreadyManaged(): void
+    {
+        $em     = $this->_em;
+        $userId = $this->userId;
+        $user   = $em->find(CmsUser::class, $userId);
+        assert($user instanceof CmsUser);
+
+        $kinds = $this->capturePostLoadKinds(static function () use ($em, $userId, $user): void {
+            self::assertSame($user, $em->find(CmsUser::class, $userId));
+        });
+
+        self::assertSame([], $kinds);
+    }
+
+    public function testExtraLazyCountDoesNotDispatchPostLoad(): void
+    {
+        $user = $this->_em->find(CmsUser::class, $this->userId);
+        assert($user instanceof CmsUser);
+
+        $kinds = $this->capturePostLoadKinds(static function () use ($user): void {
+            $user->groups->count();
+        });
+
+        self::assertSame([], $kinds);
+    }
+
+    /**
+     * @param callable(): void $operation
+     *
+     * @return list<'to_one'|'collection'|null>
+     */
+    private function capturePostLoadKinds(callable $operation): array
+    {
+        $listener = new class {
+            /** @var list<'to_one'|'collection'|null> */
+            public array $kinds = [];
+
+            public function postLoad(PostLoadEventArgs $args): void
+            {
+                $this->kinds[] = $args->getLazyLoadKind();
+            }
+        };
+
+        $eventManager = $this->_em->getEventManager();
+        $eventManager->addEventListener([Events::postLoad], $listener);
+
+        try {
+            $operation();
+        } finally {
+            $eventManager->removeEventListener([Events::postLoad], $listener);
+        }
+
+        return $listener->kinds;
+    }
+
+    private function enableLazyLoadKindCapture(): void
+    {
+        $em = $this->_em;
+
+        $this->getQueryLog()
+            ->reset()
+            ->captureLazyLoadKind(static fn (): string|null => $em->getUnitOfWork()->getLazyLoadingKind())
+            ->enable();
+    }
+
+    /** @return list<'to_one'|'collection'|null> */
+    private function capturedLazyLoadKinds(): array
+    {
+        return $this->getQueryLog()->lazyLoadKinds;
     }
 
     private function loadFixture(): void

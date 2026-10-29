@@ -255,14 +255,17 @@ EOPHP;
             $classMetadata       = $this->em->getClassMetadata($className);
             $entityPersister     = $this->uow->getEntityPersister($className);
             $identifierFlattener = $this->identifierFlattener;
+            $uow                 = $this->uow;
 
             $proxy = $classMetadata->reflClass->newLazyGhost(static function (object $object) use (
                 $identifier,
                 $entityPersister,
                 $identifierFlattener,
                 $classMetadata,
+                $uow,
             ): void {
-                $original = $entityPersister->loadById($identifier, $object);
+                $original = $uow->withLazyLoading('to_one', static fn () => $entityPersister->loadById($identifier, $object));
+
                 if ($original === null) {
                     throw EntityNotFoundException::fromClassNameAndIdentifier(
                         $classMetadata->getName(),
@@ -335,8 +338,10 @@ EOPHP;
      */
     private function createLazyInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister, IdentifierFlattener $identifierFlattener): Closure
     {
-        return static function (InternalProxy $proxy, array $identifier) use ($entityPersister, $classMetadata, $identifierFlattener): void {
-            $original = $entityPersister->loadById($identifier);
+        $uow = $this->uow;
+
+        return static function (InternalProxy $proxy, array $identifier) use ($entityPersister, $classMetadata, $identifierFlattener, $uow): void {
+            $original = $uow->withLazyLoading('to_one', static fn () => $entityPersister->loadById($identifier));
 
             if ($original === null) {
                 throw EntityNotFoundException::fromClassNameAndIdentifier(

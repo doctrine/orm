@@ -62,8 +62,10 @@ use function array_filter;
 use function array_flip;
 use function array_intersect_key;
 use function array_key_exists;
+use function array_key_last;
 use function array_keys;
 use function array_map;
+use function array_pop;
 use function array_sum;
 use function array_values;
 use function assert;
@@ -326,6 +328,13 @@ class UnitOfWork implements PropertyChangedListener
     /** @var array<string, array<string, mixed>> */
     private array $eagerLoadingCollections = [];
 
+    /**
+     * Stack of the lazy loading operations currently in progress.
+     *
+     * @var list<'to_one'|'collection'>
+     */
+    private array $lazyLoadingKinds = [];
+
     protected bool $hasCache = false;
 
     /**
@@ -345,7 +354,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->listenersInvoker         = new ListenersInvoker($em);
         $this->hasCache                 = $em->getConfiguration()->isSecondLevelCacheEnabled();
         $this->identifierFlattener      = new IdentifierFlattener($this, $em->getMetadataFactory());
-        $this->hydrationCompleteHandler = new HydrationCompleteHandler($this->listenersInvoker, $em);
+        $this->hydrationCompleteHandler = new HydrationCompleteHandler($this->listenersInvoker, $em, $this);
     }
 
     /**
@@ -2925,15 +2934,60 @@ class UnitOfWork implements PropertyChangedListener
 
         switch ($assoc->type()) {
             case ClassMetadata::ONE_TO_MANY:
-                $persister->loadOneToManyCollection($assoc, $collection->getOwner(), $collection);
+                $this->withLazyLoading(
+                    'collection',
+                    static fn () => $persister->loadOneToManyCollection($assoc, $collection->getOwner(), $collection),
+                );
                 break;
 
             case ClassMetadata::MANY_TO_MANY:
-                $persister->loadManyToManyCollection($assoc, $collection->getOwner(), $collection);
+                $this->withLazyLoading(
+                    'collection',
+                    static fn () => $persister->loadManyToManyCollection($assoc, $collection->getOwner(), $collection),
+                );
                 break;
         }
 
         $collection->setInitialized(true);
+    }
+
+    /**
+     * Returns the kind of the innermost lazy loading operation currently in
+     * progress, or null when no lazy loading is in progress.
+     *
+     * @return 'to_one'|'collection'|null
+     */
+    public function getLazyLoadingKind(): string|null
+    {
+        if ($this->lazyLoadingKinds === []) {
+            return null;
+        }
+
+        return $this->lazyLoadingKinds[array_key_last($this->lazyLoadingKinds)];
+    }
+
+    /**
+     * Runs the given operation with the lazy loading context set to the given
+     * kind. The previous context is restored even when the operation throws.
+     *
+     * @internal
+     *
+     * @param 'to_one'|'collection' $kind
+     * @param callable(): T         $operation
+     *
+     * @return T
+     *
+     * @template T
+     */
+    public function withLazyLoading(string $kind, callable $operation): mixed
+    {
+        $this->lazyLoadingKinds[] = $kind;
+
+        try {
+            return $operation();
+        } finally {
+            array_pop($this->lazyLoadingKinds);
+        }
     }
 
     /**

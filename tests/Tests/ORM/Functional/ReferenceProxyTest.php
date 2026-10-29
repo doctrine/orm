@@ -143,6 +143,25 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertFalse($this->isUninitializedObject($entity), 'Should be initialized after called UnitOfWork::initializeObject()');
     }
 
+    public function testInitializingAProxyReportsLazyLoadingToOne(): void
+    {
+        $id = $this->createProduct();
+
+        $entity = $this->_em->getReference(ECommerceProduct::class, $id);
+        assert($entity instanceof ECommerceProduct);
+
+        $em = $this->_em;
+
+        $this->getQueryLog()
+            ->reset()
+            ->captureLazyLoadKind(static fn (): string|null => $em->getUnitOfWork()->getLazyLoadingKind())
+            ->enable();
+
+        $entity->getName();
+
+        self::assertSame(['to_one'], $this->getQueryLog()->lazyLoadKinds);
+    }
+
     #[Group('DDC-1163')]
     public function testInitializeChangeAndFlushProxy(): void
     {

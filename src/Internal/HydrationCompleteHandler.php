@@ -9,6 +9,7 @@ use Doctrine\ORM\Event\ListenersInvoker;
 use Doctrine\ORM\Event\PostLoadEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\UnitOfWork;
 
 /**
  * Class, which can handle completion of hydration cycle and produce some of tasks.
@@ -16,12 +17,13 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  */
 final class HydrationCompleteHandler
 {
-    /** @var mixed[][] */
+    /** @var list<array{ClassMetadata<object>, int<0, 7>, object, 'to_one'|'collection'|null}> */
     private array $deferredPostLoadInvocations = [];
 
     public function __construct(
         private readonly ListenersInvoker $listenersInvoker,
         private readonly EntityManagerInterface $em,
+        private readonly UnitOfWork $uow,
     ) {
     }
 
@@ -36,7 +38,11 @@ final class HydrationCompleteHandler
             return;
         }
 
-        $this->deferredPostLoadInvocations[] = [$class, $invoke, $entity];
+        // Capture the lazy loading kind now: a nested lazy load dispatched before
+        // hydrationComplete() must not overwrite the kind of already queued entities.
+        $lazyLoadKind = $this->uow->getLazyLoadingKind();
+
+        $this->deferredPostLoadInvocations[] = [$class, $invoke, $entity, $lazyLoadKind];
     }
 
     /**
@@ -50,13 +56,13 @@ final class HydrationCompleteHandler
         $this->deferredPostLoadInvocations = [];
 
         foreach ($toInvoke as $classAndEntity) {
-            [$class, $invoke, $entity] = $classAndEntity;
+            [$class, $invoke, $entity, $lazyLoadKind] = $classAndEntity;
 
             $this->listenersInvoker->invoke(
                 $class,
                 Events::postLoad,
                 $entity,
-                new PostLoadEventArgs($entity, $this->em),
+                new PostLoadEventArgs($entity, $this->em, $lazyLoadKind),
                 $invoke,
             );
         }

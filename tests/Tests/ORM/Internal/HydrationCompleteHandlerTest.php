@@ -6,9 +6,11 @@ namespace Doctrine\Tests\ORM\Internal;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\ListenersInvoker;
+use Doctrine\ORM\Event\PostLoadEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\UnitOfWork;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -28,13 +30,15 @@ class HydrationCompleteHandlerTest extends TestCase
 {
     private ListenersInvoker&MockObject $listenersInvoker;
     private EntityManagerInterface&Stub $entityManager;
+    private UnitOfWork&Stub $unitOfWork;
     private HydrationCompleteHandler $handler;
 
     protected function setUp(): void
     {
         $this->listenersInvoker = $this->createMock(ListenersInvoker::class);
         $this->entityManager    = $this->createStub(EntityManagerInterface::class);
-        $this->handler          = new HydrationCompleteHandler($this->listenersInvoker, $this->entityManager);
+        $this->unitOfWork       = $this->createStub(UnitOfWork::class);
+        $this->handler          = new HydrationCompleteHandler($this->listenersInvoker, $this->entityManager, $this->unitOfWork);
     }
 
     #[DataProvider('invocationFlagProvider')]
@@ -138,6 +142,97 @@ class HydrationCompleteHandlerTest extends TestCase
         $this->handler->deferPostLoadInvoking($metadata, $entity);
 
         $this->listenersInvoker->expects(self::never())->method('invoke');
+
+        $this->handler->hydrationComplete();
+    }
+
+    public function testPassesLazyLoadKindCapturedWhenDeferring(): void
+    {
+        $metadata = $this->createStub(ClassMetadata::class);
+        assert($metadata instanceof ClassMetadata);
+        $entity = new stdClass();
+
+        $this->listenersInvoker->method('getSubscribedSystems')->willReturn(ListenersInvoker::INVOKE_LISTENERS);
+        $this->unitOfWork->method('getLazyLoadingKind')->willReturn('collection');
+
+        $this->handler->deferPostLoadInvoking($metadata, $entity);
+
+        $this
+            ->listenersInvoker
+            ->expects(self::once())
+            ->method('invoke')
+            ->with(
+                $metadata,
+                Events::postLoad,
+                $entity,
+                self::callback(
+                    static fn (LifecycleEventArgs $args) => $args instanceof PostLoadEventArgs
+                        && $args->isLazyLoad()
+                        && $args->getLazyLoadKind() === 'collection',
+                ),
+                ListenersInvoker::INVOKE_LISTENERS,
+            );
+
+        $this->handler->hydrationComplete();
+    }
+
+    public function testDeferredPostLoadIsNotALazyLoadByDefault(): void
+    {
+        $metadata = $this->createStub(ClassMetadata::class);
+        assert($metadata instanceof ClassMetadata);
+        $entity = new stdClass();
+
+        $this->listenersInvoker->method('getSubscribedSystems')->willReturn(ListenersInvoker::INVOKE_LISTENERS);
+
+        $this->handler->deferPostLoadInvoking($metadata, $entity);
+
+        $this
+            ->listenersInvoker
+            ->expects(self::once())
+            ->method('invoke')
+            ->with(
+                $metadata,
+                Events::postLoad,
+                $entity,
+                self::callback(
+                    static fn (LifecycleEventArgs $args) => $args instanceof PostLoadEventArgs
+                        && ! $args->isLazyLoad()
+                        && $args->getLazyLoadKind() === null,
+                ),
+                ListenersInvoker::INVOKE_LISTENERS,
+            );
+
+        $this->handler->hydrationComplete();
+    }
+
+    public function testLazyLoadKindIsCapturedWhenDeferringNotWhenDispatching(): void
+    {
+        $metadata = $this->createStub(ClassMetadata::class);
+        assert($metadata instanceof ClassMetadata);
+        $entity = new stdClass();
+
+        $this->listenersInvoker->method('getSubscribedSystems')->willReturn(ListenersInvoker::INVOKE_LISTENERS);
+        $this
+            ->unitOfWork
+            ->method('getLazyLoadingKind')
+            ->willReturnOnConsecutiveCalls('collection', 'to_one');
+
+        $this->handler->deferPostLoadInvoking($metadata, $entity);
+
+        $this
+            ->listenersInvoker
+            ->expects(self::once())
+            ->method('invoke')
+            ->with(
+                $metadata,
+                Events::postLoad,
+                $entity,
+                self::callback(
+                    static fn (LifecycleEventArgs $args) => $args instanceof PostLoadEventArgs
+                        && $args->getLazyLoadKind() === 'collection',
+                ),
+                ListenersInvoker::INVOKE_LISTENERS,
+            );
 
         $this->handler->hydrationComplete();
     }

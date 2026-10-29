@@ -346,7 +346,10 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         ) {
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->getMapping());
 
-            return $this->unwrap()->containsKey($key) || $persister->containsKey($this, $key);
+            return $this->getUnitOfWork()->withLazyLoading(
+                'collection',
+                fn (): bool => $this->unwrap()->containsKey($key) || $persister->containsKey($this, $key),
+            );
         }
 
         return parent::containsKey($key);
@@ -357,7 +360,10 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         if (! $this->initialized && $this->getMapping()->fetch === ClassMetadata::FETCH_EXTRA_LAZY) {
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->getMapping());
 
-            return $this->unwrap()->contains($element) || $persister->contains($this, $element);
+            return $this->getUnitOfWork()->withLazyLoading(
+                'collection',
+                fn (): bool => $this->unwrap()->contains($element) || $persister->contains($this, $element),
+            );
         }
 
         return parent::contains($element);
@@ -372,11 +378,18 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         ) {
             assert($this->em !== null);
             assert($this->typeClass !== null);
-            if (! $this->typeClass->isIdentifierComposite && $this->typeClass->isIdentifier($this->getMapping()->indexBy)) {
-                return $this->em->find($this->typeClass->name, $key);
+
+            if (isset($this->getMapping()->indexBy) && ! $this->typeClass->isIdentifierComposite && $this->typeClass->isIdentifier($this->getMapping()->indexBy)) {
+                return $this->getUnitOfWork()->withLazyLoading(
+                    'collection',
+                    fn (): mixed => $this->em->find($this->typeClass->name, $key),
+                );
             }
 
-            return $this->getUnitOfWork()->getCollectionPersister($this->getMapping())->get($this, $key);
+            return $this->getUnitOfWork()->withLazyLoading(
+                'collection',
+                fn (): mixed => $this->getUnitOfWork()->getCollectionPersister($this->getMapping())->get($this, $key),
+            );
         }
 
         return parent::get($key);
@@ -387,7 +400,10 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         if (! $this->initialized && $this->association !== null && $this->getMapping()->fetch === ClassMetadata::FETCH_EXTRA_LAZY) {
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->association);
 
-            return $persister->count($this) + ($this->isDirty ? $this->unwrap()->count() : 0);
+            return $this->getUnitOfWork()->withLazyLoading(
+                'collection',
+                fn (): int => $persister->count($this) + ($this->isDirty ? $this->unwrap()->count() : 0),
+            );
         }
 
         return parent::count();
@@ -510,7 +526,10 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         if (! $this->initialized && ! $this->isDirty && $this->getMapping()->fetch === ClassMetadata::FETCH_EXTRA_LAZY) {
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->getMapping());
 
-            return array_values($persister->slice($this, 0, 1))[0] ?? false;
+            return $this->getUnitOfWork()->withLazyLoading(
+                'collection',
+                fn (): mixed => array_values($persister->slice($this, 0, 1))[0] ?? false,
+            );
         }
 
         return parent::first();
@@ -531,7 +550,10 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         if (! $this->initialized && ! $this->isDirty && $this->getMapping()->fetch === ClassMetadata::FETCH_EXTRA_LAZY) {
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->getMapping());
 
-            return $persister->slice($this, $offset, $length);
+            return $this->getUnitOfWork()->withLazyLoading(
+                'collection',
+                fn (): array => $persister->slice($this, $offset, $length),
+            );
         }
 
         return parent::slice($offset, $length);
@@ -584,7 +606,10 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         if ($association->isManyToMany()) {
             $persister = $this->getUnitOfWork()->getCollectionPersister($association);
 
-            return new ArrayCollection($persister->loadCriteria($this, $criteria));
+            return $this->getUnitOfWork()->withLazyLoading(
+                'collection',
+                fn (): Collection => new ArrayCollection($persister->loadCriteria($this, $criteria)),
+            );
         }
 
         $builder         = Criteria::expr();
@@ -599,9 +624,12 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         $persister = $this->getUnitOfWork()->getEntityPersister($association->targetEntity);
 
-        return $association->fetch === ClassMetadata::FETCH_EXTRA_LAZY
-            ? new LazyCriteriaCollection($persister, $criteria)
-            : new ArrayCollection($persister->loadCriteria($criteria));
+        return $this->getUnitOfWork()->withLazyLoading(
+            'collection',
+            static fn (): Collection => $association->fetch === ClassMetadata::FETCH_EXTRA_LAZY
+                ? new LazyCriteriaCollection($persister, $criteria)
+                : new ArrayCollection($persister->loadCriteria($criteria)),
+        );
     }
 
     /**

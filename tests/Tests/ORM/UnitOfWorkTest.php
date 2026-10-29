@@ -713,6 +713,55 @@ class UnitOfWorkTest extends OrmTestCase
             self::assertSame('Commit failed', $e->getPrevious()->getMessage());
         }
     }
+
+    public function testIsNotLazyLoadingByDefault(): void
+    {
+        self::assertNull($this->_unitOfWork->getLazyLoadingKind());
+    }
+
+    public function testLazyLoadingKindIsTheInnermostOne(): void
+    {
+        $uow = $this->_unitOfWork;
+
+        $uow->withLazyLoading('to_one', static function () use ($uow): void {
+            self::assertSame('to_one', $uow->getLazyLoadingKind());
+
+            $uow->withLazyLoading('collection', static function () use ($uow): void {
+                self::assertSame('collection', $uow->getLazyLoadingKind());
+            });
+
+            self::assertSame('to_one', $uow->getLazyLoadingKind());
+        });
+
+        self::assertNull($uow->getLazyLoadingKind());
+    }
+
+    public function testWithLazyLoadingReturnsTheOperationResult(): void
+    {
+        $result = $this->_unitOfWork->withLazyLoading('collection', static fn (): int => 42);
+
+        self::assertSame(42, $result);
+    }
+
+    public function testLazyLoadingContextIsRestoredWhenAnExceptionIsThrown(): void
+    {
+        $uow = $this->_unitOfWork;
+
+        $uow->withLazyLoading('to_one', static function () use ($uow): void {
+            try {
+                $uow->withLazyLoading('collection', static function (): void {
+                    throw new BaseException('Failure during lazy loading');
+                });
+
+                self::fail('Exception expected');
+            } catch (BaseException) {
+            }
+
+            self::assertSame('to_one', $uow->getLazyLoadingKind());
+        });
+
+        self::assertNull($uow->getLazyLoadingKind());
+    }
 }
 
 
