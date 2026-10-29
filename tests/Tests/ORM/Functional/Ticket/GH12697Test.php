@@ -31,11 +31,11 @@ final class GH12697Test extends OrmFunctionalTestCase
             $parent = new GH12697Parent();
             $this->_em->persist($parent);
 
-            foreach (['b' => 0, 'a' => 1] as $name => $rank) {
+            foreach (['b' => 0, 'a' => 1] as $name => $score) {
                 $child         = new GH12697Child();
                 $child->parent = $parent;
                 $child->name   = $name;
-                $child->rank   = $rank;
+                $child->score  = $score;
                 $this->_em->persist($child);
             }
         }
@@ -63,7 +63,7 @@ final class GH12697Test extends OrmFunctionalTestCase
             . '   LEFT JOIN p2.children c2'
             . '   WHERE NOT EXISTS ('
             . '     SELECT 1 FROM ' . GH12697Child::class . ' x'
-            . '     WHERE x.parent = p2 AND x.rank > c2.rank'
+            . '     WHERE x.parent = p2 AND x.score > c2.score'
             . '   )'
             . '   AND c2.name = :name'
             . ' )'
@@ -116,5 +116,5 @@ class GH12697Child
 
     /** @var int */
     #[Column(type: 'integer')]
-    public $rank;
+    public $score;
 }
