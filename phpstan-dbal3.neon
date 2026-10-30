@@ -46,6 +46,11 @@ parameters:
             message: '~.*getTrimExpression.*expects int.*~'
             path: src/Query/AST/Functions/TrimFunction.php
 
+        # TypeProvider only exists on DBAL >= 4.6
+        -
+            message: '~Doctrine\\DBAL\\Types\\TypeProvider~'
+            identifier: class.notFound
+
         -
             message: '~^Call to static method unquoted\(\) on an unknown class Doctrine\\DBAL\\Schema\\Name\\Identifier\.$~'
             path: src/Tools/SchemaTool.php
@@ -120,6 +125,8 @@ parameters:
         - '~^Class Doctrine\\DBAL\\Platforms\\SQLitePlatform not found\.$~'
 
         - '~^Class Doctrine\\DBAL\\Schema\\NamedObject not found\.$~'
+        - '~^Class Doctrine\\DBAL\\Schema\\Name\\Parsers not found\.$~'
+        - '~^Call to an undefined static method Doctrine\\DBAL\\Schema\\Index\:\:editor\(\)\.$~'
 
         -
             message: '~sort~'
@@ -222,6 +229,14 @@ parameters:
 
         -
             message: '~^Parameter \$column of anonymous function has invalid type Doctrine\\DBAL\\Schema\\ColumnEditor\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Parameter \$indexEditor of method .*SchemaTool\:\:applyIndexFlags\(\) has invalid type Doctrine\\DBAL\\Schema\\IndexEditor\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Call to method (?:setIsClustered|setType)\(\) on an unknown class Doctrine\\DBAL\\Schema\\IndexEditor\.$~'
             path: src/Tools/SchemaTool.php
 
         -

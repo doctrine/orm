@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\ComparisonExpression;
 use Doctrine\ORM\Query\AST\ConditionalPrimary;
@@ -40,7 +39,9 @@ use RuntimeException;
 
 use function array_keys;
 use function array_map;
+use function array_values;
 use function count;
+use function iterator_to_array;
 use function sprintf;
 
 #[Group('DDC-1613')]
@@ -56,11 +57,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->useModelSet('company');
         $this->useModelSet('custom_id_object_type');
 
-        if (DBALType::hasType(CustomIdObjectType::NAME)) {
-            DBALType::overrideType(CustomIdObjectType::NAME, CustomIdObjectType::class);
-        } else {
-            DBALType::addType(CustomIdObjectType::NAME, CustomIdObjectType::class);
-        }
+        self::registerDbalType(CustomIdObjectType::NAME, CustomIdObjectType::class);
 
         parent::setUp();
 
@@ -85,6 +82,35 @@ class PaginationTest extends OrmFunctionalTestCase
 
         $page = (new OffsetPaginator(true, $useOutputWalkers))->paginate($query, new Window(0, self::WHOLE_RESULT_SET));
         self::assertSame(9, $page->getTotalCount());
+    }
+
+    #[DataProvider('useOutputWalkersAndFetchJoinCollection')]
+    public function testGetTotalCountWithoutPaginating(bool $useOutputWalkers, bool $fetchJoinCollection): void
+    {
+        $dql   = 'SELECT u, g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g WHERE u.id > :min';
+        $query = $this->_em->createQuery($dql)->setParameter('min', 0);
+
+        $paginator = new OffsetPaginator($fetchJoinCollection, $useOutputWalkers);
+
+        self::assertSame(9, $paginator->getTotalCount($query));
+        self::assertSame($paginator->paginate($query, new Window(0, 4))->getTotalCount(), $paginator->getTotalCount($query));
+    }
+
+    public function testGetTotalCountAcceptsAQueryBuilder(): void
+    {
+        $queryBuilder = $this->_em->createQueryBuilder()
+            ->select('g')
+            ->from(CmsGroup::class, 'g');
+
+        self::assertSame(3, (new OffsetPaginator())->getTotalCount($queryBuilder));
+    }
+
+    public function testGetTotalCountReturnsZeroForAnEmptyResultSet(): void
+    {
+        $dql   = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id < 0';
+        $query = $this->_em->createQuery($dql);
+
+        self::assertSame(0, (new OffsetPaginator())->getTotalCount($query));
     }
 
     public function testOffsetPaginatorReturnsFirstPage(): void
@@ -174,14 +200,19 @@ class PaginationTest extends OrmFunctionalTestCase
         (new OffsetPaginator())->paginate($query, 42);
     }
 
-    public function testPageItemsAreAListEvenForIndexByQueries(): void
+    #[DataProvider('fetchJoinCollection')]
+    public function testOffsetPaginatorPreservesIndexByKeys(bool $fetchJoinCollection): void
     {
-        $dql   = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u INDEX BY u.id';
+        $dql   = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u INDEX BY u.id ORDER BY u.id';
         $query = $this->_em->createQuery($dql);
 
-        $page = (new OffsetPaginator(false))->paginate($query, new Window(0, 3));
+        $page = (new OffsetPaginator($fetchJoinCollection))->paginate($query, new Window(0, 3));
 
-        self::assertSame([0, 1, 2], array_keys($page->getItems()));
+        $items = $page->getItems();
+        $ids   = array_values(array_map(static fn (CmsUser $user): int => $user->id, $items));
+
+        self::assertSame($ids, array_keys($items));
+        self::assertSame($ids, array_keys(iterator_to_array($page)));
     }
 
     public function testCountComplexWithOutputWalker(): void
@@ -198,10 +229,12 @@ class PaginationTest extends OrmFunctionalTestCase
         $dql   = 'SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g HAVING COUNT(u.id) > 0';
         $query = $this->_em->createQuery($dql);
 
+        $page = (new OffsetPaginator(false, false))->paginate($query, new Window(0, self::WHOLE_RESULT_SET));
+
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
 
-        (new OffsetPaginator(false, false))->paginate($query, new Window(0, self::WHOLE_RESULT_SET));
+        $page->getTotalCount();
     }
 
     #[DataProvider('useOutputWalkers')]
@@ -606,10 +639,12 @@ class PaginationTest extends OrmFunctionalTestCase
         // Tree walkers for pagination, which leads to an exception. If the query works, the output walkers were used
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, SqlOutputWalker::class);
 
+        $page = (new OffsetPaginator(false))->paginate($query, new Window(0, self::WHOLE_RESULT_SET));
+
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
 
-        (new OffsetPaginator(false))->paginate($query, new Window(0, self::WHOLE_RESULT_SET));
+        $page->getTotalCount();
     }
 
     /**

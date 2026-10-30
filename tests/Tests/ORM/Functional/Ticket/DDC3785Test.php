@@ -28,7 +28,7 @@ class DDC3785Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        Type::addType('ddc3785_asset_id', DDC3785AssetIdType::class);
+        self::registerDbalType('ddc3785_asset_id', DDC3785AssetIdType::class);
 
         $this->createSchemaForModels(
             DDC3785Asset::class,

@@ -666,6 +666,21 @@ The ``EntityRepository#findBy()`` method additionally accepts orderings, limit a
     <?php
     $tenUsers = $em->getRepository('MyProject\Domain\User')->findBy(array('age' => 20), array('name' => 'ASC'), 10, 0);
 
+The ``findBy()`` and ``findOneBy()`` methods also accept ``\SortDirection``
+values as sort directions, which can be mixed with ``'ASC'`` / ``'DESC'``
+strings:
+
+.. code-block:: php
+
+    <?php
+    $tenUsers = $em->getRepository('MyProject\Domain\User')
+        ->findBy(array('age' => 20), array('name' => \SortDirection::Descending), 10, 0);
+
+Unlike ``QueryBuilder#orderBy()`` and the mapped ``OrderBy`` attribute,
+repository methods do not deprecate string sort directions: they must keep
+accepting strings while ``doctrine/persistence`` 3.x and 4.x document them as
+the only statically valid values. Both forms are therefore supported.
+
 If you pass an array of values Doctrine will convert the query into a WHERE field IN (..) query automatically:
 
 .. code-block:: php

@@ -422,7 +422,10 @@ class DatabaseDriver implements MappingDriver
         $fieldMapping = [
             'fieldName'  => $this->getFieldNameForColumn($tableName, self::getAssetName($column), false),
             'columnName' => self::getAssetName($column),
-            'type'       => Type::getTypeRegistry()->lookupName($column->getType()),
+            /** @phpstan-ignore function.alreadyNarrowedType (Column::getTypeName() only exists on DBAL >= 4.6) */
+            'type'       => method_exists($column, 'getTypeName')
+                ? $column->getTypeName()
+                : Type::getTypeRegistry()->lookupName($column->getType()),
             'nullable'   => ! $column->getNotnull(),
             'options'    => [
                 'comment' => $column->getComment(),

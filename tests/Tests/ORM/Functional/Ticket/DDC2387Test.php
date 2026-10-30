@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Name\Identifier;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\TableEditor;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\ORM\Functional\DatabaseDriverTestCase;
 use PHPUnit\Framework\Attributes\Group;
@@ -25,14 +24,14 @@ class DDC2387Test extends DatabaseDriverTestCase
     {
         $product = new Table(
             'ddc2387_product',
-            [new Column('id', Type::getType('integer'))],
+            [self::createColumn('id', Types::INTEGER)],
         );
 
         $attributes = new Table(
             'ddc2387_attributes',
             [
-                new Column('product_id', Type::getType('integer')),
-                new Column('attribute_name', Type::getType('string')),
+                self::createColumn('product_id', Types::INTEGER),
+                self::createColumn('attribute_name', Types::STRING),
             ],
         );
 

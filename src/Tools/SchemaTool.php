@@ -17,7 +17,10 @@ use Doctrine\DBAL\Schema\DefaultExpression\CurrentTimestamp;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Index\IndexedColumn;
+use Doctrine\DBAL\Schema\Index\IndexType;
+use Doctrine\DBAL\Schema\IndexEditor;
 use Doctrine\DBAL\Schema\Name\Identifier;
+use Doctrine\DBAL\Schema\Name\Parsers;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
 use Doctrine\DBAL\Schema\NamedObject;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
@@ -58,6 +61,7 @@ use function current;
 use function implode;
 use function in_array;
 use function interface_exists;
+use function is_int;
 use function is_numeric;
 use function method_exists;
 use function preg_match;
@@ -414,6 +418,7 @@ class SchemaTool
 
                     /** @phpstan-ignore method.deprecated (to be handled in experimental code) */
                     $table->addIndex(
+                        /** @phpstan-ignore argument.type (todo: improve return type of getIndexedColumns) */
                         $this->getIndexColumns($class, $indexData),
                         is_numeric($indexName) ? null : $indexName,
                         (array) $indexData['flags'],
@@ -736,14 +741,26 @@ class SchemaTool
                         $indexData['flags'] = [];
                     }
 
-                    /** @phpstan-ignore method.deprecated (todo) */
-                    $table->addIndex(
-                        /** @phpstan-ignore argument.type (todo) */
-                        $this->getIndexColumns($class, $indexData),
-                        is_numeric($indexName) ? null : $indexName,
-                        (array) $indexData['flags'],
-                        $indexData['options'] ?? [],
-                    );
+                    $indexEditor = Index::editor();
+
+                    foreach ($this->getIndexColumns($class, $indexData) as $columnName) {
+                        $indexEditor->addColumn(new IndexedColumn(
+                            Parsers::parseUnqualifiedName($columnName),
+                            null,
+                        ));
+                    }
+
+                    self::applyIndexFlags($indexEditor, (array) $indexData['flags']);
+
+                    if (isset($indexData['options']['where'])) {
+                        $indexEditor->setPredicate($indexData['options']['where']);
+                    }
+
+                    if (! is_numeric($indexName)) {
+                        $indexEditor->setName(Parsers::parseUnqualifiedName($indexName));
+                    }
+
+                    $indexEditor->addToTable($table);
                 }
             }
 
@@ -1601,6 +1618,35 @@ class SchemaTool
         }
 
         return $index->getColumns();
+    }
+
+    /**
+     * Applies platform-specific index flags, such as 'fulltext', to the index being built.
+     *
+     * Flags are given as a list of names, e.g. `['fulltext']`, but a map of
+     * `name => bool` is accepted as well.
+     *
+     * @param array<array-key, mixed> $flags
+     */
+    private static function applyIndexFlags(IndexEditor $indexEditor, array $flags): void
+    {
+        $names = [];
+
+        foreach ($flags as $key => $value) {
+            $names[strtolower(is_int($key) ? (string) $value : $key)] = is_int($key) ? true : $value;
+        }
+
+        if (isset($names['clustered'])) {
+            $indexEditor->setIsClustered((bool) $names['clustered']);
+        }
+
+        if (isset($names['fulltext'])) {
+            $indexEditor->setType(IndexType::FULLTEXT);
+        }
+
+        if (isset($names['spatial'])) {
+            $indexEditor->setType(IndexType::SPATIAL);
+        }
     }
 
     /**

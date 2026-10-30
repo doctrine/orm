@@ -10,11 +10,14 @@ use Doctrine\DBAL\Schema\ForeignKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Index as DbalIndex;
 use Doctrine\DBAL\Schema\Index\IndexedColumn;
 use Doctrine\DBAL\Schema\Index\IndexType;
+use Doctrine\DBAL\Schema\Name\Identifier;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
+use Doctrine\DBAL\Schema\Name\UnquotedIdentifierFolding;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table as DbalTable;
+use Doctrine\DBAL\Schema\TableEditor;
 use Doctrine\DBAL\Types\EnumType;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
@@ -694,7 +697,26 @@ class SchemaToolTest extends OrmTestCase
 
         $table = $schema->getTable('quoted-table');
 
-        self::assertTrue($table->hasIndex('IDX_AA2790FB50D14D90'));
+        $foundIndex = false;
+        if (class_exists(TableEditor::class)) {
+            foreach ($table->getIndexes() as $index) {
+                foreach ($index->getIndexedColumns() as $column) {
+                    if (
+                        $column->getColumnName()->getIdentifier()->equals(
+                            Identifier::quoted('quoted-name'),
+                            UnquotedIdentifierFolding::NONE,
+                        )
+                    ) {
+                        $foundIndex = true;
+                        break 2;
+                    }
+                }
+            }
+        } elseif ($table->hasIndex('IDX_AA2790FB50D14D90')) {
+            $foundIndex = true;
+        }
+
+        self::assertTrue($foundIndex, 'Index on quoted-name should exist.');
 
         // DBAL < 4.3
         if (! class_exists(PrimaryKeyConstraint::class)) {
@@ -840,6 +862,20 @@ class SchemaToolTest extends OrmTestCase
         self::assertFalse(self::indexIsFulltext($table->getIndex('idx_other')));
     }
 
+    public function testIndexFlagsAreApplied(): void
+    {
+        $table = $this->getSchemaTableForEntity(GH5593FlaggedIndexes::class);
+
+        self::assertTrue($table->hasIndex('fulltext_title'));
+        self::assertTrue($table->hasIndex('spatial_title'));
+        self::assertTrue($table->hasIndex('clustered_title'));
+
+        self::assertIndexIsFulltext($table->getIndex('fulltext_title'));
+        self::assertIndexIsSpatial($table->getIndex('spatial_title'));
+        self::assertTrue(self::indexIsClustered($table->getIndex('clustered_title')), 'Index should be clustered.');
+        self::assertFalse(self::indexIsClustered($table->getIndex('fulltext_title')), 'Index should not be clustered.');
+    }
+
     #[Group('GH-5593')]
     public function testPartialIndexOptionsStillPreventDeduplication(): void
     {
@@ -960,6 +996,11 @@ class SchemaToolTest extends OrmTestCase
         self::assertTrue(self::indexIsFulltext($index), 'Index should be fulltext.');
     }
 
+    private static function assertIndexIsSpatial(DbalIndex $index): void
+    {
+        self::assertTrue(self::indexIsSpatial($index), 'Index should be spatial.');
+    }
+
     private static function indexIsUnique(DbalIndex $index): bool
     {
         if (enum_exists(IndexType::class)) {
@@ -976,6 +1017,24 @@ class SchemaToolTest extends OrmTestCase
         }
 
         return in_array('fulltext', $index->getFlags(), true);
+    }
+
+    private static function indexIsSpatial(DbalIndex $index): bool
+    {
+        if (enum_exists(IndexType::class)) {
+            return $index->getType() === IndexType::SPATIAL;
+        }
+
+        return in_array('spatial', $index->getFlags(), true);
+    }
+
+    private static function indexIsClustered(DbalIndex $index): bool
+    {
+        if (method_exists(DbalIndex::class, 'isClustered')) {
+            return $index->isClustered();
+        }
+
+        return in_array('clustered', $index->getFlags(), true);
     }
 
     private static function findUniqueNonPrimaryIndex(DbalTable $table): DbalIndex|null
@@ -1530,6 +1589,27 @@ class GH5593UnflaggedIndexWithUniqueConstraint
 
     #[Column(length: 255)]
     public string $other = '';
+}
+
+#[Entity]
+#[Table(name: 'gh5593_flagged_indexes')]
+#[Index(name: 'fulltext_title', columns: ['title'], flags: ['fulltext'])]
+#[Index(name: 'spatial_title', columns: ['position'], flags: ['spatial'])]
+#[Index(name: 'clustered_title', columns: ['subtitle'], flags: ['clustered'])]
+class GH5593FlaggedIndexes
+{
+    #[Id]
+    #[Column]
+    public int $id = 0;
+
+    #[Column(length: 255)]
+    public string $title = '';
+
+    #[Column(length: 255)]
+    public string $position = '';
+
+    #[Column(length: 255)]
+    public string $subtitle = '';
 }
 
 #[Entity]
