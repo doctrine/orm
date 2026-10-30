@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\DbalExtensions;
 
+use Doctrine\ORM\LazyLoadingKind;
+
 final class QueryLog
 {
     /** @var list<array{sql: string, params: array|null, types: array|null}> */
     public array $queries = [];
 
-    /** @var list<'to_one'|'collection'|null> */
+    /** @var list<LazyLoadingKind|null> */
     public array $lazyLoadKinds = [];
 
-    /** @var (callable(): 'to_one'|'collection'|null)|null */
+    /** @var (callable(): LazyLoadingKind|null)|null */
     private $lazyLoadKindProvider = null;
 
     private bool $enabled = false;
@@ -37,7 +39,7 @@ final class QueryLog
     /**
      * Captures the lazy loading kind for every logged query.
      *
-     * @param callable(): 'to_one'|'collection'|null $provider
+     * @param callable(): LazyLoadingKind|null $provider
      *
      * @return $this
      */

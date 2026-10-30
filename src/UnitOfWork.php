@@ -331,7 +331,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Stack of the lazy loading operations currently in progress.
      *
-     * @var list<'to_one'|'collection'>
+     * @var list<LazyLoadingKind>
      */
     private array $lazyLoadingKinds = [];
 
@@ -2935,14 +2935,14 @@ class UnitOfWork implements PropertyChangedListener
         switch ($assoc->type()) {
             case ClassMetadata::ONE_TO_MANY:
                 $this->withLazyLoading(
-                    'collection',
+                    LazyLoadingKind::Collection,
                     static fn () => $persister->loadOneToManyCollection($assoc, $collection->getOwner(), $collection),
                 );
                 break;
 
             case ClassMetadata::MANY_TO_MANY:
                 $this->withLazyLoading(
-                    'collection',
+                    LazyLoadingKind::Collection,
                     static fn () => $persister->loadManyToManyCollection($assoc, $collection->getOwner(), $collection),
                 );
                 break;
@@ -2954,10 +2954,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Returns the kind of the innermost lazy loading operation currently in
      * progress, or null when no lazy loading is in progress.
-     *
-     * @return 'to_one'|'collection'|null
      */
-    public function getLazyLoadingKind(): string|null
+    public function getLazyLoadingKind(): LazyLoadingKind|null
     {
         if ($this->lazyLoadingKinds === []) {
             return null;
@@ -2972,14 +2970,13 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @param 'to_one'|'collection' $kind
-     * @param callable(): T         $operation
+     * @param callable(): T $operation
      *
      * @return T
      *
      * @template T
      */
-    public function withLazyLoading(string $kind, callable $operation): mixed
+    public function withLazyLoading(LazyLoadingKind $kind, callable $operation): mixed
     {
         $this->lazyLoadingKinds[] = $kind;
 

@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\ListenersInvoker;
 use Doctrine\ORM\Event\PostLoadEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\LazyLoadingKind;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\UnitOfWork;
 
@@ -17,7 +18,7 @@ use Doctrine\ORM\UnitOfWork;
  */
 final class HydrationCompleteHandler
 {
-    /** @var list<array{ClassMetadata<object>, int<0, 7>, object, 'to_one'|'collection'|null}> */
+    /** @var list<array{ClassMetadata<object>, int<0, 7>, object, LazyLoadingKind|null}> */
     private array $deferredPostLoadInvocations = [];
 
     public function __construct(

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Proxy\Proxy as CommonProxy;
+use Doctrine\ORM\LazyLoadingKind;
 use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\Tests\Models\Company\CompanyAuction;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
@@ -155,12 +156,12 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
 
         $this->getQueryLog()
             ->reset()
-            ->captureLazyLoadKind(static fn (): string|null => $em->getUnitOfWork()->getLazyLoadingKind())
+            ->captureLazyLoadKind(static fn (): LazyLoadingKind|null => $em->getUnitOfWork()->getLazyLoadingKind())
             ->enable();
 
         $entity->getName();
 
-        self::assertSame(['to_one'], $this->getQueryLog()->lazyLoadKinds);
+        self::assertSame([LazyLoadingKind::ToOne], $this->getQueryLog()->lazyLoadKinds);
     }
 
     #[Group('DDC-1163')]

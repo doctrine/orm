@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Event\PostLoadEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\LazyLoadingKind;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsGroup;
@@ -757,7 +758,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         self::assertCount(3, $user->groups);
 
-        self::assertSame(['collection'], $this->capturedLazyLoadKinds());
+        self::assertSame([LazyLoadingKind::Collection], $this->capturedLazyLoadKinds());
     }
 
     #[Group('non-cacheable')]
@@ -772,7 +773,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         self::assertTrue($user->groups->contains($group));
 
-        self::assertSame(['collection'], $this->capturedLazyLoadKinds());
+        self::assertSame([LazyLoadingKind::Collection], $this->capturedLazyLoadKinds());
     }
 
     #[Group('non-cacheable')]
@@ -785,7 +786,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $user->phonenumbers->get($this->phonenumber);
 
-        self::assertSame(['collection'], $this->capturedLazyLoadKinds());
+        self::assertSame([LazyLoadingKind::Collection], $this->capturedLazyLoadKinds());
     }
 
     #[Group('non-cacheable')]
@@ -798,7 +799,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $user->groups->slice(0, 2);
 
-        self::assertSame(['collection'], $this->capturedLazyLoadKinds());
+        self::assertSame([LazyLoadingKind::Collection], $this->capturedLazyLoadKinds());
     }
 
     #[Group('non-cacheable')]
@@ -811,7 +812,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $user->groups->matching(Criteria::create()->where(Criteria::expr()->eq('name', 'Test1')));
 
-        self::assertSame(['collection'], $this->capturedLazyLoadKinds());
+        self::assertSame([LazyLoadingKind::Collection], $this->capturedLazyLoadKinds());
     }
 
     #[Group('non-cacheable')]
@@ -824,7 +825,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $user->phonenumbers->initialize();
 
-        self::assertSame(['collection'], $this->capturedLazyLoadKinds());
+        self::assertSame([LazyLoadingKind::Collection], $this->capturedLazyLoadKinds());
     }
 
     #[Group('non-cacheable')]
@@ -838,6 +839,22 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     }
 
     #[Group('non-cacheable')]
+    public function testMatchingExtraLazyCollectionMarksQueriesOnFirstRead(): void
+    {
+        $user = $this->_em->find(CmsUser::class, $this->userId);
+        assert($user instanceof CmsUser);
+
+        $matched = $user->articles->matching(Criteria::create()->where(Criteria::expr()->eq('topic', 'Test1')));
+
+        $this->enableLazyLoadKindCapture();
+
+        foreach ($matched as $article) {
+        }
+
+        self::assertSame([LazyLoadingKind::Collection], $this->capturedLazyLoadKinds());
+    }
+
+    #[Group('non-cacheable')]
     public function testPostLoadReceivesLazyLoadingKindForLazyCollection(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -848,7 +865,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
             $user->phonenumbers->get($phonenumber);
         });
 
-        self::assertSame(['collection'], $kinds);
+        self::assertSame([LazyLoadingKind::Collection], $kinds);
     }
 
     #[Group('non-cacheable')]
@@ -895,12 +912,12 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @param callable(): void $operation
      *
-     * @return list<'to_one'|'collection'|null>
+     * @return list<LazyLoadingKind|null>
      */
     private function capturePostLoadKinds(callable $operation): array
     {
         $listener = new class {
-            /** @var list<'to_one'|'collection'|null> */
+            /** @var list<LazyLoadingKind|null> */
             public array $kinds = [];
 
             public function postLoad(PostLoadEventArgs $args): void
@@ -927,11 +944,11 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $this->getQueryLog()
             ->reset()
-            ->captureLazyLoadKind(static fn (): string|null => $em->getUnitOfWork()->getLazyLoadingKind())
+            ->captureLazyLoadKind(static fn (): LazyLoadingKind|null => $em->getUnitOfWork()->getLazyLoadingKind())
             ->enable();
     }
 
-    /** @return list<'to_one'|'collection'|null> */
+    /** @return list<LazyLoadingKind|null> */
     private function capturedLazyLoadKinds(): array
     {
         return $this->getQueryLog()->lazyLoadKinds;

@@ -347,7 +347,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->getMapping());
 
             return $this->getUnitOfWork()->withLazyLoading(
-                'collection',
+                LazyLoadingKind::Collection,
                 fn (): bool => $this->unwrap()->containsKey($key) || $persister->containsKey($this, $key),
             );
         }
@@ -361,7 +361,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->getMapping());
 
             return $this->getUnitOfWork()->withLazyLoading(
-                'collection',
+                LazyLoadingKind::Collection,
                 fn (): bool => $this->unwrap()->contains($element) || $persister->contains($this, $element),
             );
         }
@@ -381,13 +381,13 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
             if (isset($this->getMapping()->indexBy) && ! $this->typeClass->isIdentifierComposite && $this->typeClass->isIdentifier($this->getMapping()->indexBy)) {
                 return $this->getUnitOfWork()->withLazyLoading(
-                    'collection',
+                    LazyLoadingKind::Collection,
                     fn (): mixed => $this->em->find($this->typeClass->name, $key),
                 );
             }
 
             return $this->getUnitOfWork()->withLazyLoading(
-                'collection',
+                LazyLoadingKind::Collection,
                 fn (): mixed => $this->getUnitOfWork()->getCollectionPersister($this->getMapping())->get($this, $key),
             );
         }
@@ -401,7 +401,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->association);
 
             return $this->getUnitOfWork()->withLazyLoading(
-                'collection',
+                LazyLoadingKind::Collection,
                 fn (): int => $persister->count($this) + ($this->isDirty ? $this->unwrap()->count() : 0),
             );
         }
@@ -527,7 +527,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->getMapping());
 
             return $this->getUnitOfWork()->withLazyLoading(
-                'collection',
+                LazyLoadingKind::Collection,
                 fn (): mixed => array_values($persister->slice($this, 0, 1))[0] ?? false,
             );
         }
@@ -551,7 +551,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->getMapping());
 
             return $this->getUnitOfWork()->withLazyLoading(
-                'collection',
+                LazyLoadingKind::Collection,
                 fn (): array => $persister->slice($this, $offset, $length),
             );
         }
@@ -607,7 +607,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             $persister = $this->getUnitOfWork()->getCollectionPersister($association);
 
             return $this->getUnitOfWork()->withLazyLoading(
-                'collection',
+                LazyLoadingKind::Collection,
                 fn (): Collection => new ArrayCollection($persister->loadCriteria($this, $criteria)),
             );
         }
@@ -624,11 +624,15 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         $persister = $this->getUnitOfWork()->getEntityPersister($association->targetEntity);
 
+        if ($association->fetch === ClassMetadata::FETCH_EXTRA_LAZY) {
+            // The queries run on first read, after this method returns, so the
+            // collection marks itself through the UnitOfWork.
+            return new LazyCriteriaCollection($persister, $criteria, $this->getUnitOfWork());
+        }
+
         return $this->getUnitOfWork()->withLazyLoading(
-            'collection',
-            static fn (): Collection => $association->fetch === ClassMetadata::FETCH_EXTRA_LAZY
-                ? new LazyCriteriaCollection($persister, $criteria)
-                : new ArrayCollection($persister->loadCriteria($criteria)),
+            LazyLoadingKind::Collection,
+            static fn (): Collection => new ArrayCollection($persister->loadCriteria($criteria)),
         );
     }
 

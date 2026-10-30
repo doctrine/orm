@@ -8,6 +8,7 @@ use Closure;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\LazyLoadingKind;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\UnitOfWork;
@@ -264,7 +265,7 @@ EOPHP;
                 $classMetadata,
                 $uow,
             ): void {
-                $original = $uow->withLazyLoading('to_one', static fn () => $entityPersister->loadById($identifier, $object));
+                $original = $uow->withLazyLoading(LazyLoadingKind::ToOne, static fn () => $entityPersister->loadById($identifier, $object));
 
                 if ($original === null) {
                     throw EntityNotFoundException::fromClassNameAndIdentifier(
@@ -341,7 +342,7 @@ EOPHP;
         $uow = $this->uow;
 
         return static function (InternalProxy $proxy, array $identifier) use ($entityPersister, $classMetadata, $identifierFlattener, $uow): void {
-            $original = $uow->withLazyLoading('to_one', static fn () => $entityPersister->loadById($identifier));
+            $original = $uow->withLazyLoading(LazyLoadingKind::ToOne, static fn () => $entityPersister->loadById($identifier));
 
             if ($original === null) {
                 throw EntityNotFoundException::fromClassNameAndIdentifier(

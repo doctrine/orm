@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Event;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\LazyLoadingKind;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 
 /** @extends LifecycleEventArgs<EntityManagerInterface> */
 final class PostLoadEventArgs extends LifecycleEventArgs
 {
-    /** @param 'to_one'|'collection'|null $lazyLoadKind */
     public function __construct(
         object $entity,
         EntityManagerInterface $em,
-        private readonly string|null $lazyLoadKind = null,
+        private readonly LazyLoadingKind|null $lazyLoadKind = null,
     ) {
         parent::__construct($entity, $em);
     }
@@ -31,10 +31,8 @@ final class PostLoadEventArgs extends LifecycleEventArgs
     /**
      * Kind of the innermost lazy loading operation that caused this entity to
      * be loaded, or null for a regular query.
-     *
-     * @return 'to_one'|'collection'|null
      */
-    public function getLazyLoadKind(): string|null
+    public function getLazyLoadKind(): LazyLoadingKind|null
     {
         return $this->lazyLoadKind;
     }

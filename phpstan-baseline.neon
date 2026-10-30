@@ -1567,7 +1567,7 @@ parameters:
 			path: src/PersistentCollection.php
 
 		-
-			message: '#^Method Doctrine\\ORM\\PersistentCollection\:\:matching\(\) should return Doctrine\\Common\\Collections\\Collection\<TKey of \(int\|string\), T\> but returns Doctrine\\Common\\Collections\\ArrayCollection\<\(int\|string\), mixed\>\|Doctrine\\ORM\\LazyCriteriaCollection\<\(int\|string\), object\>\.$#'
+			message: '#^Method Doctrine\\ORM\\PersistentCollection\:\:matching\(\) should return Doctrine\\Common\\Collections\\Collection\<TKey of \(int\|string\), T\> but returns Doctrine\\ORM\\LazyCriteriaCollection\<\(int\|string\), object\>\.$#'
 			identifier: return.type
 			count: 1
 			path: src/PersistentCollection.php

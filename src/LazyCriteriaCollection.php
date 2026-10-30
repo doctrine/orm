@@ -30,7 +30,28 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
     public function __construct(
         protected EntityPersister $entityPersister,
         protected Criteria $criteria,
+        protected readonly UnitOfWork|null $unitOfWork = null,
     ) {
+    }
+
+    /**
+     * Runs the given operation, marking it as a lazy collection load when a
+     * UnitOfWork is set, i.e. when the collection belongs to a lazy
+     * association rather than to an explicit repository query.
+     *
+     * @param callable(): T $operation
+     *
+     * @return T
+     *
+     * @template T
+     */
+    private function markLazyLoad(callable $operation): mixed
+    {
+        if ($this->unitOfWork === null) {
+            return $operation();
+        }
+
+        return $this->unitOfWork->withLazyLoading(LazyLoadingKind::Collection, $operation);
     }
 
     /**
@@ -47,7 +68,9 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
             return $this->count;
         }
 
-        return $this->count = $this->entityPersister->count($this->criteria);
+        return $this->count = $this->markLazyLoad(
+            fn (): int => $this->entityPersister->count($this->criteria),
+        );
     }
 
     /**
@@ -75,7 +98,7 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
             return $this->collection->contains($element);
         }
 
-        return $this->entityPersister->exists($element, $this->criteria);
+        return $this->markLazyLoad(fn (): bool => $this->entityPersister->exists($element, $this->criteria));
     }
 
     /** @return ReadableCollection<TKey, TValue>&Selectable<TKey, TValue> */
@@ -88,7 +111,7 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
 
     protected function doInitialize(): void
     {
-        $elements         = $this->entityPersister->loadCriteria($this->criteria);
+        $elements         = $this->markLazyLoad(fn (): array => $this->entityPersister->loadCriteria($this->criteria));
         $this->collection = new ArrayCollection($elements);
     }
 }

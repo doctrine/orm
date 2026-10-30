@@ -9,6 +9,7 @@ use Doctrine\ORM\Event\ListenersInvoker;
 use Doctrine\ORM\Event\PostLoadEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
+use Doctrine\ORM\LazyLoadingKind;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
@@ -153,7 +154,7 @@ class HydrationCompleteHandlerTest extends TestCase
         $entity = new stdClass();
 
         $this->listenersInvoker->method('getSubscribedSystems')->willReturn(ListenersInvoker::INVOKE_LISTENERS);
-        $this->unitOfWork->method('getLazyLoadingKind')->willReturn('collection');
+        $this->unitOfWork->method('getLazyLoadingKind')->willReturn(LazyLoadingKind::Collection);
 
         $this->handler->deferPostLoadInvoking($metadata, $entity);
 
@@ -168,7 +169,7 @@ class HydrationCompleteHandlerTest extends TestCase
                 self::callback(
                     static fn (LifecycleEventArgs $args) => $args instanceof PostLoadEventArgs
                         && $args->isLazyLoad()
-                        && $args->getLazyLoadKind() === 'collection',
+                        && $args->getLazyLoadKind() === LazyLoadingKind::Collection,
                 ),
                 ListenersInvoker::INVOKE_LISTENERS,
             );
@@ -215,7 +216,7 @@ class HydrationCompleteHandlerTest extends TestCase
         $this
             ->unitOfWork
             ->method('getLazyLoadingKind')
-            ->willReturnOnConsecutiveCalls('collection', 'to_one');
+            ->willReturnOnConsecutiveCalls(LazyLoadingKind::Collection, LazyLoadingKind::ToOne);
 
         $this->handler->deferPostLoadInvoking($metadata, $entity);
 
@@ -229,7 +230,7 @@ class HydrationCompleteHandlerTest extends TestCase
                 $entity,
                 self::callback(
                     static fn (LifecycleEventArgs $args) => $args instanceof PostLoadEventArgs
-                        && $args->getLazyLoadKind() === 'collection',
+                        && $args->getLazyLoadKind() === LazyLoadingKind::Collection,
                 ),
                 ListenersInvoker::INVOKE_LISTENERS,
             );

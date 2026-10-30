@@ -14,6 +14,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\Name\UnquotedIdentifierFolding;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Exception\EntityIdentityCollisionException;
+use Doctrine\ORM\LazyLoadingKind;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -723,14 +724,14 @@ class UnitOfWorkTest extends OrmTestCase
     {
         $uow = $this->_unitOfWork;
 
-        $uow->withLazyLoading('to_one', static function () use ($uow): void {
-            self::assertSame('to_one', $uow->getLazyLoadingKind());
+        $uow->withLazyLoading(LazyLoadingKind::ToOne, static function () use ($uow): void {
+            self::assertSame(LazyLoadingKind::ToOne, $uow->getLazyLoadingKind());
 
-            $uow->withLazyLoading('collection', static function () use ($uow): void {
-                self::assertSame('collection', $uow->getLazyLoadingKind());
+            $uow->withLazyLoading(LazyLoadingKind::Collection, static function () use ($uow): void {
+                self::assertSame(LazyLoadingKind::Collection, $uow->getLazyLoadingKind());
             });
 
-            self::assertSame('to_one', $uow->getLazyLoadingKind());
+            self::assertSame(LazyLoadingKind::ToOne, $uow->getLazyLoadingKind());
         });
 
         self::assertNull($uow->getLazyLoadingKind());
@@ -738,7 +739,7 @@ class UnitOfWorkTest extends OrmTestCase
 
     public function testWithLazyLoadingReturnsTheOperationResult(): void
     {
-        $result = $this->_unitOfWork->withLazyLoading('collection', static fn (): int => 42);
+        $result = $this->_unitOfWork->withLazyLoading(LazyLoadingKind::Collection, static fn (): int => 42);
 
         self::assertSame(42, $result);
     }
@@ -747,9 +748,9 @@ class UnitOfWorkTest extends OrmTestCase
     {
         $uow = $this->_unitOfWork;
 
-        $uow->withLazyLoading('to_one', static function () use ($uow): void {
+        $uow->withLazyLoading(LazyLoadingKind::ToOne, static function () use ($uow): void {
             try {
-                $uow->withLazyLoading('collection', static function (): void {
+                $uow->withLazyLoading(LazyLoadingKind::Collection, static function (): void {
                     throw new BaseException('Failure during lazy loading');
                 });
 
@@ -757,7 +758,7 @@ class UnitOfWorkTest extends OrmTestCase
             } catch (BaseException) {
             }
 
-            self::assertSame('to_one', $uow->getLazyLoadingKind());
+            self::assertSame(LazyLoadingKind::ToOne, $uow->getLazyLoadingKind());
         });
 
         self::assertNull($uow->getLazyLoadingKind());
