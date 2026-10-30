@@ -5,20 +5,25 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\DBAL\Exception;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\SQLResultCasing;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Exception\InvalidCursor;
 use Doctrine\ORM\Utility\PersisterHelper;
+use LogicException;
 
 use function array_map;
 use function array_reverse;
 use function array_slice;
 use function array_sum;
 use function array_values;
+use function assert;
 use function count;
 use function is_string;
+use function sprintf;
 
 /**
  * The cursor paginator handles cursor-based pagination for DQL queries.
@@ -204,7 +209,9 @@ final class CursorPaginator implements PaginatorInterface
 
             $fieldName     = $orderByItem->expression->field;
             $orderMetadata = $orderByItem->metadata ?? $metadata;
-            $value         = $metadata?->getFieldValue($item, $fieldName) ?? $item->$fieldName;
+            $value         = $metadata === null || $orderByItem->associationPath === []
+                ? $metadata?->getFieldValue($item, $fieldName) ?? $item->$fieldName
+                : $this->getJoinedFieldValue($em, $item, $metadata, $orderByItem);
 
             if ($value !== null && $orderMetadata !== null && isset($orderMetadata->associationMappings[$fieldName])) {
                 $targetMetadata = $em->getClassMetadata($orderMetadata->associationMappings[$fieldName]->targetEntity);
@@ -217,5 +224,40 @@ final class CursorPaginator implements PaginatorInterface
         }
 
         return $result;
+    }
+
+    /**
+     * Reads the value of an ORDER BY item that is on a joined alias, by following
+     * the single-valued associations leading from the root entity to that alias.
+     *
+     * @param ClassMetadata<object> $metadata
+     *
+     * @throws LogicException If the alias cannot be reached from the root entity.
+     */
+    private function getJoinedFieldValue(EntityManagerInterface $em, object $item, ClassMetadata $metadata, CursorOrderByItem $orderByItem): mixed
+    {
+        assert($orderByItem->expression instanceof PathExpression);
+
+        if ($orderByItem->associationPath === null || $orderByItem->metadata === null) {
+            throw new LogicException(sprintf(
+                'Cannot build a cursor for the ORDER BY item "%s": its alias must be the root alias, or be joined from it through single-valued associations only.',
+                $orderByItem->paramKey,
+            ));
+        }
+
+        foreach ($orderByItem->associationPath as $associationName) {
+            $item = $metadata->getFieldValue($item, $associationName);
+
+            if ($item === null) {
+                return null;
+            }
+
+            // the joined entity is an uninitialized proxy when its alias is not selected
+            $em->initializeObject($item);
+
+            $metadata = $em->getClassMetadata($metadata->associationMappings[$associationName]->targetEntity);
+        }
+
+        return $orderByItem->metadata->getFieldValue($item, $orderByItem->expression->field);
     }
 }
