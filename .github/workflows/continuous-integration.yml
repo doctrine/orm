@@ -49,6 +49,7 @@ jobs:
           - "8.3"
           - "8.4"
           - "8.5"
+          - "8.6"
         dbal-version:
           - "default"
         extension:
@@ -72,7 +73,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v6"
+        uses: "actions/checkout@v7"
         with:
           fetch-depth: 2
 
@@ -130,6 +131,7 @@ jobs:
           - "8.3"
           - "8.4"
           - "8.5"
+          - "8.6"
         dbal-version:
           - "default"
           - "3@dev"
@@ -162,7 +164,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v6"
+        uses: "actions/checkout@v7"
         with:
           fetch-depth: 2
 
@@ -211,6 +213,7 @@ jobs:
           - "8.3"
           - "8.4"
           - "8.5"
+          - "8.6"
         dbal-version:
           - "default"
           - "3@dev"
@@ -240,7 +243,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v6"
+        uses: "actions/checkout@v7"
         with:
           fetch-depth: 2
 
@@ -289,6 +292,7 @@ jobs:
           - "8.3"
           - "8.4"
           - "8.5"
+          - "8.6"
         dbal-version:
           - "default"
           - "3@dev"
@@ -318,7 +322,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v6"
+        uses: "actions/checkout@v7"
         with:
           fetch-depth: 2
 
@@ -375,7 +379,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v6"
+        uses: "actions/checkout@v7"
         with:
           fetch-depth: 2
 
@@ -407,7 +411,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v6"
+        uses: "actions/checkout@v7"
         with:
           fetch-depth: 2
 
@@ -417,7 +421,7 @@ jobs:
           path: "reports"
 
       - name: "Upload to Codecov"
-        uses: "codecov/codecov-action@v6"
+        uses: "codecov/codecov-action@v7"
         with:
           directory: reports
         env:
