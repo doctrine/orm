@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
+use Doctrine\DBAL\Schema\Name\UnquotedIdentifierFolding;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\EntityManagerMock;
@@ -39,6 +40,10 @@ class PersistentCollectionTest extends OrmTestCase
         parent::setUp();
 
         $platform = $this->createStub(AbstractPlatform::class);
+        if (method_exists($platform, 'getUnquotedIdentifierFolding')) {
+            $platform->method('getUnquotedIdentifierFolding')->willReturn(UnquotedIdentifierFolding::NONE);
+        }
+
         $platform->method('supportsIdentityColumns')
             ->willReturn(true);
 

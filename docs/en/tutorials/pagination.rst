@@ -379,8 +379,9 @@ API Reference
 
     SELECT ...
     FROM   post p
-    WHERE  (p.created_at < :cursor_val_0)
-       OR  (p.created_at = :cursor_val_0 AND p.id < :cursor_id_1)
+    WHERE  p.created_at <= :dctrn_cursor_0
+      AND  (   (p.created_at < :dctrn_cursor_0)
+            OR (p.created_at = :dctrn_cursor_0 AND p.id < :dctrn_cursor_1))
     ORDER  BY p.created_at DESC, p.id DESC
     LIMIT  16   -- limit + 1
 
@@ -390,10 +391,21 @@ API Reference
 
     SELECT ...
     FROM   post p
-    WHERE  (p.created_at > :cursor_val_0)
-       OR  (p.created_at = :cursor_val_0 AND p.id > :cursor_id_1)
+    WHERE  p.created_at >= :dctrn_cursor_0
+      AND  (   (p.created_at > :dctrn_cursor_0)
+            OR (p.created_at = :dctrn_cursor_0 AND p.id > :dctrn_cursor_1))
     ORDER  BY p.created_at ASC, p.id ASC   -- reversed
     LIMIT  16
+
+When the query is ordered by more than one column, the paginator puts an
+inclusive bound on the first ``ORDER BY`` column in front of the cursor
+condition (``p.created_at <= :dctrn_cursor_0`` above). The bound is redundant;
+every row that matches the ``OR`` condition already satisfies it, so it does not
+change which rows are returned. It is there for performance. Some platforms,
+PostgreSQL among them, cannot derive an index range from the ``OR`` condition
+alone and filter rows one by one, so a page gets slower the deeper it is in the
+result set. The leading bound gives them a range to seek to on an index that
+covers the ``ORDER BY`` columns.
 
 HTML Template Example
 ~~~~~~~~~~~~~~~~~~~~~
