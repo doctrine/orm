@@ -16,6 +16,7 @@ use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\WhereClause;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
+use Doctrine\ORM\Utility\PersisterHelper;
 use LogicException;
 
 use function array_unshift;
@@ -166,7 +167,7 @@ class CursorWalker extends TreeWalkerAdapter
         // so SQL injection is not possible. The worst a user can do is navigate to an
         // arbitrary position in the result set, while remaining bound by the original
         // query's WHERE constraints.
-        $this->_getQuery()->setParameter($paramName, $paramValue);
+        $this->bindCursorParameter($paramName, $paramValue, $orderByItem);
 
         $comparisonExpr = new ComparisonExpression(
             $expression,
@@ -209,6 +210,46 @@ class CursorWalker extends TreeWalkerAdapter
     private function parameterName(int $index): string
     {
         return self::CURSOR_PARAMETER_PREFIX . $index;
+    }
+
+    /**
+     * Binds a cursor value through the type of its field, like any value compared with that field.
+     *
+     * The cursor holds the database value of the field or, for a value object, its string
+     * representation (see {@see CursorPaginator}): the type reads either back, then converts it
+     * for the database and binds it as such. A binary value is thus bound as binary, which
+     * PostgreSQL among others requires.
+     */
+    private function bindCursorParameter(string $name, mixed $value, CursorOrderByItem $orderByItem): void
+    {
+        $query = $this->_getQuery();
+        $type  = $this->getFieldType($orderByItem);
+
+        if ($type === null) {
+            $query->setParameter($name, $value);
+
+            return;
+        }
+
+        $query->setParameter($name, $query->getEntityManager()->getConnection()->convertToPHPValue($value, $type), $type);
+    }
+
+    /**
+     * Returns the name of the DBAL type of the field an ORDER BY item is on, if any.
+     */
+    private function getFieldType(CursorOrderByItem $orderByItem): string|null
+    {
+        if (! $orderByItem->expression instanceof PathExpression || $orderByItem->metadata === null) {
+            return null;
+        }
+
+        $types = PersisterHelper::getTypeOfField(
+            $orderByItem->expression->field,
+            $orderByItem->metadata,
+            $this->_getQuery()->getEntityManager(),
+        );
+
+        return count($types) === 1 ? $types[0] : null;
     }
 
     /**

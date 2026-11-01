@@ -67,10 +67,13 @@ final class Cursor
 
     /**
      * Encodes the cursor to a URL-safe Base64 JSON string.
+     *
+     * @throws JsonException If a parameter cannot be encoded as JSON, e.g. the binary
+     *                       database value of a field that is not a value object.
      */
     public function encodeToString(): string
     {
-        return rtrim(strtr(base64_encode((string) json_encode($this->toArray())), '+/', '-_'), '=');
+        return rtrim(strtr(base64_encode(json_encode($this->toArray(), JSON_THROW_ON_ERROR)), '+/', '-_'), '=');
     }
 
     /**
