@@ -9,8 +9,35 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use PHPUnit\Framework\Attributes\Group;
 
+use function iterator_to_array;
+
 class ScalarHydratorTest extends HydrationTestCase
 {
+    public function testColumnPlanIsResetBetweenHydrationsAndIteration(): void
+    {
+        $hydrator = new ScalarHydrator($this->entityManager);
+        $rsm      = new ResultSetMapping();
+        $rsm->addEntityResult(CmsUser::class, 'u');
+        $rsm->addFieldResult('u', 'value', 'id');
+
+        self::assertSame([['u_id' => 12]], $hydrator->hydrateAll(
+            $this->createResultMock([['value' => '12', 'ignored' => 'unused']]),
+            $rsm,
+        ));
+
+        $scalars = new ResultSetMapping();
+        $scalars->addScalarResult('value', 'number', 'integer');
+        self::assertSame([['number' => '12']], $hydrator->hydrateAll(
+            $this->createResultMock([['value' => '12']]),
+            $scalars,
+        ));
+
+        self::assertSame([['u_id' => 13], ['u_id' => null]], iterator_to_array($hydrator->toIterable(
+            $this->createResultMock([['value' => '13'], ['value' => null]]),
+            $rsm,
+        )));
+    }
+
     /**
      * Select u.id, u.name from CmsUser u
      */
