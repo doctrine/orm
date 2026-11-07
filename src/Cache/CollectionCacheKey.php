@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
-use function implode;
+use function array_map;
+use function hash;
 use function ksort;
-use function str_replace;
+use function serialize;
 use function strtolower;
 
 /**
@@ -35,8 +36,11 @@ class CollectionCacheKey extends CacheKey
 
         $this->ownerIdentifier = $ownerIdentifier;
 
-        $filterHash = $filterHash === '' ? '' : '_' . $filterHash;
-
-        parent::__construct(str_replace('\\', '.', strtolower($entityClass)) . '_' . implode(' ', $ownerIdentifier) . '__' . $association . $filterHash);
+        parent::__construct(hash('sha256', serialize([
+            strtolower($entityClass),
+            array_map('strval', $ownerIdentifier),
+            $association,
+            $filterHash,
+        ])));
     }
 }

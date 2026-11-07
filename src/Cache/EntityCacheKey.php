@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
-use function implode;
+use function array_map;
+use function hash;
 use function ksort;
-use function str_replace;
+use function serialize;
 use function strtolower;
 
 /**
@@ -33,6 +34,6 @@ class EntityCacheKey extends CacheKey
 
         $this->identifier = $identifier;
 
-        parent::__construct(str_replace('\\', '.', strtolower($entityClass) . '_' . implode(' ', $identifier)));
+        parent::__construct(hash('sha256', serialize([strtolower($entityClass), array_map('strval', $identifier)])));
     }
 }

@@ -14,8 +14,8 @@ use Psr\Cache\CacheItemPoolInterface;
 use Traversable;
 
 use function array_map;
+use function hash;
 use function iterator_to_array;
-use function strtr;
 
 /**
  * The simplest cache region compatible with all doctrine-cache drivers.
@@ -23,7 +23,7 @@ use function strtr;
 class DefaultRegion implements Region
 {
     private const REGION_KEY_SEPARATOR = '_';
-    private const REGION_PREFIX        = 'DC2_REGION_';
+    private const REGION_PREFIX        = 'DC2_V2_REGION_';
 
     public function __construct(
         private readonly string $name,
@@ -108,6 +108,6 @@ class DefaultRegion implements Region
 
     private function getCacheEntryKey(CacheKey $key): string
     {
-        return self::REGION_PREFIX . $this->name . self::REGION_KEY_SEPARATOR . strtr($key->hash, '{}()/\@:', '________');
+        return self::REGION_PREFIX . $this->name . self::REGION_KEY_SEPARATOR . hash('sha256', $key->hash);
     }
 }
