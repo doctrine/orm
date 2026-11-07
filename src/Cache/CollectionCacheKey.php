@@ -24,12 +24,15 @@ class CollectionCacheKey extends CacheKey
     /**
      * @param class-string         $entityClass     The owner entity class.
      * @param array<string, mixed> $ownerIdentifier The identifier of the owning entity.
+     * @param string               $filterHash      The SQL filter context for this variant.
+     * @param string               $version         The shared collection version, or empty for its version entry.
      */
     public function __construct(
         public readonly string $entityClass,
         public readonly string $association,
         array $ownerIdentifier,
-        string $filterHash = '',
+        public readonly string $filterHash = '',
+        string $version = '',
     ) {
         ksort($ownerIdentifier);
 
@@ -37,6 +40,8 @@ class CollectionCacheKey extends CacheKey
 
         $filterHash = $filterHash === '' ? '' : '_' . $filterHash;
 
-        parent::__construct(str_replace('\\', '.', strtolower($entityClass)) . '_' . implode(' ', $ownerIdentifier) . '__' . $association . $filterHash);
+        $hash = str_replace('\\', '.', strtolower($entityClass)) . '_' . implode(' ', $ownerIdentifier) . '__' . $association . $filterHash;
+
+        parent::__construct($version === '' ? $hash : 'collection_' . $version . '_' . $hash);
     }
 }

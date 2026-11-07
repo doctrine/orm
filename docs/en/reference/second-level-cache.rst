@@ -584,6 +584,17 @@ Using the last update timestamps as part of the query key invalidate the cache k
 Cache API
 ---------
 
+Built-in collection cache persisters keep SQL filter variants under a shared
+version for each owner and association. Updating or deleting a collection, or
+calling ``evictCollection()``, invalidates all its filter variants. Collections
+belonging to other owners keep their cached entries. ``containsCollection()``
+checks the variant for the currently enabled filters.
+
+After a write, filtered collection cache entries are refilled from the database
+on subsequent loads instead of being populated from in-memory contents: newly
+added entities may not satisfy the SQL filter. Old versioned entries remain
+stored until their lifetime expires or the backend evicts them.
+
 Caches are not aware of changes made by another application.
 However, you can use the cache API to check / invalidate cache entries.
 

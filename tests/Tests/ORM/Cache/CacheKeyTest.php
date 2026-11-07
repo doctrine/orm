@@ -76,4 +76,13 @@ class CacheKeyTest extends TestCase
 
         self::assertSame('my-hash', $key->hash);
     }
+
+    public function testCollectionVersionAndFilterAreSeparateKeyComponents(): void
+    {
+        $key = new CollectionCacheKey('Foo', 'items', ['id' => 1], 'filter', 'first');
+        self::assertSame('filter', $key->filterHash);
+        self::assertNotSame($key->hash, (new CollectionCacheKey('Foo', 'items', ['id' => 1], 'filter', 'second'))->hash);
+        self::assertNotSame($key->hash, (new CollectionCacheKey('Foo', 'items', ['id' => 1], 'other-filter', 'first'))->hash);
+        self::assertNotSame($key->hash, (new CollectionCacheKey('Foo', 'items', ['id' => 1], 'filter'))->hash);
+    }
 }

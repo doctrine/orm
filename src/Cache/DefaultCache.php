@@ -124,7 +124,21 @@ class DefaultCache implements Cache
             return false;
         }
 
-        return $persister->getCacheRegion()->contains($this->buildCollectionCacheKey($metadata, $association, $ownerIdentifier));
+        $region  = $persister->getCacheRegion();
+        $key     = $this->buildCollectionCacheKey($metadata, $association, $ownerIdentifier);
+        $version = $region->get($key);
+        if (! $version instanceof CollectionCacheVersionEntry) {
+            // Custom collection persisters may still use unversioned entries.
+            return $region->contains($key);
+        }
+
+        return $region->contains(new CollectionCacheKey(
+            $key->entityClass,
+            $key->association,
+            $key->ownerIdentifier,
+            $this->em->getFilters()->getHash(),
+            $version->version,
+        ));
     }
 
     public function evictCollection(string $className, string $association, mixed $ownerIdentifier): void

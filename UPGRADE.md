@@ -29,6 +29,25 @@ and directly start using native lazy objects.
 
 # Upgrade to 3.7
 
+## Invalidation of filtered second-level collection caches
+
+Built-in cached collection persisters now share a version entry across all SQL
+filter variants of an owner's association. Updating or deleting the collection,
+or calling `Cache::evictCollection()`, invalidates all of its variants while
+preserving the cached collections of other owners. `containsCollection()` checks
+the current filter variant, and `READ_WRITE` locks cover the shared version entry.
+
+Filtered collections are reloaded after writes instead of being cached from their
+in-memory contents, which may contain new elements outside the SQL filter or a
+snapshot loaded under a different filter context.
+
+The built-in collection cache storage format has changed. Clear existing
+second-level caches during a coordinated deployment; old and new ORM versions
+cannot invalidate each other's filtered entries. Custom cache regions must accept
+the additional `CollectionCacheVersionEntry` cache-entry type. Versioned entries
+remain in the backend until their region lifetime or backend eviction removes
+them, so use finite lifetimes or backend eviction to reclaim storage.
+
 ## Deprecated `Doctrine\ORM\Mapping\JoinColumns` attribute
 
 Using it has no effect, it should have been removed in 3.0.0. Instead, use the
