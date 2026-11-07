@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Pagination;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\SQLResultCasing;
@@ -14,6 +15,8 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Exception\InvalidCursor;
 use Doctrine\ORM\Utility\PersisterHelper;
 use LogicException;
+use Stringable;
+use Throwable;
 
 use function array_map;
 use function array_reverse;
@@ -220,10 +223,42 @@ final class CursorPaginator implements PaginatorInterface
 
             $type = PersisterHelper::getTypeOfField($fieldName, $orderMetadata, $em)[0];
 
-            $result[$orderByItem->paramKey] = $connection->convertToDatabaseValue($value, $type);
+            $result[$orderByItem->paramKey] = $this->ensureParameterIsPrimitive($connection, $value, $type);
         }
 
         return $result;
+    }
+
+    /**
+     * Returns the value of an ORDER BY field as it is put in the cursor.
+     *
+     * Puts a value object, such as a UUID, as its string representation: unlike its database
+     * value, which may be binary, it can always be encoded as JSON. This requires the type of
+     * the field to read that representation back to the same database value, as
+     * {@see CursorWalker} does. Otherwise, and for any other value, puts the database value,
+     * which the type always reads back.
+     *
+     * @throws Exception
+     */
+    private function ensureParameterIsPrimitive(Connection $connection, mixed $value, string $type): mixed
+    {
+        $databaseValue = $connection->convertToDatabaseValue($value, $type);
+
+        if (! $value instanceof Stringable) {
+            return $databaseValue;
+        }
+
+        try {
+            $string = (string) $value;
+
+            if ($connection->convertToDatabaseValue($connection->convertToPHPValue($string, $type), $type) === $databaseValue) {
+                return $string;
+            }
+        } catch (Throwable) {
+            // the type cannot read the string representation back
+        }
+
+        return $databaseValue;
     }
 
     /**

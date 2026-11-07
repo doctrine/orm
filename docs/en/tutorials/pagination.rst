@@ -407,7 +407,16 @@ JSON object encoded with URL-safe Base64 (no padding):
 The ``_isNext`` flag distinguishes next-page cursors from previous-page cursors.
 All other keys are the DQL path expressions (``alias.field``) of the ``ORDER BY``
 columns, and their values are the database representations of the pivot row's
-field values.
+field values. A value object implementing ``Stringable``, such as a UUID, is put as
+its string representation instead, provided the type of its field reads that
+representation back to the same database value: unlike the database value, which
+may be binary (e.g. a UUID on a platform without a native GUID type), it can always
+be encoded as JSON. When the next page is fetched, each value is read back with the
+type of its field, and bound through that type.
+
+A value that cannot be encoded as JSON, such as the binary database value of a field
+that does not hold a value object, makes ``Cursor::encodeToString()`` throw a
+``JsonException``.
 
 If you need a different serialization format (e.g. encryption), build it on top of
 a ``Cursor`` instance: call ``$cursor->toArray()`` to get the raw data, apply your
