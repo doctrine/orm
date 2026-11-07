@@ -177,6 +177,8 @@ jobs:
   phpunit-deprecations:
     name: "PHPUnit (fail on deprecations)"
     runs-on: "ubuntu-latest"
+    # Run only on next minor and next major branches
+    if: ${{ (github.base_ref || github.ref_name) != github.event.repository.default_branch }}
 
     steps:
       -   name: "Checkout"
