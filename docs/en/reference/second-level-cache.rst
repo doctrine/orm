@@ -77,6 +77,13 @@ A query region might be something like:
 Cache Regions
 -------------
 
+Clearing a ``DefaultRegion`` invalidates its entries by changing a shared region
+version. It does not clear other regions or unrelated entries in the PSR-6 pool.
+Existing and new region instances read the shared version from the pool.
+Entries from previous versions remain stored until they expire or the backend
+removes them, so configure finite region lifetimes or backend eviction when
+storage reclamation is required.
+
 ``Doctrine\ORM\Cache\Region\DefaultRegion`` is the default implementation.
  A simplest cache region compatible with all doctrine-cache drivers but does not support locking.
 ``Doctrine\ORM\Cache\Region`` and ``Doctrine\ORM\Cache\ConcurrentRegion``

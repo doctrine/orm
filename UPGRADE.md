@@ -29,6 +29,23 @@ and directly start using native lazy objects.
 
 # Upgrade to 3.7
 
+## Second-level cache region eviction
+
+`DefaultRegion::evictAll()` now invalidates only the requested region using a
+shared region version, instead of relying on a non-standard prefix argument to
+PSR-6 `clear()`. Other regions, including timestamp regions, and unrelated pool
+entries are preserved. `evictQueryRegion()` also clears default and named regions
+that have not yet been initialized in the current cache instance.
+
+The `DefaultRegion` storage format has changed. Clear existing second-level
+cache entries during a coordinated deployment; old and new ORM versions cannot
+invalidate each other's entries. Existing entries are not read by the new format.
+
+Region eviction is logical: entries from previous region versions remain in the
+backend until they expire or the backend removes them. Use finite region lifetimes
+or backend eviction to reclaim their storage. Each operation reads the shared
+region version; a bulk read uses one version lookup for the whole collection.
+
 ## Deprecated `Doctrine\ORM\Mapping\JoinColumns` attribute
 
 Using it has no effect, it should have been removed in 3.0.0. Instead, use the

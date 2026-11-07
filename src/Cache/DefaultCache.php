@@ -179,15 +179,7 @@ class DefaultCache implements Cache
 
     public function evictQueryRegion(string|null $regionName = null): void
     {
-        if ($regionName === null && $this->defaultQueryCache !== null) {
-            $this->defaultQueryCache->clear();
-
-            return;
-        }
-
-        if (isset($this->queryCaches[$regionName])) {
-            $this->queryCaches[$regionName]->clear();
-        }
+        $this->getQueryCache($regionName)->clear();
     }
 
     public function evictQueryRegions(): void

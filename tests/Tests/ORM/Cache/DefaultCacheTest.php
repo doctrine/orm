@@ -11,12 +11,14 @@ use Doctrine\ORM\Cache\DefaultCache;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\QueryCache;
+use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -234,6 +236,31 @@ class DefaultCacheTest extends OrmTestCase
 
         self::assertSame($defaultQueryCache, $this->cache->getQueryCache());
         self::assertSame($fooQueryCache, $this->cache->getQueryCache('foo'));
+    }
+
+    #[DataProvider('queryRegionNames')]
+    public function testEvictQueryRegionBeforeItIsInitialized(string|null $name): void
+    {
+        $key      = new QueryCacheKey('query');
+        $region   = $this->cache->getQueryCache($name)->getRegion();
+        $neighbor = $this->cache->getQueryCache('unrelated-query-region')->getRegion();
+        $entry    = new EntityCacheEntry(Country::class, ['id' => 1]);
+        $region->put($key, $entry);
+        $neighbor->put($key, $entry);
+
+        $fresh = new DefaultCache($this->em);
+        $fresh->evictQueryRegion($name);
+
+        self::assertNull($region->get($key));
+        self::assertEquals($entry, $neighbor->get($key));
+        self::assertNull($fresh->getQueryCache($name)->getRegion()->get($key));
+    }
+
+    /** @return iterable<string, array{string|null}> */
+    public static function queryRegionNames(): iterable
+    {
+        yield 'default' => [null];
+        yield 'named' => ['named-query-region'];
     }
 
     public function testToIdentifierArrayShouldLookupForEntityIdentifier(): void

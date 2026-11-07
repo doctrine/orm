@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Cache;
+use Doctrine\ORM\Cache\DefaultCache;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\Exception\CacheException;
@@ -23,6 +24,29 @@ use ReflectionMethod;
 #[Group('DDC-2183')]
 class SecondLevelCacheQueryCacheTest extends SecondLevelCacheFunctionalTestCase
 {
+    public function testQueryRegionEvictionFromAnotherCacheInstance(): void
+    {
+        $this->loadFixturesCountries();
+
+        foreach ([null, 'isolated-query-region'] as $name) {
+            $query = $this->_em->createQuery('SELECT c FROM ' . Country::class . ' c')
+                ->setCacheable(true);
+            if ($name !== null) {
+                $query->setCacheRegion($name);
+            }
+
+            self::assertCount(2, $query->getResult());
+            $this->_em->clear();
+
+            (new DefaultCache($this->_em))->evictQueryRegion($name);
+            $this->getQueryLog()->reset()->enable();
+            self::assertCount(2, $query->getResult());
+            $this->assertQueryCount(1);
+            self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
+            $this->_em->clear();
+        }
+    }
+
     public function testBasicQueryCache(): void
     {
         $this->evictRegions();
