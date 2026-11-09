@@ -380,6 +380,49 @@ a QueryBuilder instance into a Query object:
     $scalar = $query->getScalarResult();
     $singleScalar = $query->getSingleScalarResult();
 
+Adding SQL comments
+^^^^^^^^^^^^^^^^^^^
+
+To make the SQL generated for a query easier to find in slow query logs
+and query analysis tools, attach comments to it with
+``dangerouslyAddUnescapedComment()``.
+They are rendered above the SQL, in the order they were added:
+
+.. code-block:: php
+
+    <?php
+    // $qb instanceof QueryBuilder
+    $qb->select('u')
+       ->from('User', 'u')
+       ->dangerouslyAddUnescapedComment('Admin dashboard')
+       ->dangerouslyAddUnescapedComment('Recently registered users');
+
+    // -- Admin dashboard
+    // -- Recently registered users
+    //
+    // SELECT u0_.id AS id_0, ... FROM users u0_
+
+Comments are rendered using the double-hyphen syntax, which terminates at
+the end of the line.
+A comment may still span multiple lines: the delimiter is repeated on each
+of them, so nothing the comment contains can end up in the query as SQL.
+
+.. warning::
+
+    The comment is written into the SQL as is: it is neither escaped nor
+    bound as a parameter.
+    Never pass user input to it, as it ends up in database logs, monitoring
+    tools and anywhere else the SQL is visible.
+
+When the query runs several SQL statements, such as a bulk ``UPDATE`` or
+``DELETE`` on an entity using class table inheritance, every statement
+carries the comments.
+
+Comments are passed to the query as the ``Query::HINT_SQL_COMMENTS`` hint,
+which can also be set on a DQL query directly.
+Since hints are part of the query cache key, avoid putting values that change
+on every request, like request IDs, in comments when using a query cache.
+
 The Expr class
 ^^^^^^^^^^^^^^
 
