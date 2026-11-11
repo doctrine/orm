@@ -57,6 +57,11 @@ cascades keep working as with plain collections. See the "Custom Collection
 Classes" section of the association mapping documentation for details and
 limitations.
 
+When loading an entity, the ORM creates its custom collections without calling
+their constructor. To inject dependencies into them, configure a
+`Doctrine\ORM\Collection\DelegateCollectionFactory` with
+`Configuration::setDelegateCollectionFactory()`.
+
 # Upgrade to 3.8
 
 ## The results of functions declaring their return type are converted like columns
