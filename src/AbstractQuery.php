@@ -420,6 +420,10 @@ abstract class AbstractQuery
     private function processArrayParameterValue(array $value): array
     {
         foreach ($value as $key => $paramValue) {
+            if (is_scalar($paramValue) || $paramValue === null) {
+                continue;
+            }
+
             $paramValue  = $this->processParameterValue($paramValue);
             $value[$key] = is_array($paramValue) ? reset($paramValue) : $paramValue;
         }
