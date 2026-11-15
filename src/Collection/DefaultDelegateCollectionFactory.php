@@ -13,6 +13,7 @@ use ReflectionClass;
  */
 final class DefaultDelegateCollectionFactory implements DelegateCollectionFactory
 {
+    /** @throws UninstantiableCollection When the constructor is not public or has required parameters. */
     public function create(string $collectionClass): DelegateCollection
     {
         $constructor = (new ReflectionClass($collectionClass))->getConstructor();
