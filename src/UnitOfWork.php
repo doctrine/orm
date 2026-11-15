@@ -1321,6 +1321,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->entityIdentifiers[$oid],
                 $this->originalEntityData[$oid],
                 $this->entityStates[$oid],
+                $this->partialObjectLoadedFields[$oid],
             );
 
             // Entity with this $oid after deletion treated as NEW, even if the $oid
@@ -2131,6 +2132,7 @@ class UnitOfWork implements PropertyChangedListener
                     $this->entityIdentifiers[$oid],
                     $this->entityStates[$oid],
                     $this->originalEntityData[$oid],
+                    $this->partialObjectLoadedFields[$oid],
                 );
                 break;
             case self::STATE_NEW:
