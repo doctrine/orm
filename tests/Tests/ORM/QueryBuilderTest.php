@@ -1525,4 +1525,171 @@ class QueryBuilderTest extends OrmTestCase
 
         self::assertCount(5, $qb->getHints('foo'));
     }
+
+    public function testGetQueryWithoutCommentsDoesNotSetTheCommentsHint(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('u')
+            ->from(CmsUser::class, 'u');
+
+        self::assertFalse($qb->getQuery()->hasHint(Query::HINT_SQL_COMMENTS));
+    }
+
+    public function testDangerouslyAddUnescapedCommentSingleComment(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('u.id')
+            ->from(CmsUser::class, 'u');
+
+        $sql = $qb->getQuery()->getSQL();
+
+        $qb->dangerouslyAddUnescapedComment('This is a test query');
+
+        self::assertSame("-- This is a test query\n\n" . $sql, $qb->getQuery()->getSQL());
+    }
+
+    public function testDangerouslyAddUnescapedCommentMultipleCommentsInOrder(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('u.id')
+            ->from(CmsUser::class, 'u');
+
+        $sql = $qb->getQuery()->getSQL();
+
+        $qb->dangerouslyAddUnescapedComment('First comment')
+            ->where('u.id = :id')
+            ->dangerouslyAddUnescapedComment('Second comment');
+
+        $whereSql = $this->entityManager->createQueryBuilder()
+            ->select('u.id')
+            ->from(CmsUser::class, 'u')
+            ->where('u.id = :id')
+            ->getQuery()
+            ->getSQL();
+
+        self::assertNotSame($sql, $whereSql);
+        self::assertSame("-- First comment\n-- Second comment\n\n" . $whereSql, $qb->getQuery()->getSQL());
+    }
+
+    public function testDangerouslyAddUnescapedCommentEmptyComment(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('u.id')
+            ->from(CmsUser::class, 'u');
+
+        $sql = $qb->getQuery()->getSQL();
+
+        $qb->dangerouslyAddUnescapedComment('');
+
+        self::assertSame("-- \n\n" . $sql, $qb->getQuery()->getSQL());
+    }
+
+    public function testDangerouslyAddUnescapedCommentSpecialCharacters(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('u.id')
+            ->from(CmsUser::class, 'u');
+
+        $sql = $qb->getQuery()->getSQL();
+
+        $qb->dangerouslyAddUnescapedComment('Comment with \'quotes\', "double quotes" and a :placeholder?');
+
+        self::assertSame(
+            "-- Comment with 'quotes', \"double quotes\" and a :placeholder?\n\n" . $sql,
+            $qb->getQuery()->getSQL(),
+        );
+    }
+
+    #[DataProvider('lineTerminatorProvider')]
+    public function testDangerouslyAddUnescapedCommentCommentsOutEveryLine(string $lineTerminator): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('u.id')
+            ->from(CmsUser::class, 'u');
+
+        $sql = $qb->getQuery()->getSQL();
+
+        $qb->dangerouslyAddUnescapedComment('Comment' . $lineTerminator . 'DROP TABLE users; --');
+
+        self::assertSame("-- Comment\n-- DROP TABLE users; --\n\n" . $sql, $qb->getQuery()->getSQL());
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function lineTerminatorProvider(): iterable
+    {
+        yield 'line feed' => ["\n"];
+        yield 'carriage return' => ["\r"];
+        yield 'carriage return and line feed' => ["\r\n"];
+    }
+
+    public function testDangerouslyAddUnescapedCommentIsPrependedAfterLimitIsApplied(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('u.id')
+            ->from(CmsUser::class, 'u')
+            ->setMaxResults(10)
+            ->setFirstResult(5);
+
+        $sql = $qb->getQuery()->getSQL();
+
+        $qb->dangerouslyAddUnescapedComment('Paginated');
+
+        self::assertSame("-- Paginated\n\n" . $sql, $qb->getQuery()->getSQL());
+    }
+
+    #[IgnoreDeprecations]
+    public function testDangerouslyAddUnescapedCommentWithLegacySqlWalker(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('u.id')
+            ->from(CmsUser::class, 'u')
+            ->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, Query\SqlWalker::class);
+
+        $sql = $qb->getQuery()->getSQL();
+
+        $qb->dangerouslyAddUnescapedComment('Legacy walker');
+
+        self::assertSame("-- Legacy walker\n\n" . $sql, $qb->getQuery()->getSQL());
+    }
+
+    public function testDangerouslyAddUnescapedCommentUpdateQuery(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->update(CmsUser::class, 'u')
+            ->set('u.name', ':name')
+            ->where('u.id = :id');
+
+        $sql = $qb->getQuery()->getSQL();
+
+        $qb->dangerouslyAddUnescapedComment('Update operation');
+
+        self::assertSame("-- Update operation\n\n" . $sql, $qb->getQuery()->getSQL());
+    }
+
+    public function testDangerouslyAddUnescapedCommentDeleteQuery(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->delete(CmsUser::class, 'u')
+            ->where('u.id = :id');
+
+        $sql = $qb->getQuery()->getSQL();
+
+        $qb->dangerouslyAddUnescapedComment('Delete operation');
+
+        self::assertSame("-- Delete operation\n\n" . $sql, $qb->getQuery()->getSQL());
+    }
+
+    public function testDangerouslyAddUnescapedCommentIsKeptByClone(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('u.id')
+            ->from(CmsUser::class, 'u')
+            ->dangerouslyAddUnescapedComment('Original');
+
+        $clone = clone $qb;
+        $clone->dangerouslyAddUnescapedComment('Clone only');
+
+        self::assertSame(['Original'], $qb->getQuery()->getHint(Query::HINT_SQL_COMMENTS));
+        self::assertSame(['Original', 'Clone only'], $clone->getQuery()->getHint(Query::HINT_SQL_COMMENTS));
+    }
 }
