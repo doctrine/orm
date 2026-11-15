@@ -1030,7 +1030,7 @@ been associated with an EntityManager yet:
 Custom Collection Classes
 -------------------------
 
-.. versionadded:: 3.8
+.. versionadded:: 3.9
 
 By default, the ORM exposes to-many associations as instances of
 ``Doctrine\ORM\PersistentCollection``, an implementation of the
