@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -55,23 +55,23 @@ class DDC2895Test extends OrmFunctionalTestCase
 #[HasLifecycleCallbacks]
 abstract class AbstractDDC2895
 {
-    /** @var DateTime */
-    #[Column(name: 'last_modified', type: 'datetimetz', nullable: false)]
+    /** @var DateTimeImmutable */
+    #[Column(name: 'last_modified', type: 'datetimetz_immutable', nullable: false)]
     protected $lastModified;
 
     #[PrePersist]
     #[PreUpdate]
     public function setLastModifiedPreUpdate(): void
     {
-        $this->setLastModified(new DateTime());
+        $this->setLastModified(new DateTimeImmutable());
     }
 
-    public function setLastModified(DateTime $lastModified): void
+    public function setLastModified(DateTimeImmutable $lastModified): void
     {
         $this->lastModified = $lastModified;
     }
 
-    public function getLastModified(): DateTime
+    public function getLastModified(): DateTimeImmutable
     {
         return $this->lastModified;
     }

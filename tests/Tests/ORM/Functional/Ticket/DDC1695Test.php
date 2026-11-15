@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use DateTimeZone;
+use DateTimeImmutable;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -72,8 +72,8 @@ class DDC1695News
     #[Column(name: '`LongText`', type: 'string', nullable: true)]
     private string $longText;
 
-    #[Column(name: '`PublishDate`', type: 'datetimetz', nullable: true)]
-    private DateTimeZone $publishDate;
+    #[Column(name: '`PublishDate`', type: 'datetimetz_immutable', nullable: true)]
+    private DateTimeImmutable $publishDate;
 
     #[Column(name: '`IdxNews`', type: 'json_array', nullable: true)]
     private array $idxNews;

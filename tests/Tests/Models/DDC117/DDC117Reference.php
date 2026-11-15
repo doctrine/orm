@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC117;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
@@ -26,8 +26,8 @@ class DDC117Reference
     #[JoinColumn(name: 'target_id', referencedColumnName: 'article_id')]
     private $target;
 
-    #[Column(type: 'datetime')]
-    private DateTime $created;
+    #[Column(type: 'datetime_immutable')]
+    private DateTimeImmutable $created;
 
     public function __construct(
         DDC117Article $source,
@@ -40,7 +40,7 @@ class DDC117Reference
 
         $this->source  = $source;
         $this->target  = $target;
-        $this->created = new DateTime('now');
+        $this->created = new DateTimeImmutable('now');
     }
 
     public function source(): DDC117Article

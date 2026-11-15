@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
@@ -149,8 +149,8 @@ class DDC1430Order
     #[GeneratedValue]
     protected $id;
 
-    #[Column(name: 'created_at', type: 'datetime')]
-    private DateTime $date;
+    #[Column(name: 'created_at', type: 'datetime_immutable')]
+    private DateTimeImmutable $date;
 
     #[OneToMany(targetEntity: 'DDC1430OrderProduct', mappedBy: 'order', cascade: ['persist', 'remove'])]
     private Collection $products;
@@ -164,11 +164,11 @@ class DDC1430Order
         #[Column(name: 'order_status', type: 'string', length: 255)]
         private string $status,
     ) {
-        $this->date     = new DateTime();
+        $this->date     = new DateTimeImmutable();
         $this->products = new ArrayCollection();
     }
 
-    public function getDate(): DateTime
+    public function getDate(): DateTimeImmutable
     {
         return $this->date;
     }

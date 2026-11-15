@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Query;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\UnitOfWork;
@@ -35,7 +35,7 @@ class NativeQueryTest extends OrmTestCase
 
         $query = $this->entityManager->createNativeQuery('SELECT d.* FROM date_time_model d WHERE d.datetime = :value', $rsm);
 
-        $query->setParameter('value', new DateTime(), Types::DATETIME_MUTABLE);
+        $query->setParameter('value', new DateTimeImmutable(), Types::DATETIME_IMMUTABLE);
 
         self::assertEmpty($query->getResult());
     }

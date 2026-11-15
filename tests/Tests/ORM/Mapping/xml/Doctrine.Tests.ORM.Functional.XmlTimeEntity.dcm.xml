@@ -10,7 +10,7 @@
             <generator strategy="AUTO"/>
         </id>
 
-        <field name="createdAt" type="datetime" insertable="false" updatable="false">
+        <field name="createdAt" type="datetime_immutable" insertable="false" updatable="false">
             <options>
                 <option name="default">
                     <object class="Doctrine\DBAL\Schema\DefaultExpression\CurrentTimestamp"/>
@@ -26,14 +26,14 @@
             </options>
         </field>
 
-        <field name="createdTime" type="time" insertable="false" updatable="false">
+        <field name="createdTime" type="time_immutable" insertable="false" updatable="false">
             <options>
                 <option name="default">
                     <object class="Doctrine\DBAL\Schema\DefaultExpression\CurrentTime"/>
                 </option>
             </options>
         </field>
-        <field name="createdDate" type="date" insertable="false" updatable="false">
+        <field name="createdDate" type="date_immutable" insertable="false" updatable="false">
             <options>
                 <option name="default">
                     <object class="Doctrine\DBAL\Schema\DefaultExpression\CurrentDate"/>

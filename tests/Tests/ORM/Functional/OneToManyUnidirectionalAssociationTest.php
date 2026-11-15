@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\Tests\Models\Routing\RoutingLeg;
 use Doctrine\Tests\Models\Routing\RoutingLocation;
 use Doctrine\Tests\Models\Routing\RoutingRoute;
@@ -42,8 +42,8 @@ class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $leg                = new RoutingLeg();
         $leg->fromLocation  = $this->locations['Berlin'];
         $leg->toLocation    = $this->locations['Bonn'];
-        $leg->departureDate = new DateTime('now');
-        $leg->arrivalDate   = new DateTime('now +5 hours');
+        $leg->departureDate = new DateTimeImmutable('now');
+        $leg->arrivalDate   = new DateTimeImmutable('now +5 hours');
 
         $route         = new RoutingRoute();
         $route->legs[] = $leg;
@@ -67,8 +67,8 @@ class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $leg                = new RoutingLeg();
         $leg->fromLocation  = $this->locations['Berlin'];
         $leg->toLocation    = $this->locations['Bonn'];
-        $leg->departureDate = new DateTime('now');
-        $leg->arrivalDate   = new DateTime('now +5 hours');
+        $leg->departureDate = new DateTimeImmutable('now');
+        $leg->arrivalDate   = new DateTimeImmutable('now +5 hours');
 
         $routeA         = new RoutingRoute();
         $routeA->legs[] = $leg;

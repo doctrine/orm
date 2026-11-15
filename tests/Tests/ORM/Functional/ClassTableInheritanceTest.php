@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\IterableTester;
@@ -329,7 +329,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
     public function testBulkUpdateNonScalarParameterDDC1341(): void
     {
         $this->_em->createQuery('UPDATE ' . CompanyEmployee::class . ' AS p SET p.startDate = ?0 WHERE p.department = ?1')
-                  ->setParameter(0, new DateTime())
+                  ->setParameter(0, new DateTimeImmutable())
                   ->setParameter(1, 'IT')
                   ->execute();
     }

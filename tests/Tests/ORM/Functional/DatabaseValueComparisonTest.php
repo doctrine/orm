@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Tests\DbalTypes\CustomIdObject;
 use Doctrine\Tests\DbalTypes\CustomIdObjectType;
@@ -24,7 +24,7 @@ class DatabaseValueComparisonTest extends OrmFunctionalTestCase
     public function testSameDateDifferentTimeDoesNotProduceChangeSet(): void
     {
         $entity       = $this->createEntity();
-        $entity->date = new DateTime('2020-01-01 10:00:00');
+        $entity->date = new DateTimeImmutable('2020-01-01 10:00:00');
 
         $this->_em->persist($entity);
         $this->_em->flush();
@@ -36,7 +36,7 @@ class DatabaseValueComparisonTest extends OrmFunctionalTestCase
 
         // The date type stores only the day, so a different time of day on the
         // same day is not a change.
-        $entity->date = new DateTime('2020-01-01 23:00:00');
+        $entity->date = new DateTimeImmutable('2020-01-01 23:00:00');
 
         $uow = $this->_em->getUnitOfWork();
         $uow->computeChangeSets();
@@ -47,7 +47,7 @@ class DatabaseValueComparisonTest extends OrmFunctionalTestCase
     public function testDifferentDateProducesChangeSet(): void
     {
         $entity       = $this->createEntity();
-        $entity->date = new DateTime('2020-01-01 10:00:00');
+        $entity->date = new DateTimeImmutable('2020-01-01 10:00:00');
 
         $this->_em->persist($entity);
         $this->_em->flush();
@@ -57,7 +57,7 @@ class DatabaseValueComparisonTest extends OrmFunctionalTestCase
         $entity = $this->_em->find(DatabaseValueComparisonEntity::class, $id);
         self::assertInstanceOf(DatabaseValueComparisonEntity::class, $entity);
 
-        $entity->date = new DateTime('2020-01-02 10:00:00');
+        $entity->date = new DateTimeImmutable('2020-01-02 10:00:00');
 
         $uow = $this->_em->getUnitOfWork();
         $uow->computeChangeSets();
@@ -68,7 +68,7 @@ class DatabaseValueComparisonTest extends OrmFunctionalTestCase
     public function testEqualDateTimeDoesNotProduceChangeSet(): void
     {
         $entity           = $this->createEntity();
-        $entity->dateTime = new DateTime('2020-01-01 10:00:00');
+        $entity->dateTime = new DateTimeImmutable('2020-01-01 10:00:00');
 
         $this->_em->persist($entity);
         $this->_em->flush();
@@ -79,7 +79,7 @@ class DatabaseValueComparisonTest extends OrmFunctionalTestCase
         self::assertInstanceOf(DatabaseValueComparisonEntity::class, $entity);
 
         // Replacing the date with an equal instance is not a change.
-        $entity->dateTime = new DateTime('2020-01-01 10:00:00');
+        $entity->dateTime = new DateTimeImmutable('2020-01-01 10:00:00');
 
         $uow = $this->_em->getUnitOfWork();
         $uow->computeChangeSets();
@@ -90,7 +90,7 @@ class DatabaseValueComparisonTest extends OrmFunctionalTestCase
     public function testDifferentDateTimeProducesChangeSet(): void
     {
         $entity           = $this->createEntity();
-        $entity->dateTime = new DateTime('2020-01-01 10:00:00');
+        $entity->dateTime = new DateTimeImmutable('2020-01-01 10:00:00');
 
         $this->_em->persist($entity);
         $this->_em->flush();
@@ -100,7 +100,7 @@ class DatabaseValueComparisonTest extends OrmFunctionalTestCase
         $entity = $this->_em->find(DatabaseValueComparisonEntity::class, $id);
         self::assertInstanceOf(DatabaseValueComparisonEntity::class, $entity);
 
-        $entity->dateTime = new DateTime('2020-01-01 11:00:00');
+        $entity->dateTime = new DateTimeImmutable('2020-01-01 11:00:00');
 
         $uow = $this->_em->getUnitOfWork();
         $uow->computeChangeSets();
@@ -178,8 +178,8 @@ class DatabaseValueComparisonTest extends OrmFunctionalTestCase
     private function createEntity(): DatabaseValueComparisonEntity
     {
         $entity           = new DatabaseValueComparisonEntity();
-        $entity->date     = new DateTime('2000-01-01 00:00:00');
-        $entity->dateTime = new DateTime('2000-01-01 00:00:00');
+        $entity->date     = new DateTimeImmutable('2000-01-01 00:00:00');
+        $entity->dateTime = new DateTimeImmutable('2000-01-01 00:00:00');
         $entity->value    = new CustomIdObject('default');
 
         return $entity;
@@ -194,11 +194,11 @@ class DatabaseValueComparisonEntity
     #[ORM\GeneratedValue]
     public int|null $id = null;
 
-    #[ORM\Column(type: 'date')]
-    public DateTime $date;
+    #[ORM\Column(type: 'date_immutable')]
+    public DateTimeImmutable $date;
 
-    #[ORM\Column(type: 'datetime')]
-    public DateTime $dateTime;
+    #[ORM\Column(type: 'datetime_immutable')]
+    public DateTimeImmutable $dateTime;
 
     #[ORM\Column(type: CustomIdObjectType::NAME, length: 255)]
     public CustomIdObject $value;
