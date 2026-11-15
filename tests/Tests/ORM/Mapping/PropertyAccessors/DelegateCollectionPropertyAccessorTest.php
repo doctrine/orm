@@ -10,6 +10,7 @@ use Doctrine\ORM\Collection\AbstractDelegateCollection;
 use Doctrine\ORM\Collection\DefaultDelegateCollectionFactory;
 use Doctrine\ORM\Collection\DelegateCollection;
 use Doctrine\ORM\Collection\DelegateCollectionFactory;
+use Doctrine\ORM\Exception\UninstantiableCollection;
 use Doctrine\ORM\Mapping\PropertyAccessors\DelegateCollectionPropertyAccessor;
 use Doctrine\ORM\Mapping\PropertyAccessors\PropertyAccessorFactory;
 use Doctrine\ORM\ORMInvalidArgumentException;
@@ -18,6 +19,7 @@ use Doctrine\Tests\Models\CustomCollection\Shelf;
 use Doctrine\Tests\Models\CustomCollection\Tag;
 use Doctrine\Tests\Models\CustomCollection\TagCollection;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 use function sprintf;
 
@@ -40,7 +42,7 @@ class DelegateCollectionPropertyAccessorTest extends OrmTestCase
         self::assertSame($inner, $this->createAccessor()->getValue($holder));
     }
 
-    public function testSetValueCreatesAnInstanceWithoutCallingItsConstructor(): void
+    public function testSetValueCreatesAnInstanceWithItsConstructor(): void
     {
         $holder     = new TaggedHolder();
         $collection = new ArrayCollection();
@@ -48,6 +50,7 @@ class DelegateCollectionPropertyAccessorTest extends OrmTestCase
         $this->createAccessor()->setValue($holder, $collection);
 
         self::assertInstanceOf(NamedTagCollection::class, $holder->tags);
+        self::assertSame('unnamed', $holder->tags->name);
         self::assertSame($collection, $holder->tags->getDelegatee());
     }
 
@@ -149,12 +152,28 @@ class DelegateCollectionPropertyAccessorTest extends OrmTestCase
         $accessor->setValue(new TaggedHolder(), new ArrayCollection());
     }
 
-    public function testDefaultFactoryDoesNotCallTheConstructor(): void
+    public function testDefaultFactoryCallsTheConstructor(): void
     {
-        self::assertInstanceOf(
-            NamedTagCollection::class,
-            (new DefaultDelegateCollectionFactory())->create(NamedTagCollection::class),
-        );
+        $collection = (new DefaultDelegateCollectionFactory())->create(NamedTagCollection::class);
+
+        self::assertInstanceOf(NamedTagCollection::class, $collection);
+        self::assertSame('unnamed', $collection->name);
+    }
+
+    /** @param class-string<DelegateCollection<array-key, mixed>> $collectionClass */
+    #[DataProvider('uninstantiableCollectionClasses')]
+    public function testDefaultFactoryRejectsAConstructorThatCannotBeCalledWithoutArguments(string $collectionClass): void
+    {
+        $this->expectException(UninstantiableCollection::class);
+
+        (new DefaultDelegateCollectionFactory())->create($collectionClass);
+    }
+
+    /** @return iterable<string, array{class-string<DelegateCollection<array-key, mixed>>}> */
+    public static function uninstantiableCollectionClasses(): iterable
+    {
+        yield 'required parameter' => [RequiredNameTagCollection::class];
+        yield 'private constructor' => [PrivateConstructorTagCollection::class];
     }
 }
 
@@ -173,8 +192,26 @@ class CollectionTypedHolder
 final class NamedTagCollection extends AbstractDelegateCollection
 {
     /** @param Collection<array-key, Tag> $collection */
-    public function __construct(public readonly string $name, Collection $collection = new ArrayCollection())
+    public function __construct(public readonly string $name = 'unnamed', Collection $collection = new ArrayCollection())
     {
         parent::__construct($collection);
+    }
+}
+
+/** @template-extends AbstractDelegateCollection<array-key, Tag> */
+final class RequiredNameTagCollection extends AbstractDelegateCollection
+{
+    public function __construct(public readonly string $name)
+    {
+        parent::__construct();
+    }
+}
+
+/** @template-extends AbstractDelegateCollection<array-key, Tag> */
+final class PrivateConstructorTagCollection extends AbstractDelegateCollection
+{
+    private function __construct()
+    {
+        parent::__construct();
     }
 }
