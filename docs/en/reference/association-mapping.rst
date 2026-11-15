@@ -1094,8 +1094,8 @@ The property always holds a ``BookList``, including for entities loaded from
 the database, so getters can be typed against it. The ORM only manages the
 collection inside it: on the first flush, it replaces the ``ArrayCollection``
 created by the constructor with a ``PersistentCollection``, and when it loads
-the entity, it creates the ``BookList`` without calling its constructor, like
-entities, and puts a ``PersistentCollection`` in it. Because every operation
+the entity, it creates the ``BookList`` by calling its constructor without
+arguments, and puts a ``PersistentCollection`` in it. Because every operation
 of the custom class goes through that collection, lazy loading,
 ``EXTRA_LAZY`` behavior, change tracking, orphan removal and cascades keep
 working exactly as with plain collections.
@@ -1130,9 +1130,9 @@ A custom collection class must follow these rules:
 - That property is the single source of truth for the elements: every read
   and write performed by the class must go through it. State kept outside of
   it (plain arrays, cached copies of ``toArray()`` results, ...) is invisible
-  to the ORM and will not be persisted. In particular, state initialized only
-  in the constructor is not available on loaded entities, unless a collection
-  factory initializes it (see below).
+  to the ORM and will not be persisted.
+- Its constructor must be public and have no required parameters, unless a
+  collection factory creates it (see below).
 - It must read the underlying collection from the property on each call: do
   not keep it in another property or a closure, as the ORM replaces it on the
   first flush and on refresh.
@@ -1185,7 +1185,8 @@ the elements for the current tenant, configure a
 ``Doctrine\ORM\Collection\DelegateCollectionFactory``. The ORM calls it
 whenever it creates a custom collection itself, when it loads an entity for
 instance; the instance created by the constructor of a new entity is kept as
-is. The default factory creates the instance without calling its constructor.
+is. The default factory calls the constructor without arguments, and throws
+when it is not public or has required parameters.
 Whatever the factory, the ORM then puts the managed collection in the
 ``$collection`` property of the instance.
 
