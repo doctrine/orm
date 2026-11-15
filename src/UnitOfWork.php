@@ -739,7 +739,10 @@ class UnitOfWork implements PropertyChangedListener
 
                 // if regular field
                 if (! isset($class->associationMappings[$propName])) {
-                    if ($this->isSameConvertedDatabaseValue($class, $propName, $orgValue, $actualValue)) {
+                    if (
+                        is_object($orgValue) && is_object($actualValue)
+                        && $this->isSameConvertedDatabaseValue($class, $propName, $orgValue, $actualValue)
+                    ) {
                         continue;
                     }
 
@@ -1125,7 +1128,10 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            if ($this->isSameConvertedDatabaseValue($class, $propName, $orgValue, $actualValue)) {
+            if (
+                is_object($orgValue) && is_object($actualValue)
+                && $this->isSameConvertedDatabaseValue($class, $propName, $orgValue, $actualValue)
+            ) {
                 continue;
             }
 
@@ -1160,14 +1166,10 @@ class UnitOfWork implements PropertyChangedListener
     private function isSameConvertedDatabaseValue(
         ClassMetadata $class,
         string $propName,
-        mixed $orgValue,
-        mixed $actualValue,
+        object $orgValue,
+        object $actualValue,
     ): bool {
-        if (
-            ! is_object($orgValue)
-            || ! is_object($actualValue)
-            || ! isset($class->fieldMappings[$propName])
-        ) {
+        if (! isset($class->fieldMappings[$propName])) {
             return false;
         }
 
