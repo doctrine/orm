@@ -2566,6 +2566,7 @@ class UnitOfWork implements PropertyChangedListener
                     // We will hydrate the given un-managed proxy anyway:
                     // continue work, but consider it the entity from now on
                     $entity = $unmanagedProxy;
+                    $oid    = spl_object_id($entity);
                 }
             }
 
