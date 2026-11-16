@@ -164,7 +164,11 @@ class DefaultEntityHydrator implements EntityHydrator
         }
 
         if ($entity !== null) {
-            $this->uow->registerManaged($entity, $key->identifier, $data);
+            $managedEntity = $this->uow->tryGetById($key->identifier, $metadata->rootEntityName);
+            // A detached lazy object may be initialized after another instance has been managed.
+            if ($managedEntity === false || $managedEntity === $entity) {
+                $this->uow->registerManaged($entity, $key->identifier, $data);
+            }
         }
 
         $result = $this->uow->createEntity($entry->class, $data, $hints);
