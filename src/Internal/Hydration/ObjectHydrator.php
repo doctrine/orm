@@ -465,14 +465,28 @@ class ObjectHydrator extends AbstractHydrator
                                     if ($relation->inversedBy !== null) {
                                         $inverseAssoc = $targetClass->associationMappings[$relation->inversedBy];
                                         if ($inverseAssoc->isToOne()) {
-                                            $targetClass->propertyAccessors[$inverseAssoc->fieldName]->setValue($element, $parentObject);
-                                            $this->uow->setOriginalEntityProperty(spl_object_id($element), $inverseAssoc->fieldName, $parentObject);
+                                            $targetClass->propertyAccessors[$inverseAssoc->fieldName]->setValue(
+                                                $element,
+                                                $parentObject,
+                                            );
+                                            $this->uow->setOriginalEntityProperty(
+                                                spl_object_id($element),
+                                                $inverseAssoc->fieldName,
+                                                $parentObject,
+                                            );
                                         }
                                     }
                                 } else {
                                     // For sure bidirectional, as there is no inverse side in unidirectional mappings
-                                    $targetClass->propertyAccessors[$relation->mappedBy]->setValue($element, $parentObject);
-                                    $this->uow->setOriginalEntityProperty(spl_object_id($element), $relation->mappedBy, $parentObject);
+                                    $targetClass->propertyAccessors[$relation->mappedBy]->setValue(
+                                        $element,
+                                        $parentObject,
+                                    );
+                                    $this->uow->setOriginalEntityProperty(
+                                        spl_object_id($element),
+                                        $relation->mappedBy,
+                                        $parentObject,
+                                    );
                                 }
                             }
 

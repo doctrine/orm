@@ -795,7 +795,11 @@ class BasicEntityPersister implements EntityPersister
             $targetEntity = $this->load($identifier, null, $assoc, $hints);
 
             // Complete bidirectional association, if necessary
-            if ($targetEntity !== null && $isInverseSingleValued && $this->em->getUnitOfWork()->isInIdentityMap($sourceEntity)) {
+            if (
+                $targetEntity !== null
+                && $isInverseSingleValued
+                && $this->em->getUnitOfWork()->isInIdentityMap($sourceEntity)
+            ) {
                 $targetClass->propertyAccessors[$assoc->inversedBy]->setValue($targetEntity, $sourceEntity);
             }
 

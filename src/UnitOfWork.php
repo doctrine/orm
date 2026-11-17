@@ -2549,7 +2549,7 @@ class UnitOfWork implements PropertyChangedListener
         // Holds already-loaded field data when a partial proxy is being fully initialized.
         // Used to avoid overwriting user-modified fields and to preserve the partial snapshot
         // in originalEntityData for correct changeset computation.
-        $existingData = [];
+        $existingData      = [];
         $isDetachedRefresh = false;
 
         if (isset($this->identityMap[$class->rootEntityName][$idHash])) {
@@ -2566,8 +2566,8 @@ class UnitOfWork implements PropertyChangedListener
                 ) {
                     // We will hydrate the given un-managed proxy anyway:
                     // continue work, but consider it the entity from now on
-                    $entity = $unmanagedProxy;
-                    $oid    = spl_object_id($entity);
+                    $entity            = $unmanagedProxy;
+                    $oid               = spl_object_id($entity);
                     $isDetachedRefresh = true;
                 }
             }
@@ -2824,7 +2824,12 @@ class UnitOfWork implements PropertyChangedListener
                     $this->originalEntityData[$oid][$field] = $newValue;
                     $class->propertyAccessors[$field]->setValue($entity, $newValue);
 
-                    if (! $isDetachedRefresh && $assoc->inversedBy !== null && $assoc->isOneToOne() && $newValue !== null) {
+                    if (
+                        ! $isDetachedRefresh
+                        && $assoc->inversedBy !== null
+                        && $assoc->isOneToOne()
+                        && $newValue !== null
+                    ) {
                         $inverseAssoc = $targetClass->associationMappings[$assoc->inversedBy];
                         $targetClass->propertyAccessors[$inverseAssoc->fieldName]->setValue($newValue, $entity);
                     }

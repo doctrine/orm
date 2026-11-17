@@ -56,8 +56,8 @@ class NativeLazyObjectIdentityMapCollisionTest extends OrmFunctionalTestCase
 
     public function testInitializingDetachedReferenceWithEagerAssociationKeepsManagedEntity(): void
     {
-        $related = new NativeLazyObjectIdentityMapCollisionRelatedEntity();
-        $entity  = new NativeLazyObjectIdentityMapCollisionEagerEntity('value', $related);
+        $related        = new NativeLazyObjectIdentityMapCollisionRelatedEntity();
+        $entity         = new NativeLazyObjectIdentityMapCollisionEagerEntity('value', $related);
         $related->owner = $entity;
         $this->_em->persist($related);
         $this->_em->persist($entity);
@@ -75,13 +75,18 @@ class NativeLazyObjectIdentityMapCollisionTest extends OrmFunctionalTestCase
         self::assertNotSame($managedEntity, $reference);
         $managedRelated = $managedEntity->related;
         self::assertSame($managedEntity, $managedRelated->owner);
-        $originalData = $this->_em->getUnitOfWork()->getOriginalEntityData($managedEntity);
+        $originalData        = $this->_em->getUnitOfWork()->getOriginalEntityData($managedEntity);
         $relatedOriginalData = $this->_em->getUnitOfWork()->getOriginalEntityData($managedRelated);
 
-        $this->_em->createQuery('UPDATE ' . NativeLazyObjectIdentityMapCollisionEagerEntity::class . ' e SET e.value = :value WHERE e.id = :id')
-            ->setParameter('value', 'changed in database')
+        $this->_em->createQuery(
+            'UPDATE ' . NativeLazyObjectIdentityMapCollisionEagerEntity::class
+            . ' e SET e.value = :value WHERE e.id = :id',
+        )->setParameter('value', 'changed in database')
             ->setParameter('id', $id)
             ->execute();
+
+        // Bulk DQL updates do not invalidate the second-level cache entry.
+        $this->_em->getCache()?->evictEntity(NativeLazyObjectIdentityMapCollisionEagerEntity::class, $id);
 
         self::assertSame('changed in database', $reference->value);
         self::assertSame('value', $managedEntity->value);
@@ -103,8 +108,8 @@ class NativeLazyObjectIdentityMapCollisionTest extends OrmFunctionalTestCase
 
     public function testInitializingDetachedReferenceKeepsLazyOneToOneBackReference(): void
     {
-        $related = new NativeLazyObjectIdentityMapCollisionLazyRelatedEntity();
-        $entity  = new NativeLazyObjectIdentityMapCollisionLazyEntity('value', $related);
+        $related        = new NativeLazyObjectIdentityMapCollisionLazyRelatedEntity();
+        $entity         = new NativeLazyObjectIdentityMapCollisionLazyEntity('value', $related);
         $related->owner = $entity;
         $this->_em->persist($related);
         $this->_em->persist($entity);
@@ -140,7 +145,7 @@ class NativeLazyObjectIdentityMapCollisionEntity
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
-    public ?int $id = null;
+    public int|null $id = null;
 }
 
 #[Entity]
@@ -149,7 +154,11 @@ class NativeLazyObjectIdentityMapCollisionEagerEntity
     public function __construct(
         #[Column]
         public string $value,
-        #[OneToOne(targetEntity: NativeLazyObjectIdentityMapCollisionRelatedEntity::class, inversedBy: 'owner', fetch: 'EAGER')]
+        #[OneToOne(
+            targetEntity: NativeLazyObjectIdentityMapCollisionRelatedEntity::class,
+            inversedBy: 'owner',
+            fetch: 'EAGER',
+        )]
         #[JoinColumn(nullable: false)]
         public NativeLazyObjectIdentityMapCollisionRelatedEntity $related,
     ) {
@@ -158,7 +167,7 @@ class NativeLazyObjectIdentityMapCollisionEagerEntity
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
-    public ?int $id = null;
+    public int|null $id = null;
 }
 
 #[Entity]
@@ -167,10 +176,10 @@ class NativeLazyObjectIdentityMapCollisionRelatedEntity
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
-    public ?int $id = null;
+    public int|null $id = null;
 
     #[OneToOne(targetEntity: NativeLazyObjectIdentityMapCollisionEagerEntity::class, mappedBy: 'related')]
-    public ?NativeLazyObjectIdentityMapCollisionEagerEntity $owner = null;
+    public NativeLazyObjectIdentityMapCollisionEagerEntity|null $owner = null;
 }
 
 #[Entity]
@@ -188,7 +197,7 @@ class NativeLazyObjectIdentityMapCollisionLazyEntity
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
-    public ?int $id = null;
+    public int|null $id = null;
 }
 
 #[Entity]
@@ -197,8 +206,8 @@ class NativeLazyObjectIdentityMapCollisionLazyRelatedEntity
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
-    public ?int $id = null;
+    public int|null $id = null;
 
     #[OneToOne(targetEntity: NativeLazyObjectIdentityMapCollisionLazyEntity::class, mappedBy: 'related')]
-    public ?NativeLazyObjectIdentityMapCollisionLazyEntity $owner = null;
+    public NativeLazyObjectIdentityMapCollisionLazyEntity|null $owner = null;
 }

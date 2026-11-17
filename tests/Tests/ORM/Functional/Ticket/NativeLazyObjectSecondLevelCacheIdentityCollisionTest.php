@@ -82,7 +82,7 @@ class NativeLazyObjectCachedServer
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
-    public ?int $id = null;
+    public int|null $id = null;
 }
 
 #[Entity]
@@ -101,5 +101,5 @@ class NativeLazyObjectCachedAccountType
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
-    public ?int $id = null;
+    public int|null $id = null;
 }
