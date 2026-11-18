@@ -14,7 +14,6 @@ use Doctrine\DBAL\Schema\PrimaryKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Table as DbalTable;
 use Doctrine\DBAL\Types\Type;
 
-use function array_key_exists;
 use function array_map;
 use function class_exists;
 use function ksort;
@@ -86,11 +85,7 @@ trait SchemaAssertions
      */
     private static function column(string $name, string $type, array $options = []): Column
     {
-        if (! array_key_exists('platformOptions', $options)) {
-            $options['platformOptions'] = ['version' => false];
-        }
-
-        return self::createColumn($name, $type, $options);
+        return self::createColumn($name, $type, ['platformOptions' => []] + $options);
     }
 
     /**
@@ -100,7 +95,7 @@ trait SchemaAssertions
      */
     private static function joinColumn(string $name, string $type, array $options = []): Column
     {
-        return self::createColumn($name, $type, ['platformOptions' => []] + $options);
+        return self::column($name, $type, $options);
     }
 
     /** @param list<string> $localColumns @param list<string> $foreignColumns */
@@ -237,6 +232,12 @@ trait SchemaAssertions
     /** @return array<string, mixed> */
     private static function toComparableColumn(Column $column): array
     {
+        $platformOptions = $column->getPlatformOptions();
+        if (($platformOptions['version'] ?? null) === false) {
+            // The legacy schema path sets "version" to false; the editor API omits it.
+            unset($platformOptions['version']);
+        }
+
         return [
             'type'             => method_exists($column, 'getTypeName')
                 ? $column->getTypeName()
@@ -249,7 +250,7 @@ trait SchemaAssertions
             'notnull'          => $column->getNotnull(),
             'default'          => $column->getDefault(),
             'autoincrement'    => $column->getAutoincrement(),
-            'platformOptions'  => $column->getPlatformOptions(),
+            'platformOptions'  => $platformOptions,
             'columnDefinition' => $column->getColumnDefinition(),
             'comment'          => $column->getComment(),
         ];

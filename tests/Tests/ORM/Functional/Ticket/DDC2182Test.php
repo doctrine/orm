@@ -36,7 +36,7 @@ class DDC2182Test extends OrmFunctionalTestCase
             self::table(
                 'DDC2182OptionParent',
                 [
-                    self::column('id', 'integer', ['unsigned' => true, 'platformOptions' => []]),
+                    self::column('id', 'integer', ['unsigned' => true]),
                 ],
                 primaryKey: ['id'],
             ),
