@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Query;
 
-use DateTime;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\ArrayParameterType;
@@ -541,7 +540,7 @@ class QueryTest extends OrmTestCase
 
         $query = $this->entityManager->createQuery('SELECT d FROM ' . DateTimeModel::class . ' d WHERE d.datetime = :value');
 
-        $query->setParameter('value', new DateTime(), Types::DATETIME_MUTABLE);
+        $query->setParameter('value', new DateTimeImmutable(), Types::DATETIME_IMMUTABLE);
 
         self::assertEmpty($query->getResult());
     }

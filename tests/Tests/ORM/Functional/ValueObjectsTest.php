@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
@@ -385,7 +385,7 @@ class DDC93Person
         #[Embedded(class: 'DDC93Address')]
         public DDC93Address|null $address = null,
     ) {
-        $this->timestamps = new DDC93Timestamps(new DateTime());
+        $this->timestamps = new DDC93Timestamps(new DateTimeImmutable());
     }
 }
 
@@ -393,8 +393,8 @@ class DDC93Person
 class DDC93Timestamps
 {
     public function __construct(
-        #[Column(type: 'datetime')]
-        public DateTime $createdAt,
+        #[Column(type: 'datetime_immutable')]
+        public DateTimeImmutable $createdAt,
     ) {
     }
 }

@@ -94,8 +94,8 @@ class XmlTimeEntity
 {
     public int $id;
 
-    public DateTime $createdAt;
+    public DateTimeImmutable $createdAt;
     public DateTimeImmutable $createdAtImmutable;
-    public DateTime $createdTime;
-    public DateTime $createdDate;
+    public DateTimeImmutable $createdTime;
+    public DateTimeImmutable $createdDate;
 }

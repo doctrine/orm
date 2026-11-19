@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
@@ -65,7 +65,7 @@ class DDC345Test extends OrmFunctionalTestCase
 
         self::assertEquals(1, $membership->prePersistCallCount);
         self::assertEquals(0, $membership->preUpdateCallCount);
-        self::assertInstanceOf(DateTime::class, $membership->updated);
+        self::assertInstanceOf(DateTimeImmutable::class, $membership->updated);
     }
 }
 
@@ -141,8 +141,8 @@ class DDC345Membership
     #[Column(type: 'string', length: 255)]
     public $state;
 
-    /** @var DateTime */
-    #[Column(type: 'datetime')]
+    /** @var DateTimeImmutable */
+    #[Column(type: 'datetime_immutable')]
     public $updated;
 
     /** @var int */
@@ -156,7 +156,7 @@ class DDC345Membership
     {
         //echo "***** PrePersist\n";
         ++$this->prePersistCallCount;
-        $this->updated = new DateTime();
+        $this->updated = new DateTimeImmutable();
     }
 
     #[PreUpdate]
@@ -164,6 +164,6 @@ class DDC345Membership
     {
         //echo "***** PreUpdate\n";
         ++$this->preUpdateCallCount;
-        $this->updated = new DateTime();
+        $this->updated = new DateTimeImmutable();
     }
 }

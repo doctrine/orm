@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use DateTime;
+use DateTimeImmutable;
 use DateTimeZone;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -29,9 +29,9 @@ class DDC657Test extends OrmFunctionalTestCase
 
         self::assertInstanceOf(DateTimeModel::class, $datetime);
 
-        self::assertInstanceOf(DateTime::class, $datetime->datetime);
-        self::assertInstanceOf(DateTime::class, $datetime->time);
-        self::assertInstanceOf(DateTime::class, $datetime->date);
+        self::assertInstanceOf(DateTimeImmutable::class, $datetime->datetime);
+        self::assertInstanceOf(DateTimeImmutable::class, $datetime->time);
+        self::assertInstanceOf(DateTimeImmutable::class, $datetime->date);
     }
 
     public function testScalarResult(): void
@@ -57,13 +57,13 @@ class DDC657Test extends OrmFunctionalTestCase
 
         self::assertCount(2, $result);
 
-        self::assertInstanceOf(DateTime::class, $result[0]['datetime']);
-        self::assertInstanceOf(DateTime::class, $result[0]['time']);
-        self::assertInstanceOf(DateTime::class, $result[0]['date']);
+        self::assertInstanceOf(DateTimeImmutable::class, $result[0]['datetime']);
+        self::assertInstanceOf(DateTimeImmutable::class, $result[0]['time']);
+        self::assertInstanceOf(DateTimeImmutable::class, $result[0]['date']);
 
-        self::assertInstanceOf(DateTime::class, $result[1]['datetime']);
-        self::assertInstanceOf(DateTime::class, $result[1]['time']);
-        self::assertInstanceOf(DateTime::class, $result[1]['date']);
+        self::assertInstanceOf(DateTimeImmutable::class, $result[1]['datetime']);
+        self::assertInstanceOf(DateTimeImmutable::class, $result[1]['time']);
+        self::assertInstanceOf(DateTimeImmutable::class, $result[1]['date']);
     }
 
     public function testTicketSingleResult(): void
@@ -73,9 +73,9 @@ class DDC657Test extends OrmFunctionalTestCase
 
         self::assertIsArray($datetime);
 
-        self::assertInstanceOf(DateTime::class, $datetime['datetime']);
-        self::assertInstanceOf(DateTime::class, $datetime['time']);
-        self::assertInstanceOf(DateTime::class, $datetime['date']);
+        self::assertInstanceOf(DateTimeImmutable::class, $datetime['datetime']);
+        self::assertInstanceOf(DateTimeImmutable::class, $datetime['time']);
+        self::assertInstanceOf(DateTimeImmutable::class, $datetime['date']);
     }
 
     public function testTicketResult(): void
@@ -85,15 +85,15 @@ class DDC657Test extends OrmFunctionalTestCase
 
         self::assertCount(2, $result);
 
-        self::assertInstanceOf(DateTime::class, $result[0]['time']);
-        self::assertInstanceOf(DateTime::class, $result[0]['date']);
-        self::assertInstanceOf(DateTime::class, $result[0]['datetime']);
+        self::assertInstanceOf(DateTimeImmutable::class, $result[0]['time']);
+        self::assertInstanceOf(DateTimeImmutable::class, $result[0]['date']);
+        self::assertInstanceOf(DateTimeImmutable::class, $result[0]['datetime']);
 
         self::assertEquals('2010-01-01 11:11:11', $result[0]['datetime']->format('Y-m-d G:i:s'));
 
-        self::assertInstanceOf(DateTime::class, $result[1]['time']);
-        self::assertInstanceOf(DateTime::class, $result[1]['date']);
-        self::assertInstanceOf(DateTime::class, $result[1]['datetime']);
+        self::assertInstanceOf(DateTimeImmutable::class, $result[1]['time']);
+        self::assertInstanceOf(DateTimeImmutable::class, $result[1]['date']);
+        self::assertInstanceOf(DateTimeImmutable::class, $result[1]['datetime']);
 
         self::assertEquals('2010-02-02 12:12:12', $result[1]['datetime']->format('Y-m-d G:i:s'));
     }
@@ -105,13 +105,13 @@ class DDC657Test extends OrmFunctionalTestCase
         $dateTime1 = new DateTimeModel();
         $dateTime2 = new DateTimeModel();
 
-        $dateTime1->date     = new DateTime('2010-01-01', $timezone);
-        $dateTime1->time     = new DateTime('2010-01-01 11:11:11', $timezone);
-        $dateTime1->datetime = new DateTime('2010-01-01 11:11:11', $timezone);
+        $dateTime1->date     = new DateTimeImmutable('2010-01-01', $timezone);
+        $dateTime1->time     = new DateTimeImmutable('2010-01-01 11:11:11', $timezone);
+        $dateTime1->datetime = new DateTimeImmutable('2010-01-01 11:11:11', $timezone);
 
-        $dateTime2->date     = new DateTime('2010-02-02', $timezone);
-        $dateTime2->time     = new DateTime('2010-02-02 12:12:12', $timezone);
-        $dateTime2->datetime = new DateTime('2010-02-02 12:12:12', $timezone);
+        $dateTime2->date     = new DateTimeImmutable('2010-02-02', $timezone);
+        $dateTime2->time     = new DateTimeImmutable('2010-02-02 12:12:12', $timezone);
+        $dateTime2->datetime = new DateTimeImmutable('2010-02-02 12:12:12', $timezone);
 
         $this->_em->persist($dateTime1);
         $this->_em->persist($dateTime2);

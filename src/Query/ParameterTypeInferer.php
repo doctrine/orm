@@ -44,6 +44,7 @@ final class ParameterTypeInferer
         }
 
         if ($value instanceof DateTimeInterface) {
+            /** @phpstan-ignore classConstant.deprecated (a mutable DateTime value maps to the mutable datetime type) */
             return Types::DATETIME_MUTABLE;
         }
 

@@ -88,7 +88,7 @@ class DDC1657Screen
      *
      * @var Date
      */
-    #[Column(name: 'ddate', type: 'date', nullable: false)]
+    #[Column(name: 'ddate', type: 'date_immutable', nullable: false)]
     private $ddate;
 
     /**

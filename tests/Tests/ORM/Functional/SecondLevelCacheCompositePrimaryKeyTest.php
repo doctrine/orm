@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\Flight;
 use PHPUnit\Framework\Attributes\Group;
@@ -31,7 +31,7 @@ class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheFunctional
             'goingTo'       => $goingToId,
         ];
 
-        $flight->setDeparture(new DateTime('tomorrow'));
+        $flight->setDeparture(new DateTimeImmutable('tomorrow'));
 
         self::assertTrue($this->cache->containsEntity(City::class, $this->cities[0]->getId()));
         self::assertTrue($this->cache->containsEntity(City::class, $this->cities[1]->getId()));
@@ -77,7 +77,7 @@ class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheFunctional
             'goingTo'       => $goingToId,
         ];
 
-        $flight->setDeparture(new DateTime('tomorrow'));
+        $flight->setDeparture(new DateTimeImmutable('tomorrow'));
 
         self::assertTrue($this->cache->containsEntity(City::class, $this->cities[0]->getId()));
         self::assertTrue($this->cache->containsEntity(City::class, $this->cities[1]->getId()));
@@ -109,8 +109,8 @@ class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheFunctional
         $this->_em->clear();
         $this->evictRegions();
 
-        $now           = new DateTime('now');
-        $tomorrow      = new DateTime('tomorrow');
+        $now           = new DateTimeImmutable('now');
+        $tomorrow      = new DateTimeImmutable('tomorrow');
         $leavingFromId = $this->cities[0]->getId();
         $goingToId     = $this->cities[1]->getId();
         $leavingFrom   = $this->_em->find(City::class, $leavingFromId);

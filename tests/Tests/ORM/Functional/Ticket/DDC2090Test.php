@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
@@ -24,18 +24,18 @@ class DDC2090Test extends OrmFunctionalTestCase
 
     public function testIssue(): void
     {
-        $date1     = new DateTime('2011-11-11 11:11:11');
-        $date2     = new DateTime('2012-12-12 12:12:12');
+        $date1     = new DateTimeImmutable('2011-11-11 11:11:11');
+        $date2     = new DateTimeImmutable('2012-12-12 12:12:12');
         $employee1 = new CompanyEmployee();
         $employee2 = new CompanyEmployee();
 
         $employee1->setName('Fabio B. Silva');
-        $employee1->setStartDate(new DateTime('yesterday'));
+        $employee1->setStartDate(new DateTimeImmutable('yesterday'));
         $employee1->setDepartment('R&D');
         $employee1->setSalary(100);
 
         $employee2->setName('Doctrine Bot');
-        $employee1->setStartDate(new DateTime('yesterday'));
+        $employee1->setStartDate(new DateTimeImmutable('yesterday'));
         $employee2->setDepartment('QA');
         $employee2->setSalary(100);
 

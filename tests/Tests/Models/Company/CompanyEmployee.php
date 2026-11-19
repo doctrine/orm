@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Company;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -22,8 +22,8 @@ class CompanyEmployee extends CompanyPerson
     #[Column(type: 'string', length: 255)]
     private string|null $department = null;
 
-    #[Column(type: 'datetime', nullable: true)]
-    private DateTime|null $startDate = null;
+    #[Column(type: 'datetime_immutable', nullable: true)]
+    private DateTimeImmutable|null $startDate = null;
 
     /** @phpstan-var Collection<int, CompanyContract> */
     #[ManyToMany(targetEntity: 'CompanyContract', mappedBy: 'engineers', fetch: 'EXTRA_LAZY')]
@@ -53,12 +53,12 @@ class CompanyEmployee extends CompanyPerson
         $this->department = $dep;
     }
 
-    public function getStartDate(): DateTime|null
+    public function getStartDate(): DateTimeImmutable|null
     {
         return $this->startDate;
     }
 
-    public function setStartDate(DateTime $date): void
+    public function setStartDate(DateTimeImmutable $date): void
     {
         $this->startDate = $date;
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -26,7 +26,7 @@ class DDC425Test extends OrmFunctionalTestCase
     public function testIssue(): void
     {
         $num = $this->_em->createQuery('DELETE ' . __NAMESPACE__ . '\DDC425Entity e WHERE e.someDatetimeField > ?1')
-                ->setParameter(1, new DateTime(), Types::DATETIME_MUTABLE)
+                ->setParameter(1, new DateTimeImmutable(), Types::DATETIME_IMMUTABLE)
                 ->getResult();
         self::assertEquals(0, $num);
     }
@@ -41,7 +41,7 @@ class DDC425Entity
     #[GeneratedValue]
     public $id;
 
-    /** @var DateTime */
-    #[Column(type: 'datetime')]
+    /** @var DateTimeImmutable */
+    #[Column(type: 'datetime_immutable')]
     public $someDatetimeField;
 }

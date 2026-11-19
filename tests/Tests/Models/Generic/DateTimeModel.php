@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Generic;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -20,15 +21,15 @@ class DateTimeModel
     #[GeneratedValue]
     public $id;
 
-    /** @var DateTime|null */
-    #[Column(name: 'col_datetime', type: 'datetime', nullable: true)]
+    /** @var DateTimeImmutable|null */
+    #[Column(name: 'col_datetime', type: 'datetime_immutable', nullable: true)]
     public $datetime;
 
-    /** @var DateTime|null */
-    #[Column(name: 'col_date', type: 'date', nullable: true)]
+    /** @var DateTimeImmutable|null */
+    #[Column(name: 'col_date', type: 'date_immutable', nullable: true)]
     public $date;
 
-    /** @var DateTime|null */
-    #[Column(name: 'col_time', type: 'time', nullable: true)]
+    /** @var DateTimeImmutable|null */
+    #[Column(name: 'col_time', type: 'time_immutable', nullable: true)]
     public $time;
 }

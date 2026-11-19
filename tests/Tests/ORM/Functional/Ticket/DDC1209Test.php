@@ -13,8 +13,12 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use Stringable;
 
+// This test covers a custom mutable DateTime subclass used as an identifier,
+// which cannot be replaced with the immutable type.
+#[IgnoreDeprecations]
 class DDC1209Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

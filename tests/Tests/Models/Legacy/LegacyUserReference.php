@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Legacy;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
@@ -26,8 +26,8 @@ class LegacyUserReference
     #[JoinColumn(name: 'iUserIdTarget', referencedColumnName: 'iUserId')]
     private LegacyUser $_target;
 
-    #[Column(type: 'datetime', name: 'created')]
-    private DateTime $created;
+    #[Column(type: 'datetime_immutable', name: 'created')]
+    private DateTimeImmutable $created;
 
     public function __construct(
         LegacyUser $source,
@@ -40,7 +40,7 @@ class LegacyUserReference
 
         $this->_source = $source;
         $this->_target = $target;
-        $this->created = new DateTime('now');
+        $this->created = new DateTimeImmutable('now');
     }
 
     public function source(): LegacyUser

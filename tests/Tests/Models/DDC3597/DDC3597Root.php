@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC3597;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
@@ -32,12 +32,12 @@ abstract class DDC3597Root
     #[GeneratedValue(strategy: 'IDENTITY')]
     protected $id;
 
-    /** @var DateTime */
-    #[Column(name: 'created_at', type: 'datetime', nullable: false)]
+    /** @var DateTimeImmutable */
+    #[Column(name: 'created_at', type: 'datetime_immutable', nullable: false)]
     protected $createdAt = null;
 
-    /** @var DateTime */
-    #[Column(name: 'updated_at', type: 'datetime', nullable: false)]
+    /** @var DateTimeImmutable */
+    #[Column(name: 'updated_at', type: 'datetime_immutable', nullable: false)]
     protected $updatedAt = null;
 
     /**
@@ -46,7 +46,7 @@ abstract class DDC3597Root
     #[PrePersist]
     public function prePersist(): void
     {
-        $this->updatedAt = $this->createdAt = new DateTime();
+        $this->updatedAt = $this->createdAt = new DateTimeImmutable();
     }
 
     /**
@@ -55,7 +55,7 @@ abstract class DDC3597Root
     #[PreUpdate]
     public function preUpdate(): void
     {
-        $this->updatedAt = new DateTime();
+        $this->updatedAt = new DateTimeImmutable();
     }
 
     public function getId(): int
@@ -63,12 +63,12 @@ abstract class DDC3597Root
         return (int) $this->id;
     }
 
-    public function getCreatedAt(): DateTime
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function getUpdatedAt(): DateTime
+    public function getUpdatedAt(): DateTimeImmutable
     {
         return $this->updatedAt;
     }
