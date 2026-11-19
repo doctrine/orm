@@ -507,6 +507,68 @@ final class Parser
     }
 
     /**
+     * Peeks beyond the arithmetic expression starting at the lookahead token, skipping the
+     * parenthesized and CASE expressions it contains, and returns the operator that follows it.
+     * Does not reset the peek.
+     *
+     * @phpstan-return DqlToken|null
+     */
+    private function peekBeyondArithmeticExpression(): Token|null
+    {
+        $token = $this->lexer->lookahead;
+        $depth = 0;
+
+        while ($token !== null) {
+            switch ($token->type) {
+                case TokenType::T_OPEN_PARENTHESIS:
+                case TokenType::T_CASE:
+                    ++$depth;
+                    break;
+
+                case TokenType::T_CLOSE_PARENTHESIS:
+                case TokenType::T_END:
+                    --$depth;
+                    break;
+
+                case TokenType::T_DOT:
+                    // Skip the field name, it can be a keyword like "end"
+                    $this->lexer->peek();
+                    break;
+
+                case TokenType::T_NOT:
+                case TokenType::T_IN:
+                case TokenType::T_LIKE:
+                case TokenType::T_BETWEEN:
+                case TokenType::T_IS:
+                case TokenType::T_MEMBER:
+                case TokenType::T_INSTANCE:
+                case TokenType::T_EQUALS:
+                case TokenType::T_LOWER_THAN:
+                case TokenType::T_GREATER_THAN:
+                case TokenType::T_NEGATE:
+                case TokenType::T_AND:
+                case TokenType::T_OR:
+                    if ($depth === 0) {
+                        return $token;
+                    }
+
+                    break;
+
+                default:
+                    // Part of the expression
+            }
+
+            if ($depth < 0) {
+                return $token;
+            }
+
+            $token = $this->lexer->peek();
+        }
+
+        return null;
+    }
+
+    /**
      * Checks if the given token indicates a mathematical operator.
      *
      * @phpstan-param DqlToken|null $token
@@ -2515,7 +2577,6 @@ final class Parser
         }
 
         $token     = $this->lexer->lookahead;
-        $peek      = $this->lexer->glimpse();
         $lookahead = $token;
 
         if ($this->lexer->isNextToken(TokenType::T_NOT)) {
@@ -2523,54 +2584,22 @@ final class Parser
         }
 
         assert($token !== null);
-        assert($peek !== null);
-        if ($token->type === TokenType::T_IDENTIFIER || $token->type === TokenType::T_INPUT_PARAMETER || $this->isFunction()) {
-            // Peek beyond the matching closing parenthesis.
-            $beyond = $this->lexer->peek();
+        if ($token === $this->lexer->lookahead) {
+            // Peek beyond the left operand, whatever it starts with.
+            $token = $this->peekBeyondArithmeticExpression() ?? $token;
 
-            switch ($peek->value) {
-                case '(':
-                    // Peeks beyond the matched closing parenthesis.
-                    $token = $this->peekBeyondClosingParenthesis(false);
-                    assert($token !== null);
-
-                    if ($token->type === TokenType::T_NOT) {
-                        $token = $this->lexer->peek();
-                        assert($token !== null);
-                    }
-
-                    if ($token->type === TokenType::T_IS) {
-                        $lookahead = $this->lexer->peek();
-                    }
-
-                    break;
-
-                default:
-                    // Peek beyond the PathExpression or InputParameter.
-                    $token = $beyond;
-
-                    while ($token->value === '.') {
-                        $this->lexer->peek();
-
-                        $token = $this->lexer->peek();
-                        assert($token !== null);
-                    }
-
-                    // Also peek beyond a NOT if there is one.
-                    assert($token !== null);
-                    if ($token->type === TokenType::T_NOT) {
-                        $token = $this->lexer->peek();
-                        assert($token !== null);
-                    }
-
-                    // We need to go even further in case of IS (differentiate between NULL and EMPTY)
-                    $lookahead = $this->lexer->peek();
+            // Also peek beyond a NOT if there is one.
+            if ($token->type === TokenType::T_NOT) {
+                $token = $this->lexer->peek() ?? $token;
             }
 
-            assert($lookahead !== null);
-            // Also peek beyond a NOT if there is one.
-            if ($lookahead->type === TokenType::T_NOT) {
-                $lookahead = $this->lexer->peek();
+            // We need to go even further in case of IS (differentiate between NULL and EMPTY)
+            if ($token->type === TokenType::T_IS) {
+                $lookahead = $this->lexer->peek() ?? $lookahead;
+
+                if ($lookahead->type === TokenType::T_NOT) {
+                    $lookahead = $this->lexer->peek() ?? $lookahead;
+                }
             }
 
             $this->lexer->resetPeek();
@@ -2596,7 +2625,6 @@ final class Parser
             return $this->CollectionMemberExpression();
         }
 
-        assert($lookahead !== null);
         if ($token->type === TokenType::T_IS && $lookahead->type === TokenType::T_NULL) {
             return $this->NullComparisonExpression();
         }
