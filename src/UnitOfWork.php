@@ -80,12 +80,14 @@ use function implode;
 use function in_array;
 use function is_array;
 use function is_object;
+use function phpversion;
 use function reset;
 use function spl_object_id;
 use function sprintf;
 use function strcmp;
 use function strtolower;
 use function usort;
+use function version_compare;
 
 use const PHP_VERSION_ID;
 
@@ -2597,9 +2599,14 @@ class UnitOfWork implements PropertyChangedListener
                 } else {
                     $entity->__setInitialized(true);
 
-                    if (extension_loaded('deepclone')) {
+                    $deepcloneVersion = extension_loaded('deepclone') ? phpversion('deepclone') : false;
+
+                    if ($deepcloneVersion !== false && version_compare($deepcloneVersion, '0.8.11', '!=')) {
                         deepclone_hydrate($entity, (array) $class->reflClass->newInstanceWithoutConstructor());
                     } else {
+                        // ext-deepclone 0.8.11 writes unset untyped properties through __set()
+                        // from an inaccessible scope, which breaks Symfony lazy ghosts.
+                        // See https://github.com/symfony/php-ext-deepclone/issues/82.
                         /** @phpstan-ignore staticMethod.deprecatedClass */
                         Hydrator::hydrate($entity, (array) $class->reflClass->newInstanceWithoutConstructor());
                     }
