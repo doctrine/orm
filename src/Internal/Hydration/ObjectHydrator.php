@@ -457,20 +457,37 @@ class ObjectHydrator extends AbstractHydrator
                             $this->uow->setOriginalEntityProperty($oid, $relationField, $element);
                             $targetClass = $this->metadataCache[$relation->targetEntity];
 
-                            if ($relation->isOwningSide()) {
-                                // TODO: Just check hints['fetched'] here?
-                                // If there is an inverse mapping on the target class its bidirectional
-                                if ($relation->inversedBy !== null) {
-                                    $inverseAssoc = $targetClass->associationMappings[$relation->inversedBy];
-                                    if ($inverseAssoc->isToOne()) {
-                                        $targetClass->propertyAccessors[$inverseAssoc->fieldName]->setValue($element, $parentObject);
-                                        $this->uow->setOriginalEntityProperty(spl_object_id($element), $inverseAssoc->fieldName, $parentObject);
+                            // A detached refresh must not change managed inverse associations.
+                            if ($this->uow->isInIdentityMap($parentObject)) {
+                                if ($relation->isOwningSide()) {
+                                    // TODO: Just check hints['fetched'] here?
+                                    // If there is an inverse mapping on the target class its bidirectional
+                                    if ($relation->inversedBy !== null) {
+                                        $inverseAssoc = $targetClass->associationMappings[$relation->inversedBy];
+                                        if ($inverseAssoc->isToOne()) {
+                                            $targetClass->propertyAccessors[$inverseAssoc->fieldName]->setValue(
+                                                $element,
+                                                $parentObject,
+                                            );
+                                            $this->uow->setOriginalEntityProperty(
+                                                spl_object_id($element),
+                                                $inverseAssoc->fieldName,
+                                                $parentObject,
+                                            );
+                                        }
                                     }
+                                } else {
+                                    // For sure bidirectional, as there is no inverse side in unidirectional mappings
+                                    $targetClass->propertyAccessors[$relation->mappedBy]->setValue(
+                                        $element,
+                                        $parentObject,
+                                    );
+                                    $this->uow->setOriginalEntityProperty(
+                                        spl_object_id($element),
+                                        $relation->mappedBy,
+                                        $parentObject,
+                                    );
                                 }
-                            } else {
-                                // For sure bidirectional, as there is no inverse side in unidirectional mappings
-                                $targetClass->propertyAccessors[$relation->mappedBy]->setValue($element, $parentObject);
-                                $this->uow->setOriginalEntityProperty(spl_object_id($element), $relation->mappedBy, $parentObject);
                             }
 
                             // Update result pointer
