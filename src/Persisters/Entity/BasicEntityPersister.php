@@ -50,6 +50,7 @@ use function array_fill;
 use function array_flip;
 use function array_keys;
 use function array_map;
+use function array_shift;
 use function array_unique;
 use function array_values;
 use function assert;
@@ -209,6 +210,33 @@ class BasicEntityPersister implements EntityPersister
     final protected function updateFilterHash(): void
     {
         $this->filterHash = $this->em->getFilters()->getHash();
+    }
+
+    /**
+     * Starts (re)building the SELECT column list: meta column aliases of the previous build
+     * become reusable, so a rebuild after a filter change maps the same result columns
+     * instead of adding new ones to the cached ResultSetMapping.
+     */
+    final protected function startSelectColumnsBuild(): void
+    {
+        $this->currentPersisterContext->reusableMetaColumnAliases = $this->currentPersisterContext->metaColumnAliases;
+        $this->currentPersisterContext->metaColumnAliases         = [];
+    }
+
+    final protected function getMetaColumnAlias(string $ownerAlias, string $sqlTableAlias, string $columnName): string
+    {
+        $context = $this->currentPersisterContext;
+        $key     = $ownerAlias . '|' . $sqlTableAlias . '|' . $columnName;
+
+        if (isset($context->reusableMetaColumnAliases[$key]) && $context->reusableMetaColumnAliases[$key] !== []) {
+            $columnAlias = array_shift($context->reusableMetaColumnAliases[$key]);
+        } else {
+            $columnAlias = $this->getSQLColumnAlias($columnName);
+        }
+
+        $context->metaColumnAliases[$key][] = $columnAlias;
+
+        return $columnAlias;
     }
 
     final protected function getType(string $name): Type
@@ -1286,6 +1314,8 @@ class BasicEntityPersister implements EntityPersister
             return $this->currentPersisterContext->selectColumnListSql;
         }
 
+        $this->startSelectColumnsBuild();
+
         $columnList = [];
         $this->currentPersisterContext->rsm->addEntityResult($this->class->name, 'r'); // r for root
 
@@ -1421,7 +1451,7 @@ class BasicEntityPersister implements EntityPersister
 
         foreach ($assoc->joinColumns as $joinColumn) {
             $quotedColumn     = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
-            $resultColumnName = $this->getSQLColumnAlias($joinColumn->name);
+            $resultColumnName = $this->getMetaColumnAlias($alias, $sqlTableAlias, $joinColumn->name);
             $type             = PersisterHelper::getTypeOfColumn($joinColumn->referencedColumnName, $targetClass, $this->em);
 
             $this->currentPersisterContext->rsm->addMetaResult($alias, $resultColumnName, $joinColumn->name, $isIdentifier, $type);

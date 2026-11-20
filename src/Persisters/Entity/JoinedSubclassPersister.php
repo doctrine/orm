@@ -368,6 +368,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             return $this->currentPersisterContext->selectColumnListSql;
         }
 
+        $this->startSelectColumnsBuild();
+
         $columnList       = [];
         $discrColumn      = $this->class->getDiscriminatorColumn();
         $discrColumnName  = $discrColumn->name;
