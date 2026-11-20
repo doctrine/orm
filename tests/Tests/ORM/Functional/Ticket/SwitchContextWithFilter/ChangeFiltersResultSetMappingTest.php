@@ -94,7 +94,6 @@ final class ChangeFiltersResultSetMappingTest extends AbstractTestCase
         };
 
         $filters->enable(CompanySQLFilter::class)->setParameter('company', 'A');
-        $find();
         $toggle();
 
         $before = $this->resultSetMappingSize($className);

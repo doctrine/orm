@@ -228,11 +228,9 @@ class BasicEntityPersister implements EntityPersister
         $context = $this->currentPersisterContext;
         $key     = $ownerAlias . '|' . $sqlTableAlias . '|' . $columnName;
 
-        if (isset($context->reusableMetaColumnAliases[$key]) && $context->reusableMetaColumnAliases[$key] !== []) {
-            $columnAlias = array_shift($context->reusableMetaColumnAliases[$key]);
-        } else {
-            $columnAlias = $this->getSQLColumnAlias($columnName);
-        }
+        $columnAlias = isset($context->reusableMetaColumnAliases[$key][0])
+            ? array_shift($context->reusableMetaColumnAliases[$key])
+            : $this->getSQLColumnAlias($columnName);
 
         $context->metaColumnAliases[$key][] = $columnAlias;
 
