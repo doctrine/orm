@@ -36,6 +36,7 @@ use Doctrine\ORM\Internal\StronglyConnectedComponents;
 use Doctrine\ORM\Internal\TopologicalSort;
 use Doctrine\ORM\Internal\TypeProviderLocator;
 use Doctrine\ORM\Internal\UnitOfWork\InsertBatch;
+use Doctrine\ORM\Internal\UnitOfWork\ObjectValueSnapshot;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -57,6 +58,7 @@ use InvalidArgumentException;
 use RuntimeException;
 use Stringable;
 use Symfony\Component\VarExporter\Hydrator;
+use Throwable;
 use UnexpectedValueException;
 
 use function array_chunk;
@@ -79,7 +81,11 @@ use function get_debug_type;
 use function implode;
 use function in_array;
 use function is_array;
+use function is_bool;
+use function is_float;
+use function is_int;
 use function is_object;
+use function is_string;
 use function reset;
 use function spl_object_id;
 use function sprintf;
@@ -676,7 +682,7 @@ class UnitOfWork implements PropertyChangedListener
         if (! isset($this->originalEntityData[$oid])) {
             // Entity is either NEW or MANAGED but not yet fully persisted (only has an id).
             // These result in an INSERT.
-            $this->originalEntityData[$oid] = $actualData;
+            $this->originalEntityData[$oid] = $this->snapshotOriginalObjectValues($class, $actualData);
             $changeSet                      = [];
 
             foreach ($actualData as $propName => $actualValue) {
@@ -716,7 +722,12 @@ class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
-                $orgValue = $originalData[$propName];
+                $orgValue    = $originalData[$propName];
+                $orgSnapshot = $orgValue instanceof ObjectValueSnapshot ? $orgValue : null;
+
+                if ($orgSnapshot !== null) {
+                    $orgValue = $orgSnapshot->object;
+                }
 
                 if (! empty($class->fieldMappings[$propName]->enumType)) {
                     if (is_array($orgValue)) {
@@ -739,7 +750,18 @@ class UnitOfWork implements PropertyChangedListener
 
                 // if regular field
                 if (! isset($class->associationMappings[$propName])) {
-                    if ($this->isSameConvertedDatabaseValue($class, $propName, $orgValue, $actualValue)) {
+                    if ($orgSnapshot !== null) {
+                        if (
+                            is_object($actualValue)
+                            && $this->isSameDatabaseValueAsSnapshot($orgSnapshot, $class, $propName, $actualValue)
+                        ) {
+                            continue;
+                        }
+                    } elseif (
+                        is_object($orgValue)
+                        && is_object($actualValue)
+                        && $this->isSameConvertedDatabaseValue($class, $propName, $orgValue, $actualValue)
+                    ) {
                         continue;
                     }
 
@@ -797,7 +819,7 @@ class UnitOfWork implements PropertyChangedListener
 
             if ($changeSet) {
                 $this->entityChangeSets[$oid]   = $changeSet;
-                $this->originalEntityData[$oid] = $actualData;
+                $this->originalEntityData[$oid] = $this->snapshotOriginalObjectValues($class, $actualData, $originalData);
                 $this->entityUpdates[$oid]      = $entity;
             }
         }
@@ -818,7 +840,11 @@ class UnitOfWork implements PropertyChangedListener
                 $val->isDirty()
             ) {
                 $this->entityChangeSets[$oid]   = [];
-                $this->originalEntityData[$oid] = $actualData;
+                $this->originalEntityData[$oid] = $this->snapshotOriginalObjectValues(
+                    $class,
+                    $actualData,
+                    $this->originalEntityData[$oid],
+                );
                 $this->entityUpdates[$oid]      = $entity;
             }
         }
@@ -866,7 +892,7 @@ class UnitOfWork implements PropertyChangedListener
             $originalData[$propName] = $actualValue;
         }
 
-        $this->originalEntityData[$oid] = $originalData;
+        $this->originalEntityData[$oid] = $this->snapshotOriginalObjectValues($class, $originalData);
     }
 
     /**
@@ -1105,7 +1131,12 @@ class UnitOfWork implements PropertyChangedListener
         $changeSet    = [];
 
         foreach ($actualData as $propName => $actualValue) {
-            $orgValue = $originalData[$propName] ?? null;
+            $orgValue    = $originalData[$propName] ?? null;
+            $orgSnapshot = $orgValue instanceof ObjectValueSnapshot ? $orgValue : null;
+
+            if ($orgSnapshot !== null) {
+                $orgValue = $orgSnapshot->object;
+            }
 
             if (isset($class->fieldMappings[$propName]->enumType)) {
                 if (is_array($orgValue)) {
@@ -1125,7 +1156,18 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            if ($this->isSameConvertedDatabaseValue($class, $propName, $orgValue, $actualValue)) {
+            if ($orgSnapshot !== null) {
+                if (
+                    is_object($actualValue)
+                    && $this->isSameDatabaseValueAsSnapshot($orgSnapshot, $class, $propName, $actualValue)
+                ) {
+                    continue;
+                }
+            } elseif (
+                is_object($orgValue)
+                && is_object($actualValue)
+                && $this->isSameConvertedDatabaseValue($class, $propName, $orgValue, $actualValue)
+            ) {
                 continue;
             }
 
@@ -1140,7 +1182,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->entityUpdates[$oid]    = $entity;
             }
 
-            $this->originalEntityData[$oid] = $actualData;
+            $this->originalEntityData[$oid] = $this->snapshotOriginalObjectValues($class, $actualData, $originalData);
         }
     }
 
@@ -1178,6 +1220,107 @@ class UnitOfWork implements PropertyChangedListener
 
         return $fieldType->convertToDatabaseValue($orgValue, $this->platform)
             === $fieldType->convertToDatabaseValue($actualValue, $this->platform);
+    }
+
+    /**
+     * Tells whether the actual value has the same database representation as
+     * the snapshot stored for the original value.
+     *
+     * This detects a value that was replaced with an equal one, even when the
+     * original value was modified in place before being replaced.
+     *
+     * @param ClassMetadata<object> $class
+     */
+    private function isSameDatabaseValueAsSnapshot(
+        ObjectValueSnapshot $snapshot,
+        ClassMetadata $class,
+        string $propName,
+        object $actualValue,
+    ): bool {
+        $databaseValue = $this->convertObjectValueToDatabaseValue($class, $propName, $actualValue);
+
+        return $databaseValue !== null && $snapshot->matchesDatabaseValue($actualValue, $databaseValue);
+    }
+
+    /**
+     * Converts an object value to its database representation.
+     *
+     * Returns null when the representation is not a scalar, or when the type
+     * cannot convert the value outside of a write operation.
+     *
+     * @param ClassMetadata<object> $class
+     */
+    private function convertObjectValueToDatabaseValue(
+        ClassMetadata $class,
+        string $propName,
+        object $value,
+    ): string|null {
+        $this->platform     ??= $this->em->getConnection()->getDatabasePlatform();
+        $this->typeProvider ??= TypeProviderLocator::fromConnection($this->em->getConnection());
+
+        try {
+            $databaseValue = $this->typeProvider->get($class->fieldMappings[$propName]->type)
+                ->convertToDatabaseValue($value, $this->platform);
+        } catch (Throwable) {
+            return null;
+        }
+
+        if (is_string($databaseValue)) {
+            return $databaseValue;
+        }
+
+        if (is_int($databaseValue) || is_float($databaseValue) || is_bool($databaseValue)) {
+            return (string) $databaseValue;
+        }
+
+        return null;
+    }
+
+    /**
+     * Replaces object values with a snapshot of their database representation.
+     *
+     * The returned data is stored as original entity data. The snapshot is used
+     * later to detect whether a replaced value maps to the same database value,
+     * even when the original value was modified in place.
+     *
+     * @param ClassMetadata<object> $class
+     * @param array<string, mixed>  $data
+     * @param array<string, mixed>  $previousData
+     *
+     * @return array<string, mixed>
+     */
+    private function snapshotOriginalObjectValues(
+        ClassMetadata $class,
+        array $data,
+        array $previousData = [],
+    ): array {
+        foreach ($class->fieldMappings as $propName => $mapping) {
+            if (! isset($data[$propName]) || $class->isIdentifier($propName)) {
+                continue;
+            }
+
+            $value = $data[$propName];
+
+            if (! is_object($value)) {
+                continue;
+            }
+
+            $previous = $previousData[$propName] ?? null;
+
+            if ($previous instanceof ObjectValueSnapshot && $previous->object === $value) {
+                $data[$propName] = $previous;
+
+                continue;
+            }
+
+            $databaseValue = $this->convertObjectValueToDatabaseValue($class, $propName, $value);
+
+            if ($databaseValue !== null) {
+                $data[$propName] = ObjectValueSnapshot::fromDatabaseValue($value, $databaseValue);
+            }
+        }
+
+        return $data;
     }
 
     /**
@@ -2614,7 +2757,7 @@ class UnitOfWork implements PropertyChangedListener
             // init fired. Fields not yet loaded (not in $existingData) are added from $data.
             // For regular proxies and explicit refreshes $existingData is empty, so this is
             // equivalent to a plain assignment.
-            $this->originalEntityData[$oid] = $existingData + $data;
+            $this->originalEntityData[$oid] = $existingData + $this->snapshotOriginalObjectValues($class, $data, $existingData);
 
             // Whichever way we got here (lazy ghost initializer, find(), or an explicit
             // refresh()), $data is always a complete row: the early return above is the
@@ -3041,9 +3184,16 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getOriginalEntityData(object $entity): array
     {
-        $oid = spl_object_id($entity);
+        $oid  = spl_object_id($entity);
+        $data = $this->originalEntityData[$oid] ?? [];
 
-        return $this->originalEntityData[$oid] ?? [];
+        foreach ($data as $propName => $value) {
+            if ($value instanceof ObjectValueSnapshot) {
+                $data[$propName] = $value->object;
+            }
+        }
+
+        return $data;
     }
 
     /**
@@ -3221,7 +3371,13 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->entityIdentifiers[$oid]  = $id;
         $this->entityStates[$oid]       = self::STATE_MANAGED;
-        $this->originalEntityData[$oid] = $data;
+        $this->originalEntityData[$oid] = $data === []
+            ? $data
+            : $this->snapshotOriginalObjectValues(
+                $this->em->getClassMetadata($entity::class),
+                $data,
+                $this->originalEntityData[$oid] ?? [],
+            );
 
         $this->addToIdentityMap($entity);
     }
