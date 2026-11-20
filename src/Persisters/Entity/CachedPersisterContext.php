@@ -42,6 +42,21 @@ class CachedPersisterContext
      */
     public array $sqlTableAliases = [];
 
+    /**
+     * Result column aliases of the meta (join) columns selected by the latest build of
+     * {@see selectColumnListSql}, keyed by owner alias, SQL table alias and column name.
+     *
+     * @var array<string, list<string>>
+     */
+    public array $metaColumnAliases = [];
+
+    /**
+     * Aliases of the previous build that a rebuild has not reused yet.
+     *
+     * @var array<string, list<string>>
+     */
+    public array $reusableMetaColumnAliases = [];
+
     public function __construct(
         /**
          * Metadata object that describes the mapping of the mapped entity class.
