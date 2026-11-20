@@ -56,7 +56,8 @@
         "phpstan/phpstan-deprecation-rules": "^2",
         "phpunit/phpunit": "^10.5.0 || ^11.5",
         "psr/log": "^1 || ^2 || ^3",
-        "symfony/cache": "^5.4 || ^6.2 || ^7.0 || ^8.0"
+        "symfony/cache": "^5.4 || ^6.2 || ^7.0 || ^8.0",
+        "symfony/uid": "^5.4 || ^6.0 || ^7.0 || ^8.0"
     },
     "suggest": {
         "ext-deepclone": "Improves performance when not using native lazy objects (Symfony 8.1+)",

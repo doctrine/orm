@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use BackedEnum;
+use BcMath\Number;
+use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -56,6 +58,7 @@ use Exception;
 use InvalidArgumentException;
 use RuntimeException;
 use Stringable;
+use Symfony\Component\Uid\AbstractUid;
 use Symfony\Component\VarExporter\Hydrator;
 use UnexpectedValueException;
 
@@ -1153,12 +1156,17 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Tells whether two object values share the same database representation.
+     * Tells whether two values of a known immutable class share the same
+     * database representation.
      *
-     * Object values are not comparable by identity when they represent the same
-     * database value, for instance when the time of a date mapped as "date"
-     * changes, or when a value object is replaced by an equal one. Comparing
-     * the database representation avoids a useless update.
+     * Only the original value is checked. When it belongs to a known immutable
+     * class, it cannot have been modified since hydration, so its database
+     * representation can be trusted.
+     *
+     * Other object values are mutable: the UnitOfWork keeps a reference to the
+     * original value, so an in-place modification is visible through that
+     * reference when the change set is computed. They are compared by identity,
+     * as in previous versions.
      *
      * Only object values are compared, scalars are already compared by value.
      * Associations and embedded objects have no field mapping of their own.
@@ -1171,7 +1179,14 @@ class UnitOfWork implements PropertyChangedListener
         object $orgValue,
         object $actualValue,
     ): bool {
-        if (! isset($class->fieldMappings[$propName])) {
+        if (
+            (
+                ! $orgValue instanceof DateTimeImmutable
+                && ! $orgValue instanceof Number
+                && ! $orgValue instanceof AbstractUid
+            )
+            || ! isset($class->fieldMappings[$propName])
+        ) {
             return false;
         }
 
