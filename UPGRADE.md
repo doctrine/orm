@@ -27,6 +27,19 @@ At this point, we recommend upgrading to PHP 8.4 first and then directly from
 ORM 2.19 to 3.5 and up so that you can skip the lazy ghost proxy generation
 and directly start using native lazy objects.
 
+# Upgrade to 3.9
+
+## Object values are compared using a snapshot of their database representation
+
+When an entity is hydrated, Doctrine stores a snapshot of the database
+representation of each object value. It is used when computing the change set:
+
+- replacing an object value with an equal one does not trigger an update;
+- replacing it with a value that maps to a different database value triggers an
+  update, even when the original object was modified in place before being
+  replaced;
+- modifying the object in place without replacing it is still not detected.
+
 # Upgrade to 3.8
 
 ## The results of functions declaring their return type are converted like columns
