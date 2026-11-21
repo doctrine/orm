@@ -2055,7 +2055,10 @@ class SqlWalker
             $sqlParts    = [];
 
             foreach ($joinColumns as $joinColumn) {
-                $targetColumn = $this->quoteStrategy->getColumnName($class->fieldNames[$joinColumn->referencedColumnName], $class, $this->platform);
+                $referencedField = $class->fieldNames[$joinColumn->referencedColumnName] ?? null;
+                $targetColumn    = $referencedField !== null
+                    ? $this->quoteStrategy->getColumnName($referencedField, $class, $this->platform)
+                    : $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $class, $this->platform);
 
                 $sqlParts[] = $joinTableAlias . '.' . $joinColumn->name . ' = ' . $sourceTableAlias . '.' . $targetColumn;
             }
