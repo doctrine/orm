@@ -56,6 +56,7 @@ use function assert;
 use function count;
 use function implode;
 use function is_array;
+use function is_object;
 use function reset;
 use function spl_object_id;
 use function sprintf;
@@ -957,7 +958,7 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            foreach (PersisterHelper::convertToParameterValue($value, $this->em) as $parameter) {
+            foreach ($this->convertToParameterValues($field, $value) as $parameter) {
                 $sqlParams[] = $parameter;
             }
 
@@ -1930,12 +1931,47 @@ class BasicEntityPersister implements EntityPersister
                 $types[] = $type;
             }
 
-            foreach (PersisterHelper::convertToParameterValue($value, $this->em) as $parameter) {
+            foreach ($this->convertToParameterValues($field, $value) as $parameter) {
                 $params[] = $parameter;
             }
         }
 
         return [$params, $types];
+    }
+
+    /**
+     * Like PersisterHelper::convertToParameterValue(), but when an entity is compared to a to-one
+     * association with several join columns, its identifier values follow the join columns, as the
+     * columns of the SQL condition and the inferred parameter types do.
+     *
+     * @return list<mixed>
+     */
+    private function convertToParameterValues(string $field, mixed $value): array
+    {
+        $association = $this->class->associationMappings[$field] ?? null;
+
+        if (
+            $association === null
+            || ! $association->isToOneOwningSide()
+            || count($association->joinColumns) < 2
+            || ! is_object($value)
+        ) {
+            return PersisterHelper::convertToParameterValue($value, $this->em);
+        }
+
+        $targetClass = $this->em->getClassMetadata($association->targetEntity);
+        $identifier  = $targetClass->getIdentifierValues($value);
+        $parameters  = [];
+
+        foreach ($association->sourceToTargetKeyColumns as $targetColumn) {
+            $targetField = $targetClass->getFieldForColumn($targetColumn);
+
+            foreach (PersisterHelper::convertToParameterValue($identifier[$targetField], $this->em) as $parameter) {
+                $parameters[] = $parameter;
+            }
+        }
+
+        return $parameters;
     }
 
     /**
