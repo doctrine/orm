@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -13,14 +13,9 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 
 use function assert;
 
-// The datetime version field cannot use the immutable type yet: DBAL deprecates
-// the mutable datetime type, but the ORM does not support a datetime_immutable
-// version field.
-#[IgnoreDeprecations]
 final class GH7067Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -36,7 +31,7 @@ final class GH7067Test extends OrmFunctionalTestCase
     public function testSLCWithVersion(): void
     {
         $entity             = new GH7067Entity();
-        $entity->lastUpdate = new DateTime();
+        $entity->lastUpdate = new DateTimeImmutable();
 
         $this->_em->persist($entity);
         $this->_em->flush();
@@ -47,7 +42,7 @@ final class GH7067Test extends OrmFunctionalTestCase
 
         self::assertNotNull($notCached->version, 'Version already cached by persister above, it must be not null');
 
-        $notCached->lastUpdate = new DateTime('+1 seconds');
+        $notCached->lastUpdate = new DateTimeImmutable('+1 seconds');
 
         $this->_em->flush();
         $this->_em->clear();
@@ -64,12 +59,12 @@ class GH7067Entity
     #[Column(type: 'integer')]
     public $id;
 
-    /** @var DateTime */
-    #[Column(type: 'datetime')]
+    /** @var DateTimeImmutable */
+    #[Column(type: 'datetime_immutable')]
     public $lastUpdate;
 
-    /** @var DateTime */
-    #[Column(type: 'datetime')]
+    /** @var DateTimeImmutable */
+    #[Column(type: 'datetime_immutable')]
     #[Version]
     public $version;
 }

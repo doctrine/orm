@@ -27,6 +27,19 @@ At this point, we recommend upgrading to PHP 8.4 first and then directly from
 ORM 2.19 to 3.5 and up so that you can skip the lazy ghost proxy generation
 and directly start using native lazy objects.
 
+# Upgrade to 3.9
+
+## `datetime_immutable` version fields are supported
+
+Optimistic locking version fields may now use the `datetime_immutable` type in addition to `datetime`. Since DBAL 4.6
+deprecates the mutable date/time types, using the immutable type is recommended for new version fields:
+
+```php
+#[Version]
+#[Column(type: 'datetime_immutable')]
+private DateTimeImmutable $version;
+```
+
 # Upgrade to 3.8
 
 ## The results of functions declaring their return type are converted like columns

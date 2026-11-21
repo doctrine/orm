@@ -2520,7 +2520,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         if (! isset($mapping['default'])) {
             if (in_array($mapping['type'], ['integer', 'bigint', 'smallint'], true)) {
                 $mapping['options']['default'] = 1;
-            } elseif ($mapping['type'] === 'datetime') {
+            } elseif ($mapping['type'] === 'datetime' || $mapping['type'] === 'datetime_immutable') {
                 $mapping['options']['default'] = class_exists(CurrentTimestamp::class) ? new CurrentTimestamp() : 'CURRENT_TIMESTAMP';
             } else {
                 throw MappingException::unsupportedOptimisticLockingType($this->name, $mapping['fieldName'], $mapping['type']);

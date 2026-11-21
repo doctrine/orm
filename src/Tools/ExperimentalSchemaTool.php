@@ -599,11 +599,9 @@ final class ExperimentalSchemaTool
         if (isset($options['default']) && interface_exists(DefaultExpression::class)) {
             if (
                 in_array($mapping->type, [
-                    // @phpstan-ignore classConstant.deprecated (the ORM still supports the mutable datetime type)
-                    Types::DATETIME_MUTABLE,
+                    'datetime',
                     Types::DATETIME_IMMUTABLE,
-                    // @phpstan-ignore classConstant.deprecated (the ORM still supports the mutable datetimetz type)
-                    Types::DATETIMETZ_MUTABLE,
+                    'datetimetz',
                     Types::DATETIMETZ_IMMUTABLE,
                 ], true)
                 && $options['default'] === $this->platform->getCurrentTimestampSQL()
@@ -622,8 +620,7 @@ final class ExperimentalSchemaTool
             }
 
             if (
-                // @phpstan-ignore classConstant.deprecated (the ORM still supports the mutable time type)
-                in_array($mapping->type, [Types::TIME_MUTABLE, Types::TIME_IMMUTABLE], true)
+                in_array($mapping->type, ['time', Types::TIME_IMMUTABLE], true)
                 && $options['default'] === $this->platform->getCurrentTimeSQL()
             ) {
                 Deprecation::trigger(
@@ -640,8 +637,7 @@ final class ExperimentalSchemaTool
             }
 
             if (
-                // @phpstan-ignore classConstant.deprecated (the ORM still supports the mutable date type)
-                in_array($mapping->type, [Types::DATE_MUTABLE, Types::DATE_IMMUTABLE], true)
+                in_array($mapping->type, ['date', Types::DATE_IMMUTABLE], true)
                 && $options['default'] === $this->platform->getCurrentDateSQL()
             ) {
                 Deprecation::trigger(

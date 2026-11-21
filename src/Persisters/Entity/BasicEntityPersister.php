@@ -494,8 +494,8 @@ class BasicEntityPersister implements EntityPersister
                     $set[] = $versionColumn . ' = ' . $versionColumn . ' + 1';
                     break;
 
-                // @phpstan-ignore classConstant.deprecated (the ORM only supports mutable datetime version fields)
-                case Types::DATETIME_MUTABLE:
+                case 'datetime':
+                case Types::DATETIME_IMMUTABLE:
                     $set[] = $versionColumn . ' = CURRENT_TIMESTAMP';
                     break;
             }
