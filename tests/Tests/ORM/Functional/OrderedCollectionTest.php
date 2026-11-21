@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\Tests\Models\Routing\RoutingLeg;
 use Doctrine\Tests\Models\Routing\RoutingLocation;
 use Doctrine\Tests\Models\Routing\RoutingRoute;
@@ -41,14 +41,14 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
         $leg1                = new RoutingLeg();
         $leg1->fromLocation  = $this->locations['Berlin'];
         $leg1->toLocation    = $this->locations['Bonn'];
-        $leg1->departureDate = new DateTime('now');
-        $leg1->arrivalDate   = new DateTime('now +5 hours');
+        $leg1->departureDate = new DateTimeImmutable('now');
+        $leg1->arrivalDate   = new DateTimeImmutable('now +5 hours');
 
         $leg2                = new RoutingLeg();
         $leg2->fromLocation  = $this->locations['Bonn'];
         $leg2->toLocation    = $this->locations['Brasilia'];
-        $leg2->departureDate = new DateTime('now +6 hours');
-        $leg2->arrivalDate   = new DateTime('now +24 hours');
+        $leg2->departureDate = new DateTimeImmutable('now +6 hours');
+        $leg2->arrivalDate   = new DateTimeImmutable('now +24 hours');
 
         $route->legs[] = $leg2;
         $route->legs[] = $leg1;

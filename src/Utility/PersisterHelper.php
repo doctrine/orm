@@ -36,12 +36,16 @@ use function sprintf;
 class PersisterHelper
 {
     private const DATE_TIME_TYPES = [
+        // @phpstan-ignore classConstant.deprecated (the ORM still supports the mutable date type)
         Types::DATE_MUTABLE,
         Types::DATE_IMMUTABLE,
+        // @phpstan-ignore classConstant.deprecated (the ORM still supports the mutable datetime type)
         Types::DATETIME_MUTABLE,
         Types::DATETIME_IMMUTABLE,
+        // @phpstan-ignore classConstant.deprecated (the ORM still supports the mutable datetimetz type)
         Types::DATETIMETZ_MUTABLE,
         Types::DATETIMETZ_IMMUTABLE,
+        // @phpstan-ignore classConstant.deprecated (the ORM still supports the mutable time type)
         Types::TIME_MUTABLE,
         Types::TIME_IMMUTABLE,
     ];

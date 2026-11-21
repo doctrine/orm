@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Cache;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -18,8 +18,8 @@ use Doctrine\ORM\Mapping\Table;
 #[Cache('NONSTRICT_READ_WRITE')]
 class Flight
 {
-    /** @var DateTime */
-    #[Column(type: 'date')]
+    /** @var DateTimeImmutable */
+    #[Column(type: 'date_immutable')]
     protected $departure;
 
     public function __construct(
@@ -34,7 +34,7 @@ class Flight
         #[JoinColumn(name: 'going_to_city_id', referencedColumnName: 'id')]
         protected City $goingTo,
     ) {
-        $this->departure = new DateTime();
+        $this->departure = new DateTimeImmutable();
     }
 
     public function getLeavingFrom(): City
@@ -47,12 +47,12 @@ class Flight
         return $this->goingTo;
     }
 
-    public function getDeparture(): DateTime
+    public function getDeparture(): DateTimeImmutable
     {
         return $this->departure;
     }
 
-    public function setDeparture(DateTime $departure): void
+    public function setDeparture(DateTimeImmutable $departure): void
     {
         $this->departure = $departure;
     }

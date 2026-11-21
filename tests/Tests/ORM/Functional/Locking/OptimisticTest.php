@@ -20,10 +20,15 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 
 use function date;
 use function strtotime;
 
+// The datetime version field cannot use the immutable type yet: DBAL deprecates
+// the mutable datetime type, but the ORM does not support a datetime_immutable
+// version field.
+#[IgnoreDeprecations]
 class OptimisticTest extends OrmFunctionalTestCase
 {
     private Connection $_conn;

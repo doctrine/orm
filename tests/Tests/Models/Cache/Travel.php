@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Cache;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Cache;
@@ -30,8 +30,8 @@ class Travel
     #[Column(type: 'integer')]
     protected $id;
 
-    /** @var DateTime */
-    #[Column(type: 'date')]
+    /** @var DateTimeImmutable */
+    #[Column(type: 'date_immutable')]
     protected $createdAt;
 
     /** @phpstan-var Collection<int, City> */
@@ -48,7 +48,7 @@ class Travel
         #[JoinColumn(name: 'traveler_id', referencedColumnName: 'id')]
         protected Traveler $traveler,
     ) {
-        $this->createdAt     = new DateTime('now');
+        $this->createdAt     = new DateTimeImmutable('now');
         $this->visitedCities = new ArrayCollection();
     }
 
@@ -83,7 +83,7 @@ class Travel
         $this->visitedCities->removeElement($city);
     }
 
-    public function getCreatedAt(): DateTime
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }

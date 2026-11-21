@@ -159,12 +159,12 @@ class TimeEntity
     public int $id;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIME_IMMUTABLE,
         options: ['default' => new CurrentTimestamp()],
         insertable: false,
         updatable: false,
     )]
-    public DateTime $createdAt;
+    public DateTimeImmutable $createdAt;
 
     #[ORM\Column(
         type: Types::DATETIME_IMMUTABLE,
@@ -175,18 +175,18 @@ class TimeEntity
     public DateTimeImmutable $createdAtImmutable;
 
     #[ORM\Column(
-        type: Types::TIME_MUTABLE,
+        type: Types::TIME_IMMUTABLE,
         options: ['default' => new CurrentTime()],
         insertable: false,
         updatable: false,
     )]
-    public DateTime $createdTime;
+    public DateTimeImmutable $createdTime;
 
     #[ORM\Column(
-        type: Types::DATE_MUTABLE,
+        type: Types::DATE_IMMUTABLE,
         options: ['default' => new CurrentDate()],
         insertable: false,
         updatable: false,
     )]
-    public DateTime $createdDate;
+    public DateTimeImmutable $createdDate;
 }

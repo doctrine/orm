@@ -13,9 +13,14 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 
 use function assert;
 
+// The datetime version field cannot use the immutable type yet: DBAL deprecates
+// the mutable datetime type, but the ORM does not support a datetime_immutable
+// version field.
+#[IgnoreDeprecations]
 final class GH7067Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

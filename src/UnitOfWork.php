@@ -80,12 +80,14 @@ use function implode;
 use function in_array;
 use function is_array;
 use function is_object;
+use function phpversion;
 use function reset;
 use function spl_object_id;
 use function sprintf;
 use function strcmp;
 use function strtolower;
 use function usort;
+use function version_compare;
 
 use const PHP_VERSION_ID;
 
@@ -739,7 +741,10 @@ class UnitOfWork implements PropertyChangedListener
 
                 // if regular field
                 if (! isset($class->associationMappings[$propName])) {
-                    if ($this->isSameConvertedDatabaseValue($class, $propName, $orgValue, $actualValue)) {
+                    if (
+                        is_object($orgValue) && is_object($actualValue)
+                        && $this->isSameConvertedDatabaseValue($class, $propName, $orgValue, $actualValue)
+                    ) {
                         continue;
                     }
 
@@ -1125,7 +1130,10 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            if ($this->isSameConvertedDatabaseValue($class, $propName, $orgValue, $actualValue)) {
+            if (
+                is_object($orgValue) && is_object($actualValue)
+                && $this->isSameConvertedDatabaseValue($class, $propName, $orgValue, $actualValue)
+            ) {
                 continue;
             }
 
@@ -1160,14 +1168,10 @@ class UnitOfWork implements PropertyChangedListener
     private function isSameConvertedDatabaseValue(
         ClassMetadata $class,
         string $propName,
-        mixed $orgValue,
-        mixed $actualValue,
+        object $orgValue,
+        object $actualValue,
     ): bool {
-        if (
-            ! is_object($orgValue)
-            || ! is_object($actualValue)
-            || ! isset($class->fieldMappings[$propName])
-        ) {
+        if (! isset($class->fieldMappings[$propName])) {
             return false;
         }
 
@@ -2595,9 +2599,17 @@ class UnitOfWork implements PropertyChangedListener
                 } else {
                     $entity->__setInitialized(true);
 
-                    if (extension_loaded('deepclone')) {
+                    $deepcloneVersion    = extension_loaded('deepclone') ? phpversion('deepclone') : false;
+                    $deepcloneIsAffected = $deepcloneVersion !== false
+                        && version_compare($deepcloneVersion, '0.8.11', '>=')
+                        && version_compare($deepcloneVersion, '0.8.13', '<');
+
+                    if ($deepcloneVersion !== false && ! $deepcloneIsAffected) {
                         deepclone_hydrate($entity, (array) $class->reflClass->newInstanceWithoutConstructor());
                     } else {
+                        // ext-deepclone 0.8.11 and 0.8.12 write unset untyped properties through
+                        // __set() from an inaccessible scope, which breaks Symfony lazy ghosts.
+                        // See https://github.com/symfony/php-ext-deepclone/issues/82.
                         /** @phpstan-ignore staticMethod.deprecatedClass */
                         Hydrator::hydrate($entity, (array) $class->reflClass->newInstanceWithoutConstructor());
                     }

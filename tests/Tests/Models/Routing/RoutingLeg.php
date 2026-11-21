@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Routing;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -30,11 +31,11 @@ class RoutingLeg
     #[JoinColumn(name: 'to_id', referencedColumnName: 'id')]
     public $toLocation;
 
-    /** @var DateTime */
-    #[Column(type: 'datetime')]
+    /** @var DateTimeImmutable */
+    #[Column(type: 'datetime_immutable')]
     public $departureDate;
 
-    /** @var DateTime */
-    #[Column(type: 'datetime')]
+    /** @var DateTimeImmutable */
+    #[Column(type: 'datetime_immutable')]
     public $arrivalDate;
 }

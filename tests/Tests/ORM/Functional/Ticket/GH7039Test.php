@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyManager;
@@ -29,13 +29,13 @@ final class GH7039Test extends OrmFunctionalTestCase
         $employee->setName('emp');
         $employee->setSalary(1000);
         $employee->setDepartment('IT');
-        $employee->setStartDate(new DateTime());
+        $employee->setStartDate(new DateTimeImmutable());
 
         $manager = new CompanyManager();
         $manager->setName('mgr');
         $manager->setSalary(2000);
         $manager->setDepartment('IT');
-        $manager->setStartDate(new DateTime());
+        $manager->setStartDate(new DateTimeImmutable());
         $manager->setTitle('boss');
 
         $user        = new User1();
