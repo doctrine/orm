@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -13,12 +13,8 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use Stringable;
 
-// This test covers a custom mutable DateTime subclass used as an identifier,
-// which cannot be replaced with the immutable type.
-#[IgnoreDeprecations]
 class DDC1209Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -90,17 +86,17 @@ class DDC1209Two
 {
     /** @var DateTime2 */
     #[Id]
-    #[Column(type: 'datetime', nullable: false)]
+    #[Column(type: 'datetime_immutable', nullable: false)]
     public $startingDatetime;
 
     /** @var DateTime2 */
     #[Id]
-    #[Column(type: 'datetime', nullable: false)]
+    #[Column(type: 'datetime_immutable', nullable: false)]
     public $duringDatetime;
 
     /** @var DateTime2 */
     #[Id]
-    #[Column(type: 'datetime', nullable: false)]
+    #[Column(type: 'datetime_immutable', nullable: false)]
     public $endingDatetime;
 
     public function __construct(
@@ -120,7 +116,7 @@ class DDC1209Three
 {
     /** @var DateTime2 */
     #[Id]
-    #[Column(type: 'datetime', name: 'somedate')]
+    #[Column(type: 'datetime_immutable', name: 'somedate')]
     public $date;
 
     public function __construct()
@@ -129,7 +125,7 @@ class DDC1209Three
     }
 }
 
-class DateTime2 extends DateTime implements Stringable
+class DateTime2 extends DateTimeImmutable implements Stringable
 {
     public function __toString(): string
     {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use DateTime;
+use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
@@ -18,15 +18,10 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 
 use function date;
 use function strtotime;
 
-// The datetime version field cannot use the immutable type yet: DBAL deprecates
-// the mutable datetime type, but the ORM does not support a datetime_immutable
-// version field.
-#[IgnoreDeprecations]
 class GH8499Test extends OrmFunctionalTestCase
 {
     /** @var Connection */
@@ -70,7 +65,7 @@ class GH8499Test extends OrmFunctionalTestCase
         $test = $q->getSingleResult();
 
         $format       = $this->_em->getConnection()->getDatabasePlatform()->getDateTimeFormatString();
-        $modifiedDate = new DateTime(date(
+        $modifiedDate = new DateTimeImmutable(date(
             $format,
             strtotime($test->getRevision()->format($format)) - 3600,
         ));
@@ -110,7 +105,7 @@ class GH8499Test extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->expectException(OptimisticLockException::class);
-        $this->_em->lock($entity, LockMode::OPTIMISTIC, new DateTime('2020-07-15 18:04:00'));
+        $this->_em->lock($entity, LockMode::OPTIMISTIC, new DateTimeImmutable('2020-07-15 18:04:00'));
     }
 }
 
@@ -132,9 +127,9 @@ class GH8499VersionableEntity
     #[Column(type: 'string', length: 255)]
     public $description;
 
-    /** @var DateTimeInterface */
+    /** @var DateTimeImmutable */
     #[Version]
-    #[Column(type: 'datetime')]
+    #[Column(type: 'datetime_immutable')]
     public $revision;
 
     public function getId(): int

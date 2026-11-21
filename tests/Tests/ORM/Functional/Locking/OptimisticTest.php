@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Mapping\Column;
@@ -20,15 +20,10 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
-use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 
 use function date;
 use function strtotime;
 
-// The datetime version field cannot use the immutable type yet: DBAL deprecates
-// the mutable datetime type, but the ORM does not support a datetime_immutable
-// version field.
-#[IgnoreDeprecations]
 class OptimisticTest extends OrmFunctionalTestCase
 {
     private Connection $_conn;
@@ -215,7 +210,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         $this->_em->persist($test);
         $this->_em->flush();
 
-        self::assertInstanceOf(DateTime::class, $test->version);
+        self::assertInstanceOf(DateTimeImmutable::class, $test->version);
 
         return $test;
     }
@@ -229,7 +224,7 @@ class OptimisticTest extends OrmFunctionalTestCase
 
         $test = $q->getSingleResult();
 
-        self::assertInstanceOf(DateTime::class, $test->version);
+        self::assertInstanceOf(DateTimeImmutable::class, $test->version);
 
         // Manually increment the version datetime column
         $format = $this->_em->getConnection()->getDatabasePlatform()->getDateTimeFormatString();
@@ -259,13 +254,13 @@ class OptimisticTest extends OrmFunctionalTestCase
 
         $test = $q->getSingleResult();
 
-        self::assertInstanceOf(DateTime::class, $test->version);
+        self::assertInstanceOf(DateTimeImmutable::class, $test->version);
 
         // Try to lock the record with an older timestamp and it should throw an exception
         $caughtException = null;
 
         try {
-            $expectedVersionExpired = DateTime::createFromFormat(
+            $expectedVersionExpired = DateTimeImmutable::createFromFormat(
                 'U',
                 (string) ($test->version->getTimestamp() - 3600),
             );
@@ -351,8 +346,8 @@ class OptimisticTimestamp
     #[Column(type: 'string', length: 255)]
     public $name;
 
-    /** @var DateTime */
+    /** @var DateTimeImmutable */
     #[Version]
-    #[Column(type: 'datetime')]
+    #[Column(type: 'datetime_immutable')]
     public $version;
 }
