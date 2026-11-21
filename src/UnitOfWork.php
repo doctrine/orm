@@ -2599,13 +2599,16 @@ class UnitOfWork implements PropertyChangedListener
                 } else {
                     $entity->__setInitialized(true);
 
-                    $deepcloneVersion = extension_loaded('deepclone') ? phpversion('deepclone') : false;
+                    $deepcloneVersion    = extension_loaded('deepclone') ? phpversion('deepclone') : false;
+                    $deepcloneIsAffected = $deepcloneVersion !== false
+                        && version_compare($deepcloneVersion, '0.8.11', '>=')
+                        && version_compare($deepcloneVersion, '0.8.13', '<');
 
-                    if ($deepcloneVersion !== false && version_compare($deepcloneVersion, '0.8.11', '!=')) {
+                    if ($deepcloneVersion !== false && ! $deepcloneIsAffected) {
                         deepclone_hydrate($entity, (array) $class->reflClass->newInstanceWithoutConstructor());
                     } else {
-                        // ext-deepclone 0.8.11 writes unset untyped properties through __set()
-                        // from an inaccessible scope, which breaks Symfony lazy ghosts.
+                        // ext-deepclone 0.8.11 and 0.8.12 write unset untyped properties through
+                        // __set() from an inaccessible scope, which breaks Symfony lazy ghosts.
                         // See https://github.com/symfony/php-ext-deepclone/issues/82.
                         /** @phpstan-ignore staticMethod.deprecatedClass */
                         Hydrator::hydrate($entity, (array) $class->reflClass->newInstanceWithoutConstructor());
