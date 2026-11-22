@@ -160,7 +160,7 @@ class PersisterHelper
                 break;
 
             case isset($class->associationMappings[$field]):
-                $assoc = $em->getMetadataFactory()->getOwningSide($class->associationMappings[$field]);
+                $assoc = OwningSideResolver::resolve($em->getMetadataFactory(), $class->associationMappings[$field]);
                 $class = $em->getClassMetadata($assoc->targetEntity);
 
                 if ($assoc->isManyToManyOwningSide()) {
