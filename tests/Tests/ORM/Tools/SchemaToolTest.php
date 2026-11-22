@@ -962,6 +962,24 @@ class SchemaToolTest extends OrmTestCase
     }
 
     #[RequiresMethod(Schema::class, 'edit')]
+    public function testIndexLengthsArePreserved(): void
+    {
+        $em = $this->getTestEntityManager();
+
+        if (! $em->getConfiguration()->getUseSchemaEditorApi()) {
+            self::markTestSkipped('Requires the schema editor API.');
+        }
+
+        $schema = (new SchemaTool($em))->getSchemaFromMetadata([
+            $em->getClassMetadata(GH12807IndexLengths::class),
+        ]);
+        $table  = $schema->getTable('gh12807_index_lengths');
+
+        self::assertSame([768], self::getIndexedColumnLengths($table->getIndex('idx_path')));
+        self::assertSame([10, 20], self::getIndexedColumnLengths($table->getIndex('idx_pair')));
+    }
+
+    #[RequiresMethod(Schema::class, 'edit')]
     public function testConflictingIndexTypeFlagsThrow(): void
     {
         if (! $this->getTestEntityManager()->getConfiguration()->getUseSchemaEditorApi()) {
@@ -1099,6 +1117,15 @@ class SchemaToolTest extends OrmTestCase
             self::assertSame($foreignColumns, $foreignKey->getForeignColumns());
             self::assertSame($onDelete, $foreignKey->onDelete());
         }
+    }
+
+    /** @return list<int|null> */
+    private static function getIndexedColumnLengths(DbalIndex $index): array
+    {
+        return array_map(
+            static fn (IndexedColumn $column): int|null => $column->getLength(),
+            $index->getIndexedColumns(),
+        );
     }
 
     /** @return string[] */
@@ -1800,4 +1827,24 @@ class UniqueScalarIdEntity
     #[Id]
     #[Column(unique: true)]
     public int $id = 0;
+}
+
+#[Entity]
+#[Table(name: 'gh12807_index_lengths')]
+#[Index(name: 'idx_path', columns: ['path'], options: ['lengths' => [768]])]
+#[Index(name: 'idx_pair', columns: ['first', 'second'], options: ['lengths' => [10, 20]])]
+class GH12807IndexLengths
+{
+    #[Id]
+    #[Column]
+    public int $id = 0;
+
+    #[Column(length: 1000)]
+    public string $path = '';
+
+    #[Column(length: 255)]
+    public string $first = '';
+
+    #[Column(length: 255)]
+    public string $second = '';
 }
