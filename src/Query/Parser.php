@@ -80,6 +80,8 @@ final class Parser
         'date_diff' => Functions\DateDiffFunction::class,
         'bit_and'   => Functions\BitAndFunction::class,
         'bit_or'    => Functions\BitOrFunction::class,
+        'sin'       => Functions\SinFunction::class,
+        'cos'       => Functions\CosFunction::class,
 
         // Aggregate functions
         'min'       => Functions\MinFunction::class,
@@ -3417,6 +3419,8 @@ final class Parser
      *      "LOCATE" "(" StringPrimary "," StringPrimary ["," SimpleArithmeticExpression]")" |
      *      "ABS" "(" SimpleArithmeticExpression ")" |
      *      "SQRT" "(" SimpleArithmeticExpression ")" |
+     *      "SIN" "(" SimpleArithmeticExpression ")" |
+     *      "COS" "(" SimpleArithmeticExpression ")" |
      *      "MOD" "(" SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
      *      "SIZE" "(" CollectionValuedPathExpression ")" |
      *      "DATE_DIFF" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |

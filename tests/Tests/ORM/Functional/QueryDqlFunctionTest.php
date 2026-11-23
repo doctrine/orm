@@ -161,6 +161,16 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEquals(894, round((float) $result[3]['sqrtsalary']));
     }
 
+    public function testTrigonometricFunctions(): void
+    {
+        $result = $this->_em->createQuery('SELECT SIN((m.salary / 1000 - 70) * 0.017453292519943295) AS sine, COS((m.salary / 1000 - 40) * 0.017453292519943295) AS cosine FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC')
+                         ->setMaxResults(1)
+                         ->getSingleResult();
+
+        self::assertEqualsWithDelta(0.5, (float) $result['sine'], 1e-9);
+        self::assertEqualsWithDelta(0.5, (float) $result['cosine'], 1e-9);
+    }
+
     public function testFunctionUpper(): void
     {
         $result = $this->_em->createQuery('SELECT m, UPPER(m.name) AS uppername FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC')
