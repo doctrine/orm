@@ -136,6 +136,19 @@ class CustomCollectionClassTest extends OrmFunctionalTestCase
         self::assertTrue((new TagCollection())->isInitialized(), 'A collection backed by an ArrayCollection is always initialized.');
     }
 
+    public function testInitializeObjectLoadsANestedCustomCollection(): void
+    {
+        $library = $this->createLibrary();
+        $this->_em->clear();
+
+        $loaded = $this->_em->find(Library::class, $library->id);
+        assert($loaded instanceof Library);
+
+        $this->_em->initializeObject(new TagCollection($loaded->getTags()));
+
+        self::assertTrue($loaded->getTags()->isInitialized());
+    }
+
     public function testExtraLazyCountDoesNotInitialize(): void
     {
         $library = $this->createLibrary();

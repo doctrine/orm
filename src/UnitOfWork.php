@@ -3360,8 +3360,9 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        if ($obj instanceof DelegateCollection) {
-            $obj = DelegateCollectionPropertyAccessor::readInnerCollection($obj) ?? $obj;
+        // A custom collection may wrap another one, e.g. new TagCollection($other->getTags())
+        while ($obj instanceof DelegateCollection && ($inner = DelegateCollectionPropertyAccessor::readInnerCollection($obj)) !== null) {
+            $obj = $inner;
         }
 
         if ($obj instanceof PersistentCollection) {
