@@ -20,6 +20,7 @@ use Doctrine\Tests\Models\CustomCollection\Tag;
 use Doctrine\Tests\Models\CustomCollection\TagCollection;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Traversable;
 
 use function sprintf;
 
@@ -83,6 +84,21 @@ class DelegateCollectionPropertyAccessorTest extends OrmTestCase
         self::assertNotSame($shared, $holder->tags);
         self::assertSame($owned, $shared->getDelegatee(), 'The other entity keeps its collection.');
         self::assertSame($collection, $holder->tags->getDelegatee());
+    }
+
+    public function testSetValueWritesThePropertyOfASubclassRedeclaringIt(): void
+    {
+        $holder       = new PrivateListHolder();
+        $holder->tags = new RedeclaringTagList();
+        $collection   = new ArrayCollection();
+        $accessor     = new DelegateCollectionPropertyAccessor(
+            PropertyAccessorFactory::createPropertyAccessor(PrivateListHolder::class, 'tags'),
+            PrivateTagList::class,
+        );
+
+        $accessor->setValue($holder, $collection);
+
+        self::assertSame($collection, $accessor->getValue($holder));
     }
 
     public function testSetValueAssignsACustomCollection(): void
@@ -195,6 +211,40 @@ final class NamedTagCollection extends AbstractDelegateCollection
     public function __construct(public readonly string $name = 'unnamed', Collection $collection = new ArrayCollection())
     {
         parent::__construct($collection);
+    }
+}
+
+class PrivateListHolder
+{
+    public PrivateTagList $tags;
+}
+
+/** @template-implements DelegateCollection<array-key, Tag> */
+class PrivateTagList implements DelegateCollection
+{
+    /** @param Collection<array-key, Tag> $collection */
+    public function __construct(private Collection $collection = new ArrayCollection())
+    {
+    }
+
+    public function getIterator(): Traversable
+    {
+        return $this->collection->getIterator();
+    }
+}
+
+/** A subclass cannot see the private property of its parent and declares its own. */
+final class RedeclaringTagList extends PrivateTagList
+{
+    /** @param Collection<array-key, Tag> $collection */
+    public function __construct(private Collection $collection = new ArrayCollection())
+    {
+        parent::__construct();
+    }
+
+    public function getIterator(): Traversable
+    {
+        return $this->collection->getIterator();
     }
 }
 

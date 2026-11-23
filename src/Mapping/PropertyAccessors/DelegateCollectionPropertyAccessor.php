@@ -30,14 +30,13 @@ final class DelegateCollectionPropertyAccessor implements PropertyAccessor
     /** @var array<class-string, ReflectionProperty> */
     private static array $innerProperties = [];
 
-    private readonly ReflectionProperty $innerProperty;
     private DelegateCollectionFactory $collectionFactory;
 
     /** @param class-string<DelegateCollection<array-key, mixed>> $collectionClass */
     public function __construct(private readonly PropertyAccessor $parent, private readonly string $collectionClass)
     {
-        $this->innerProperty     = self::resolveInnerProperty($collectionClass);
-        $this->collectionFactory = new DefaultDelegateCollectionFactory();
+        self::$innerProperties[$collectionClass] ??= self::resolveInnerProperty($collectionClass);
+        $this->collectionFactory                   = new DefaultDelegateCollectionFactory();
     }
 
     public function setCollectionFactory(DelegateCollectionFactory $collectionFactory): void
@@ -76,14 +75,14 @@ final class DelegateCollectionPropertyAccessor implements PropertyAccessor
         }
 
         if ($current instanceof DelegateCollection && ! self::isOwnedByAnotherEntity($current, $object)) {
-            $this->innerProperty->setValue($current, $value);
+            self::writeInnerCollection($current, $value);
 
             return;
         }
 
         $delegate = $this->collectionFactory->create($this->collectionClass);
         $this->assertMappedClass($delegate);
-        $this->innerProperty->setValue($delegate, $value);
+        self::writeInnerCollection($delegate, $value);
         $this->parent->setValue($object, $delegate);
     }
 
@@ -122,6 +121,19 @@ final class DelegateCollectionPropertyAccessor implements PropertyAccessor
         $property = self::$innerProperties[$delegate::class] ??= self::resolveInnerProperty($delegate::class);
 
         return $property->isInitialized($delegate) ? $property->getValue($delegate) : null;
+    }
+
+    /**
+     * Resolved from the actual class like readInnerCollection(): a subclass may
+     * declare its own $collection when the one of its parent is private.
+     *
+     * @param DelegateCollection<array-key, mixed> $delegate
+     */
+    private static function writeInnerCollection(DelegateCollection $delegate, mixed $value): void
+    {
+        $property = self::$innerProperties[$delegate::class] ??= self::resolveInnerProperty($delegate::class);
+
+        $property->setValue($delegate, $value);
     }
 
     /**
