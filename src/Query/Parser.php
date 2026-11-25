@@ -2479,12 +2479,20 @@ final class Parser
         }
 
         // Peek beyond the matching closing parenthesis ')'
-        $peek = $this->peekBeyondClosingParenthesis();
+        $peek     = $this->peekBeyondClosingParenthesis(false);
+        $operator = $peek?->type === TokenType::T_NOT ? $this->lexer->peek() : $peek;
+        $this->lexer->resetPeek();
+
+        if ($operator?->type === TokenType::T_BETWEEN) {
+            $condPrimary->simpleConditionalExpression = $this->BetweenExpression();
+
+            return $condPrimary;
+        }
 
         if (
             $peek !== null && (
             in_array($peek->value, ['=', '<', '<=', '<>', '>', '>=', '!='], true) ||
-            in_array($peek->type, [TokenType::T_NOT, TokenType::T_BETWEEN, TokenType::T_LIKE, TokenType::T_IN, TokenType::T_IS, TokenType::T_EXISTS], true) ||
+            in_array($peek->type, [TokenType::T_NOT, TokenType::T_LIKE, TokenType::T_IN, TokenType::T_IS, TokenType::T_EXISTS], true) ||
             $this->isMathOperator($peek)
             )
         ) {
