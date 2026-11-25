@@ -171,6 +171,16 @@ class ExprTest extends OrmTestCase
         self::assertEquals('SQRT(1)', (string) $this->expr->sqrt(1));
     }
 
+    public function testSineExpr(): void
+    {
+        self::assertEquals('SIN(u.angle)', (string) $this->expr->sin('u.angle'));
+    }
+
+    public function testCosineExpr(): void
+    {
+        self::assertEquals('COS(u.angle)', (string) $this->expr->cos('u.angle'));
+    }
+
     public function testEqualExpr(): void
     {
         self::assertEquals('1 = 1', (string) $this->expr->eq(1, 1));

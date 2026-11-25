@@ -392,6 +392,26 @@ class Expr
     }
 
     /**
+     * Creates a SIN() function expression with the given argument.
+     *
+     * @param mixed $x Angle in radians to be used in SIN() function.
+     */
+    public function sin(mixed $x): Expr\Func
+    {
+        return new Expr\Func('SIN', [$x]);
+    }
+
+    /**
+     * Creates a COS() function expression with the given argument.
+     *
+     * @param mixed $x Angle in radians to be used in COS() function.
+     */
+    public function cos(mixed $x): Expr\Func
+    {
+        return new Expr\Func('COS', [$x]);
+    }
+
+    /**
      * Creates an IN() expression with the given arguments.
      *
      * @param string $x Field in string format to be restricted by IN() function.

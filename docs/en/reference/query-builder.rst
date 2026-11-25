@@ -543,6 +543,12 @@ complete list of supported helper methods available:
         // Example - $qb->expr()->sqrt('u.currentBalance')
         public function sqrt($x); // Returns Expr\Func
 
+        // Example - $qb->expr()->sin('u.angle')
+        public function sin($x); // Returns Expr\Func
+
+        // Example - $qb->expr()->cos('u.angle')
+        public function cos($x); // Returns Expr\Func
+
         // Example - $qb->expr()->mod('u.currentBalance', '10')
         public function mod($x); // Returns Expr\Func
 
