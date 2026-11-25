@@ -2768,9 +2768,21 @@ class UnitOfWork implements PropertyChangedListener
                     }
 
                     // Foreign key is set
+                    // The identity map hashes identifiers in the order of ClassMetadata#identifier,
+                    // and the join columns can be declared in another order
+                    if ($targetClass->isIdentifierComposite) {
+                        $sortedId = [];
+
+                        foreach ($targetClass->identifier as $identifier) {
+                            if (array_key_exists($identifier, $associatedId)) {
+                                $sortedId[$identifier] = $associatedId[$identifier];
+                            }
+                        }
+
+                        $associatedId = $sortedId + $associatedId;
+                    }
+
                     // Check identity map first
-                    // FIXME: Can break easily with composite keys if join column values are in
-                    //        wrong order. The correct order is the one in ClassMetadata#identifier.
                     $relatedIdHash = self::getIdHashByIdentifier($associatedId);
 
                     switch (true) {
