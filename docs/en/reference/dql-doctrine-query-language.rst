@@ -843,6 +843,8 @@ clauses:
    Retrieve the foreign key column of association of the owning side
 -  ``ABS(arithmetic_expression)``
 -  ``CONCAT(str1, str2)``
+-  ``COS(arithmetic_expression)`` - Return the cosine of an angle in
+   radians.
 -  ``CURRENT_DATE()`` - Return the current date
 -  ``CURRENT_TIME()`` - Returns the current time
 -  ``CURRENT_TIMESTAMP()`` - Returns a timestamp of the current date
@@ -852,6 +854,8 @@ clauses:
    occurrence of the substring in the string.
 -  ``LOWER(str)`` - returns the string lowercased.
 -  ``MOD(a, b)`` - Return a MOD b.
+-  ``SIN(arithmetic_expression)`` - Return the sine of an angle in
+   radians.
 -  ``SIZE(collection)`` - Return the number of elements in the
    specified collection
 -  ``SQRT(q)`` - Return the square-root of q.
@@ -1870,6 +1874,8 @@ Functions
             "LOCATE" "(" StringPrimary "," StringPrimary ["," SimpleArithmeticExpression]")" |
             "ABS" "(" SimpleArithmeticExpression ")" |
             "SQRT" "(" SimpleArithmeticExpression ")" |
+            "SIN" "(" SimpleArithmeticExpression ")" |
+            "COS" "(" SimpleArithmeticExpression ")" |
             "MOD" "(" SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
             "SIZE" "(" CollectionValuedPathExpression ")" |
             "DATE_DIFF" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |

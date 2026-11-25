@@ -472,6 +472,16 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
+    public function testSupportsTrigonometricFunctions(): void
+    {
+        $this->assertSqlGeneration(
+            'SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u'
+                . ' WHERE :sine * SIN(u.id) + :cosine * COS(u.id) * COS(u.id - :longitude) >= :distance',
+            'SELECT c0_.id AS id_0 FROM cms_users c0_'
+                . ' WHERE ? * SIN(c0_.id) + ? * COS(c0_.id) * COS(c0_.id - ?) >= ?',
+        );
+    }
+
     /** Ticket 894 */
     public function testSupportsBetweenClauseWithPositionalParameters(): void
     {
