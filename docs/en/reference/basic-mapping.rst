@@ -489,10 +489,12 @@ you are using.
 
 .. note::
 
-    Date, time and object values are compared by their database
-    representation. Replacing a value with another instance that maps to the
-    same database value does not trigger an update. In-place modifications are
-    not detected, so these objects behave as if they were immutable.
+    Object values are compared by reference. Replacing a mutable object with
+    another instance triggers an update, even when both instances map to the
+    same database value. Immutable values such as ``DateTimeImmutable`` and
+    ``BcMath\Number`` are the exception: they are compared by their database
+    representation, so replacing one with an equal instance does not trigger an
+    update.
 
 .. warning::
 

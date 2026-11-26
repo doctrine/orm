@@ -106,14 +106,17 @@ to DBAL as a column platform option. DBAL 5 removes column platform options and
 `ColumnEditor` has no setter for custom ones, so relying on this is deprecated.
 With DBAL 5, it throws a `Doctrine\ORM\Exception\NotSupported` exception.
 
-## No update query when the database value of a date or object does not change
+## No update query when an immutable value does not change
 
-Replacing a date or a value object with another instance that maps to the same
-database value no longer produces an `UPDATE`. The change set computation now
-compares the database representation of object values instead of their identity.
-This covers the built-in date and time types and custom value object types. For
-example, changing only the time of a date mapped as `date` no longer triggers an
-update.
+Replacing a `DateTimeImmutable` or `BcMath\Number` value with another instance
+that maps to the same database value no longer produces an `UPDATE`. The change
+set computation compares the database representation of these immutable values
+instead of their identity. For example, changing only the time of a
+`DateTimeImmutable` mapped as `date` no longer triggers an update.
+
+Other object values are compared by identity, as in previous versions. They are
+mutable, so the value kept by the UnitOfWork for comparison can be modified in
+place before the comparison.
 
 ## Custom ID generators imply the `CUSTOM` strategy
 

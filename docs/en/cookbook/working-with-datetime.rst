@@ -198,10 +198,11 @@ requiring timezoned datetimes:
         }
     }
 
-This snippet makes use of the fact that in-place modifications of a date object
-are not detected by the change set computation: the UnitOfWork keeps the same
-instance as the original value. This means we can modify the instance by setting
-the previous local timezone without triggering an update.
+This snippet relies on the way object values are compared during change
+detection. A new DateTime is only used during an update if the reference
+changes between retrieval and flush. The instance can therefore be modified in
+place, here by setting the previous local timezone, without triggering an
+update.
 
 .. warning::
 
