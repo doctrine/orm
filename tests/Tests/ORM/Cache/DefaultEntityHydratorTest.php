@@ -66,6 +66,27 @@ class DefaultEntityHydratorTest extends OrmTestCase
         self::assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($proxy));
     }
 
+    public function testLoadDetachedProxyWhenAnotherInstanceIsManaged(): void
+    {
+        $metadata = $this->em->getClassMetadata(Country::class);
+        $key      = new EntityCacheKey($metadata->name, ['id' => 1]);
+        $entry    = new EntityCacheEntry($metadata->name, ['id' => 1, 'name' => 'Cached']);
+        $proxy    = $this->em->getReference(Country::class, 1);
+        $this->em->clear();
+
+        $managed = new Country('Managed');
+        $managed->setId(1);
+        $this->em->getUnitOfWork()->registerManaged($managed, ['id' => 1], ['id' => 1, 'name' => 'Managed']);
+
+        $entity = $this->structure->loadCacheEntry($metadata, $key, $entry, $proxy);
+
+        self::assertSame($proxy, $entity);
+        self::assertSame('Cached', $proxy->getName());
+        self::assertSame('Managed', $managed->getName());
+        self::assertSame($managed, $this->em->getReference(Country::class, 1));
+        self::assertFalse($this->em->contains($proxy));
+    }
+
     public function testBuildCacheEntry(): void
     {
         $entity   = new Country('Foo');

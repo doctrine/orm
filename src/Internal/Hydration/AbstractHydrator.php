@@ -1006,11 +1006,15 @@ abstract class AbstractHydrator
      */
     protected function registerManaged(ClassMetadata $class, object $entity, array $data): void
     {
-        $this->em->getUnitOfWork()->registerManaged(
-            $entity,
-            $this->identifierFlattener->flattenIdentifier($class, $data),
-            $data,
-        );
+        $identifier    = $this->identifierFlattener->flattenIdentifier($class, $data);
+        $managedEntity = $this->uow->tryGetById($identifier, $class->rootEntityName);
+
+        // A detached lazy object may be initialized after another instance has been managed.
+        if ($managedEntity !== false && $managedEntity !== $entity) {
+            return;
+        }
+
+        $this->uow->registerManaged($entity, $identifier, $data);
     }
 
     /**
