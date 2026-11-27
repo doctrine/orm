@@ -2298,11 +2298,13 @@ class SqlWalker
         $class = $this->getMetadataForDqlAlias($expr->identificationVariable);
         $types = PersisterHelper::getTypeOfField($expr->field, $class, $this->em);
 
-        if (count($types) !== 1 || ! Type::hasType($types[0])) {
+        if (count($types) !== 1 || ! $this->typeProvider->has($types[0])) {
             return null;
         }
 
-        if (Type::getType($types[0])->convertToDatabaseValueSQL('?', $this->platform) !== '?') {
+        // Types converting the value on the SQL side (e.g. ST_GeomFromText(?)) need the placeholder
+        // wrapped, which only happens for explicitly typed parameters, see walkInputParameter().
+        if ($this->typeProvider->get($types[0])->convertToDatabaseValueSQL('?', $this->platform) !== '?') {
             return null;
         }
 
@@ -2340,32 +2342,14 @@ class SqlWalker
      */
     private function unwrapOperand(AST\Node|string|null $expr): AST\Node|string|null
     {
-        while (true) {
-            switch (true) {
-                case $expr instanceof AST\ArithmeticExpression && $expr->isSimpleArithmeticExpression():
-                    $expr = $expr->simpleArithmeticExpression;
-                    break;
-
-                case $expr instanceof AST\SimpleArithmeticExpression && count($expr->arithmeticTerms) === 1:
-                    $expr = $expr->arithmeticTerms[0];
-                    break;
-
-                case $expr instanceof AST\ArithmeticTerm && count($expr->arithmeticFactors) === 1:
-                    $expr = $expr->arithmeticFactors[0];
-                    break;
-
-                case $expr instanceof AST\ArithmeticFactor && $expr->sign === null:
-                    $expr = $expr->arithmeticPrimary;
-                    break;
-
-                case $expr instanceof AST\ParenthesisExpression:
-                    $expr = $expr->expression;
-                    break;
-
-                default:
-                    return $expr;
-            }
-        }
+        return match (true) {
+            $expr instanceof AST\ArithmeticExpression && $expr->isSimpleArithmeticExpression() => $this->unwrapOperand($expr->simpleArithmeticExpression),
+            $expr instanceof AST\SimpleArithmeticExpression && count($expr->arithmeticTerms) === 1 => $this->unwrapOperand($expr->arithmeticTerms[0]),
+            $expr instanceof AST\ArithmeticTerm && count($expr->arithmeticFactors) === 1 => $this->unwrapOperand($expr->arithmeticFactors[0]),
+            $expr instanceof AST\ArithmeticFactor && $expr->sign === null => $this->unwrapOperand($expr->arithmeticPrimary),
+            $expr instanceof AST\ParenthesisExpression => $this->unwrapOperand($expr->expression),
+            default => $expr,
+        };
     }
 
     /**

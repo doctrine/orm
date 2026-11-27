@@ -18,9 +18,11 @@ namespace Doctrine\ORM\Query;
  *
  * <b>Users should use the public methods.</b>
  *
+ * @internal
+ *
  * @see ResultSetMapping
  */
-class BindParameterMapping
+final class BindParameterMapping
 {
     /**
      * Maps DQL parameters to the name of the DBAL type of the field they are compared or

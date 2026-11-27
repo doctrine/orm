@@ -36,6 +36,7 @@ class ParserResultTest extends TestCase
     {
         $bpm = $this->parserResult->getBindParameterMapping();
 
+        self::assertTrue($this->parserResult->hasBindParameterMapping());
         self::assertInstanceOf(BindParameterMapping::class, $bpm);
         self::assertTrue($bpm->isEmpty());
         self::assertSame($bpm, $this->parserResult->getBindParameterMapping());
@@ -49,7 +50,10 @@ class ParserResultTest extends TestCase
         $parserResult = unserialize($legacy);
 
         self::assertInstanceOf(ParserResult::class, $parserResult);
-        self::assertTrue($parserResult->getBindParameterMapping()->isEmpty());
+        self::assertFalse($parserResult->hasBindParameterMapping());
+
+        $this->expectException(LogicException::class);
+        $parserResult->getBindParameterMapping();
     }
 
     #[IgnoreDeprecations]

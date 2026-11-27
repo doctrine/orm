@@ -53,7 +53,8 @@ class ParserResult
      */
     public function __construct()
     {
-        $this->resultSetMapping = new ResultSetMapping();
+        $this->resultSetMapping     = new ResultSetMapping();
+        $this->bindParameterMapping = new BindParameterMapping();
     }
 
     /**
@@ -81,7 +82,23 @@ class ParserResult
      */
     public function getBindParameterMapping(): BindParameterMapping
     {
-        return $this->bindParameterMapping ??= new BindParameterMapping();
+        if ($this->bindParameterMapping === null) {
+            throw new LogicException(sprintf(
+                'This %s lacks a BindParameterMapping, it was cached by a previous release.',
+                self::class,
+            ));
+        }
+
+        return $this->bindParameterMapping;
+    }
+
+    /**
+     * Tells whether the BindParameterMapping is set, which is not the case for an instance cached
+     * by a release that did not have it.
+     */
+    public function hasBindParameterMapping(): bool
+    {
+        return $this->bindParameterMapping !== null;
     }
 
     /**

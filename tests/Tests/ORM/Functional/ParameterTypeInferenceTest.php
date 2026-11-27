@@ -11,6 +11,9 @@ use Doctrine\Tests\Models\CustomType\CustomTypeInferredParameter;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
+use function array_keys;
+use function unserialize;
+
 /**
  * Tests the type of the bind parameters of a DQL query being inferred from the fields they are
  * compared to, rather than guessed from the bound value.
@@ -102,6 +105,32 @@ class ParameterTypeInferenceTest extends OrmFunctionalTestCase
             ->setQueryCache($queryCache)
             ->setParameter('value', 'abc')
             ->getOneOrNullResult();
+
+        $this->_em->getConfiguration()->setInferParameterTypes(true);
+
+        $entity = $this->createQuery('WHERE e.encoded = :value')
+            ->setQueryCache($queryCache)
+            ->setParameter('value', 'abc')
+            ->getOneOrNullResult();
+
+        self::assertNotNull($entity);
+    }
+
+    public function testAParserResultCachedWithoutABindParameterMappingIsParsedAgain(): void
+    {
+        $queryCache = new ArrayAdapter();
+
+        $this->createQuery('WHERE e.encoded = :value')
+            ->setQueryCache($queryCache)
+            ->setParameter('value', 'abc')
+            ->getOneOrNullResult();
+
+        $legacy = unserialize('O:31:"Doctrine\ORM\Query\ParserResult":1:'
+            . "{s:50:\"\0Doctrine\\ORM\\Query\\ParserResult\0parameterMappings\";a:0:{}}");
+
+        foreach (array_keys($queryCache->getValues()) as $key) {
+            $queryCache->save($queryCache->getItem((string) $key)->set($legacy));
+        }
 
         $this->_em->getConfiguration()->setInferParameterTypes(true);
 

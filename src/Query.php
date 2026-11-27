@@ -243,7 +243,7 @@ class Query extends AbstractQuery
 
         if (! $this->expireQueryCache && $cacheItem->isHit()) {
             $cached = $cacheItem->get();
-            if ($cached instanceof ParserResult) {
+            if ($cached instanceof ParserResult && $cached->hasBindParameterMapping()) {
                 // Cache hit.
                 $this->parserResult = $cached;
 
