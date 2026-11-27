@@ -1356,6 +1356,53 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
+    public function testCaseExpressionAsLeftOperandOfInExpression(): void
+    {
+        $this->assertSqlGeneration(
+            "SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE CASE WHEN g.name = 'admin' THEN 1 ELSE 2 END IN (1, 3)",
+            "SELECT c0_.id AS id_0, c0_.name AS name_1 FROM cms_groups c0_ WHERE CASE WHEN c0_.name = 'admin' THEN 1 ELSE 2 END IN (1, 3)",
+        );
+
+        $this->assertSqlGeneration(
+            "SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE CASE g.name WHEN 'admin' THEN 1 ELSE 2 END NOT IN (:values)",
+            "SELECT c0_.id AS id_0, c0_.name AS name_1 FROM cms_groups c0_ WHERE CASE c0_.name WHEN 'admin' THEN 1 ELSE 2 END NOT IN (?)",
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE 1 + CASE WHEN g.id = 1 THEN 2 ELSE 3 END IN (3)',
+            'SELECT c0_.id AS id_0, c0_.name AS name_1 FROM cms_groups c0_ WHERE 1 + CASE WHEN c0_.id = 1 THEN 2 ELSE 3 END IN (3)',
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE (g.id + 1) IN (2, 3)',
+            'SELECT c0_.id AS id_0, c0_.name AS name_1 FROM cms_groups c0_ WHERE (c0_.id + 1) IN (2, 3)',
+        );
+    }
+
+    public function testCaseExpressionAsLeftOperandOfLikeExpression(): void
+    {
+        $this->assertSqlGeneration(
+            "SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE CASE WHEN g.id = 1 THEN 'admin' ELSE g.name END LIKE :filter",
+            "SELECT c0_.id AS id_0, c0_.name AS name_1 FROM cms_groups c0_ WHERE CASE WHEN c0_.id = 1 THEN 'admin' ELSE c0_.name END LIKE ?",
+        );
+    }
+
+    public function testCaseExpressionAsLeftOperandOfBetweenExpression(): void
+    {
+        $this->assertSqlGeneration(
+            "SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE CASE g.name WHEN 'admin' THEN g.id ELSE g.id * 10 END BETWEEN 100 AND 300",
+            "SELECT c0_.id AS id_0, c0_.name AS name_1 FROM cms_groups c0_ WHERE CASE c0_.name WHEN 'admin' THEN c0_.id ELSE c0_.id * 10 END BETWEEN 100 AND 300",
+        );
+    }
+
+    public function testArithmeticExpressionStartingWithAPathAsLeftOperandOfBetweenExpression(): void
+    {
+        $this->assertSqlGeneration(
+            'SELECT fc.id FROM Doctrine\Tests\Models\Company\CompanyFlexContract fc WHERE fc.hoursWorked * fc.pricePerHour BETWEEN :min AND :max',
+            "SELECT c0_.id AS id_0 FROM company_contracts c0_ WHERE (c0_.hoursWorked * c0_.pricePerHour BETWEEN ? AND ?) AND c0_.discr IN ('flexible', 'flexultra')",
+        );
+    }
+
     public function testIdentityFunctionWithCompositePrimaryKey(): void
     {
         $this->assertSqlGeneration(
