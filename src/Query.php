@@ -8,6 +8,7 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\Deprecations\Deprecation;
+use Doctrine\ORM\Internal\TypeProviderLocator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\AST\DeleteStatement;
 use Doctrine\ORM\Query\AST\SelectStatement;
@@ -423,14 +424,15 @@ class Query extends AbstractQuery
             return [$value, $inferredType];
         }
 
-        $type = Type::getType($inferredType);
+        $typeProvider = TypeProviderLocator::fromConnection($this->em->getConnection());
+        $type         = $typeProvider->get($inferredType);
 
         return [
             array_map(
                 fn (mixed $element): mixed => $type->convertToDatabaseValue($element, $this->em->getConnection()->getDatabasePlatform()),
                 $value,
             ),
-            PersisterHelper::getArrayBindingType($inferredType),
+            PersisterHelper::getArrayBindingType($inferredType, $typeProvider),
         ];
     }
 
