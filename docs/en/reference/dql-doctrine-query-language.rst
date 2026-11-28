@@ -1418,6 +1418,67 @@ pass parameters to the query the following methods can be used:
 
 Both named and positional parameters are passed to these methods without their ? or : prefix.
 
+.. _dql-parameter-type-inference:
+
+Parameter Type Inference
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. versionadded:: 3.9
+
+When no type is given to ``setParameter()``, the value is bound as is, with a
+type guessed from the PHP value. For a field mapped to a custom DBAL type that
+converts its value on the PHP side, such as a type storing the value encoded,
+the comparison is then made against the unconverted value and matches nothing.
+
+Doctrine can instead infer the type of a parameter from the field it is used
+against, and convert the value through that type, as it does when persisting
+entities. This is disabled by default, and can be enabled for every query on the
+configuration, see :ref:`the configuration reference <reference-advanced-configuration-parameter-type-inference>`:
+
+.. code-block:: php
+
+    <?php
+    $config->setInferParameterTypes(true);
+
+    // the value is converted through the type of the u.email field
+    $query = $em->createQuery('SELECT u FROM User u WHERE u.email = :email');
+    $query->setParameter('email', 'jdoe@example.com');
+
+It can also be enabled or disabled for a single query, whatever the
+configuration says. Passing ``null`` applies the configuration again:
+
+.. code-block:: php
+
+    <?php
+    $query->setInferParameterTypes(true);
+    $query->setInferParameterTypes(false);
+    $query->setInferParameterTypes(null);
+
+The type of a parameter is inferred when the parameter is compared to a field
+(``=``, ``<>``, ``<``, ``>=``, ...), on either side of the comparison, used in
+an ``IN`` list, as a bound of ``BETWEEN``, or assigned to a field in the ``SET``
+clause of an ``UPDATE`` query. For an ``IN`` list given as an array, each value
+is converted.
+
+Nothing is inferred, and the parameter is bound as before, when:
+
+-  a type is given to ``setParameter()``, which always takes precedence;
+-  the parameter is not directly compared to the field, for instance in
+   ``u.id = :a + 1``, ``LOWER(:a)``, ``LIKE`` patterns or ``MEMBER OF``;
+-  the parameter is used against fields of different types in the same query;
+-  the field is an association to an entity with a composite identifier;
+-  the type converts the value on the SQL side, through
+   ``Type::convertToDatabaseValueSQL()``. Give the type explicitly to
+   ``setParameter()`` for those.
+
+.. warning::
+
+    With inference enabled, the value has to be valid for the type of the
+    field. For instance, a string compared to a ``datetime`` field is passed to
+    ``DateTimeType::convertToDatabaseValue()``, which throws a
+    ``ConversionException``, while it used to be bound as a plain string. This
+    is why the feature has to be opted into.
+
 Cache related API
 ^^^^^^^^^^^^^^^^^
 
