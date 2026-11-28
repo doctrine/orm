@@ -43,12 +43,18 @@ class ParserResult
     private array $parameterMappings = [];
 
     /**
+     * The BindParameterMapping that describes how the bind parameters map to corresponding DBAL type.
+     */
+    private BindParameterMapping|null $bindParameterMapping = null;
+
+    /**
      * Initializes a new instance of the <tt>ParserResult</tt> class.
      * The new instance is initialized with an empty <tt>ResultSetMapping</tt>.
      */
     public function __construct()
     {
-        $this->resultSetMapping = new ResultSetMapping();
+        $this->resultSetMapping     = new ResultSetMapping();
+        $this->bindParameterMapping = new BindParameterMapping();
     }
 
     /**
@@ -67,6 +73,32 @@ class ParserResult
     public function setResultSetMapping(ResultSetMapping $rsm): void
     {
         $this->resultSetMapping = $rsm;
+    }
+
+    /**
+     * Gets the BindParameterMapping for the parsed query.
+     *
+     * @return BindParameterMapping The query set mapping of the parsed query
+     */
+    public function getBindParameterMapping(): BindParameterMapping
+    {
+        if ($this->bindParameterMapping === null) {
+            throw new LogicException(sprintf(
+                'This %s lacks a BindParameterMapping, it was cached by a previous release.',
+                self::class,
+            ));
+        }
+
+        return $this->bindParameterMapping;
+    }
+
+    /**
+     * Tells whether the BindParameterMapping is set, which is not the case for an instance cached
+     * by a release that did not have it.
+     */
+    public function hasBindParameterMapping(): bool
+    {
+        return $this->bindParameterMapping !== null;
     }
 
     /**

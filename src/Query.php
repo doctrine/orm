@@ -8,6 +8,7 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\Deprecations\Deprecation;
+use Doctrine\ORM\Internal\TypeProviderLocator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\AST\DeleteStatement;
 use Doctrine\ORM\Query\AST\SelectStatement;
@@ -22,15 +23,18 @@ use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
+use Doctrine\ORM\Utility\PersisterHelper;
 use Psr\Cache\CacheItemPoolInterface;
 
 use function array_keys;
+use function array_map;
 use function array_values;
 use function assert;
 use function count;
 use function get_debug_type;
 use function in_array;
 use function is_a;
+use function is_array;
 use function ksort;
 use function md5;
 use function reset;
@@ -169,6 +173,11 @@ class Query extends AbstractQuery
     private bool $useQueryCache = true;
 
     /**
+     * Whether to infer the type of the bind parameters from the fields they are used against.
+     */
+    private bool|null $inferParameterTypes = null;
+
+    /**
      * Gets the SQL query/queries that correspond to this DQL query.
      *
      * @return list<string>|string The built sql query or an array of all sql queries.
@@ -234,7 +243,7 @@ class Query extends AbstractQuery
 
         if (! $this->expireQueryCache && $cacheItem->isHit()) {
             $cached = $cacheItem->get();
-            if ($cached instanceof ParserResult) {
+            if ($cached instanceof ParserResult && $cached->hasBindParameterMapping()) {
                 // Cache hit.
                 $this->parserResult = $cached;
 
@@ -355,6 +364,7 @@ class Query extends AbstractQuery
     {
         $sqlParams = [];
         $types     = [];
+        $bpm       = $this->shouldInferParameterTypes() ? $this->parserResult->getBindParameterMapping() : null;
 
         foreach ($this->parameters as $parameter) {
             $key = $parameter->getName();
@@ -364,6 +374,12 @@ class Query extends AbstractQuery
             }
 
             [$value, $type] = $this->resolveParameterValue($parameter);
+
+            $inferredType = $parameter->typeWasSpecified() ? null : $bpm?->getParameterType($key);
+
+            if ($inferredType !== null) {
+                [$value, $type] = $this->applyInferredParameterType($value, $inferredType);
+            }
 
             foreach ($paramMappings[$key] as $position) {
                 $types[$position] = $type;
@@ -394,6 +410,35 @@ class Query extends AbstractQuery
         }
 
         return [$sqlParams, $types];
+    }
+
+    /**
+     * Applies the type inferred from the field a parameter is used against.
+     *
+     * @return mixed[] tuple of (value, type)
+     * @phpstan-return array{0: mixed, 1: mixed}
+     */
+    private function applyInferredParameterType(mixed $value, string $inferredType): array
+    {
+        if (! is_array($value)) {
+            return [$value, $inferredType];
+        }
+
+        $typeProvider = TypeProviderLocator::fromConnection($this->em->getConnection());
+        $type         = $typeProvider->get($inferredType);
+
+        return [
+            array_map(
+                fn (mixed $element): mixed => $type->convertToDatabaseValue($element, $this->em->getConnection()->getDatabasePlatform()),
+                $value,
+            ),
+            PersisterHelper::getArrayBindingType($inferredType, $typeProvider),
+        ];
+    }
+
+    private function shouldInferParameterTypes(): bool
+    {
+        return $this->inferParameterTypes ?? $this->em->getConfiguration()->isInferParameterTypesEnabled();
     }
 
     /**
@@ -453,6 +498,22 @@ class Query extends AbstractQuery
     public function useQueryCache(bool $bool): self
     {
         $this->useQueryCache = $bool;
+
+        return $this;
+    }
+
+    /**
+     * Defines whether the type of the bind parameters should be inferred from the fields they
+     * are used against, overriding {@see Configuration::setInferParameterTypes()} for this
+     * query only.
+     *
+     * @param bool|null $inferParameterTypes NULL to apply the configured behaviour.
+     *
+     * @return $this
+     */
+    public function setInferParameterTypes(bool|null $inferParameterTypes): self
+    {
+        $this->inferParameterTypes = $inferParameterTypes;
 
         return $this;
     }

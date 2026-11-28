@@ -250,6 +250,27 @@ The default value is ``255``. Setting it explicitly is useful for platforms or
 storage layouts that require shorter default string lengths, for example MySQL
 ``utf8mb4`` schemas that often use ``191`` for indexed varchar columns.
 
+.. _reference-advanced-configuration-parameter-type-inference:
+
+Parameter Type Inference (**OPTIONAL**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. versionadded:: 3.9
+
+.. code-block:: php
+
+    <?php
+    $config->setInferParameterTypes(true);
+    $config->isInferParameterTypesEnabled();
+
+Gets or sets whether the type of the DQL query parameters given without a type
+is inferred from the field they are compared or assigned to, so that their value
+is converted through the type of that field.
+
+The default value is ``false``. It can be overridden for a single query with
+``Query::setInferParameterTypes()``. See
+:ref:`Parameter Type Inference <dql-parameter-type-inference>` for the details.
+
 Query Cache (**RECOMMENDED**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
